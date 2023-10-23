@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Table(name = "peer_review", uniqueConstraints =
-        @UniqueConstraint(name = "UniqueReviewId", columnNames = {"reviewer", "reviewee", "steady"})
+        @UniqueConstraint(name = "UniqueReviewId", columnNames = {"reviewer_id", "reviewee_id", "steady"})
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PeerReview {
@@ -29,6 +29,7 @@ public class PeerReview {
     private User reviewee;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "steady")
     private Steady steady;
 
     @Column(name = "comment", nullable = false)
