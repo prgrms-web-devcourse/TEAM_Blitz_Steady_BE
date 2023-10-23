@@ -1,0 +1,58 @@
+name: 블리츠 백엔드 서버 CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 레포지토리 체크아웃
+    - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GIT_TOKEN }}
+        submodules: 'true'
+        
+    - name: JDK 17 설치
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: gradlew 권한 부여
+      run: chmod +x ./gradlew
+      shell: bash
+
+    - name: 빌드 & 테스트
+      run: ./gradlew build test
+
+    - name: 테스트 결과를 PR 코멘트에 등록
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+       files: '**/build/test-results/test/TEST-*.xml'
+
+    - name: 테스트 실패 시 Check 코멘트 등록.
+      uses: mikepenz/action-junit-report@v3
+      if: always()
+      with:
+        report_paths: '**/build/test-results/test/TEST-*.xml'
+
+    - name: CI가 종료되면 Slack으로 알림
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        author_name: CI 결과 알림
+        fields: repo, message, commit, author, action, eventName, ref, workflow, job, took
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: always()
+     
