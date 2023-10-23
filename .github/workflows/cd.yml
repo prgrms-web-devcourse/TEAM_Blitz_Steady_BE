@@ -11,10 +11,10 @@ on:
       - dev
     
 env:
-  PROJECT_NAME: wonnapark_project
-  BUCKET_NAME: wonna-park-cd-bucket
-  CODE_DEPLOY_APP_NAME: wonna-park-cicd
-  DEPLOYMENT_GROUP_NAME: wonna-park-cicd-test
+  PROJECT_NAME: blitz-dev-server
+  BUCKET_NAME: team13a-cicd-bucket
+  CODE_DEPLOY_APP_NAME: team13a-cp
+  DEPLOYMENT_GROUP_NAME: team13a-cp-group
 
 jobs:
   deploy:
