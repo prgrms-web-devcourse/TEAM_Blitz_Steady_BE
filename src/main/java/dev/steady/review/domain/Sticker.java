@@ -1,4 +1,4 @@
-package dev.steady.peerReview.domain;
+package dev.steady.review.domain;
 
 
 import jakarta.persistence.*;
@@ -17,7 +17,7 @@ public class Sticker {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "content", nullable = false)
+    @Column(nullable = false)
     private String content;
 
     @Builder

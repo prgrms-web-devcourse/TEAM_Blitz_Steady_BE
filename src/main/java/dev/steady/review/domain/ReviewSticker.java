@@ -1,4 +1,4 @@
-package dev.steady.peerReview.domain;
+package dev.steady.review.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "review_sticker")
+@Table(name = "review_stickers")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReviewSticker {
 
@@ -17,14 +17,14 @@ public class ReviewSticker {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private PeerReview peerReview;
+    private Review review;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Sticker sticker;
 
     @Builder
-    private ReviewSticker(PeerReview peerReview, Sticker sticker) {
-        this.peerReview = peerReview;
+    private ReviewSticker(Review review, Sticker sticker) {
+        this.review = review;
         this.sticker = sticker;
     }
 

@@ -16,10 +16,10 @@ public class SteadyQuestion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "content", nullable = false)
+    @Column(nullable = false)
     private String content;
 
-    @Column(name = "order", nullable = false)
+    @Column(nullable = false)
     private int order;
 
     @ManyToOne(fetch = FetchType.LAZY)

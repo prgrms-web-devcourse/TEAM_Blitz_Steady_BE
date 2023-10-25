@@ -21,7 +21,7 @@ public class Answer {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @Column(name = "content", nullable = false)
+    @Column(nullable = false)
     private String content;
 
     @Builder

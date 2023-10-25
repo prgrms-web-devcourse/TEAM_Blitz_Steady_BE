@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "steady_like")
+@Table(name = "steady_likes")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SteadyLike {
 

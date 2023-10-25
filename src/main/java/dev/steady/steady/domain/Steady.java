@@ -21,34 +21,34 @@ public class Steady extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
+    @Column(nullable = false)
     private SteadyType type;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(nullable = false)
     private SteadyStatus status;
 
-    @Column(name = "recruit_count", nullable = false)
+    @Column(nullable = false)
     private int recruitCount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "steady_mode", nullable = false)
+    @Column(nullable = false)
     private SteadyMode steadyMode;
 
-    @Column(name = "opening_date", nullable = false)
+    @Column(nullable = false)
     private LocalDate openingDate;
 
-    @Column(name = "deadline", nullable = false)
+    @Column(nullable = false)
     private LocalDate deadline;
 
-    @Column(name = "title", nullable = false)
+    @Column(nullable = false)
     private String title;
 
-    @Column(name = "content", nullable = false)
+    @Column(nullable = false)
     private String content;
 
     @Embedded
