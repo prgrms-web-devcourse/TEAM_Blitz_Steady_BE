@@ -1,7 +1,5 @@
-package dev.steady.applicationForm.domain;
+package dev.steady.steady.domain;
 
-
-import dev.steady.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,24 +8,28 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "answers")
+@Table(name = "forms")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Answer {
+public class SteadyQuestion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
-
     @Column(name = "content", nullable = false)
     private String content;
 
+    @Column(name = "order", nullable = false)
+    private int order;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Steady steady;
+
     @Builder
-    private Answer(User user, String content) {
-        this.user = user;
+    public SteadyQuestion(String content, int order, Steady steady) {
         this.content = content;
+        this.order = order;
+        this.steady = steady;
     }
 
 }
