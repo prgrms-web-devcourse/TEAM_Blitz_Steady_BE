@@ -1,6 +1,6 @@
-package dev.steady.steady.api;
+package dev.steady.steady.presentation;
 
-import dev.steady.steady.application.SteadyService;
+import dev.steady.steady.service.SteadyService;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

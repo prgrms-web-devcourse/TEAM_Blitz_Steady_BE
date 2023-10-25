@@ -1,14 +1,12 @@
 package dev.steady.steady.fixture;
 
-import dev.steady.steadyForm.domain.SteadyForm;
-import dev.steady.steady.domain.Promotion;
-import dev.steady.steady.domain.Steady;
-import dev.steady.steady.domain.SteadyMode;
-import dev.steady.steady.domain.SteadyType;
+import dev.steady.steady.domain.*;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SteadyFixtures {
 
@@ -22,19 +20,32 @@ public class SteadyFixtures {
                 .deadline(LocalDate.now().plusDays(14))
                 .title("스테디원 모집합니다")
                 .content("많관부")
-                .steadyFormId(1L)
+                .questionList(List.of("1번 질문", "2번 질문", "3번 질문"))
                 .build();
     }
 
-    public static Steady createSteady(SteadyCreateRequest request, Promotion promotion, SteadyForm steadyForm) {
-        Steady steady = request.toEntity(promotion, steadyForm);
+    public static List<SteadyQuestion> createSteadyQuestions(List<String> questionList, Steady steady) {
+        List<SteadyQuestion> steadyQuestions = new ArrayList<>();
+        for (int i = 0; i < questionList.size(); i++) {
+            SteadyQuestion steadyQuestion = SteadyQuestion.builder()
+                    .content(questionList.get(i))
+                    .order(i + 1)
+                    .steady(steady)
+                    .build();
+            ReflectionTestUtils.setField(steadyQuestion, "id", Long.valueOf(i + 1));
+            steadyQuestions.add(steadyQuestion);
+        }
+        return steadyQuestions;
+    }
+
+    public static Steady createSteady(SteadyCreateRequest request, Promotion promotion) {
+        Steady steady = request.toEntity(promotion);
         ReflectionTestUtils.setField(steady, "id", 1L);
         return steady;
     }
 
     public static Promotion createPromotion() {
-        int promotionCount = 3;
-        Promotion promotion = new Promotion(promotionCount);
+        Promotion promotion = new Promotion();
         return promotion;
     }
 

@@ -52,8 +52,8 @@ class SteadyControllerTest extends ControllerTestConfig {
         SteadyCreateRequest steadyRequest = SteadyFixtures.createSteadyRequest();
         Promotion promotion = SteadyFixtures.createPromotion();
         User user = UserFixtures.createUser();
-        SteadyForm steadyForm = SteadyFormFixtures.createForm(user);
-        Steady steady = SteadyFixtures.createSteady(steadyRequest, promotion, steadyForm);
+        Steady steady = SteadyFixtures.createSteady(steadyRequest, promotion);
+        List<SteadyQuestion> steadyQuestions = SteadyFixtures.createSteadyQuestions(steadyRequest.questionList(), steady);
 
         given(steadyService.create(steadyRequest)).willReturn(steady.getId());
 
