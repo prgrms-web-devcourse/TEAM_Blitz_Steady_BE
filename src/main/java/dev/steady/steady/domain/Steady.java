@@ -17,6 +17,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Steady extends BaseEntity {
 
+    private final static int INITIAL_NUMBER_OF_MEMBER = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,6 +36,9 @@ public class Steady extends BaseEntity {
 
     @Column(nullable = false)
     private int recruitCount;
+
+    @Column(nullable = false)
+    private int numberOfParticipants;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -71,6 +76,7 @@ public class Steady extends BaseEntity {
         this.type = type;
         this.status = SteadyStatus.RECRUITING;
         this.recruitCount = recruitCount;
+        this.numberOfParticipants = INITIAL_NUMBER_OF_MEMBER;
         this.steadyMode = steadyMode;
         this.openingDate = openingDate;
         this.deadline = deadline;

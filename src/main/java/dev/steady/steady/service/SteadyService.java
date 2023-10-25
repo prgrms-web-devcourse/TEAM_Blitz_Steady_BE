@@ -6,16 +6,16 @@ import dev.steady.steady.domain.Promotion;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
-import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.domain.repository.SteadyRepository;
+import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.user.domain.User;
 import dev.steady.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +38,7 @@ public class SteadyService {
         createSteadyLeader(steady, user);
         Steady savedSteady = steadyRepository.save(steady);
 
-        List<SteadyQuestion> steadyQuestions = createSteadyQuestions(request.questionList(), savedSteady);
+        List<SteadyQuestion> steadyQuestions = createSteadyQuestions(request.questions(), savedSteady);
         steadyQuestionRepository.saveAll(steadyQuestions);
         return savedSteady.getId();
     }
@@ -52,17 +52,14 @@ public class SteadyService {
         steady.addParticipant(participant);
     }
 
-    private List<SteadyQuestion> createSteadyQuestions(List<String> questionList, Steady steady) {
-        List<SteadyQuestion> steadyQuestions = new ArrayList<>();
-        for (int i = 0; i < questionList.size(); i++) {
-            SteadyQuestion steadyQuestion = SteadyQuestion.builder()
-                    .content(questionList.get(i))
-                    .order(i + 1)
-                    .steady(steady)
-                    .build();
-            steadyQuestions.add(steadyQuestion);
-        }
-        return steadyQuestions;
+    private List<SteadyQuestion> createSteadyQuestions(List<String> questions, Steady steady) {
+        return IntStream.range(0, questions.size())
+                .mapToObj(index -> SteadyQuestion.builder()
+                        .content(questions.get(index))
+                        .order(index + 1)
+                        .steady(steady)
+                        .build())
+                .toList();
     }
 
 }

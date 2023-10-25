@@ -19,7 +19,7 @@ public record SteadyCreateRequest(
         LocalDate deadline,
         String title,
         String content,
-        List<String> questionList
+        List<String> questions
 ) {
 
     public Steady toEntity(Promotion promotion) {

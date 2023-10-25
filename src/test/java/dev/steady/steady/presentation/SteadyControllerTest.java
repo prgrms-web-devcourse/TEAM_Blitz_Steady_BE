@@ -2,12 +2,12 @@ package dev.steady.steady.presentation;
 
 import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.steady.steady.service.SteadyService;
 import dev.steady.steady.domain.Promotion;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.fixture.SteadyFixtures;
+import dev.steady.steady.service.SteadyService;
 import dev.steady.user.domain.User;
 import dev.steady.user.fixture.UserFixtures;
 import org.junit.jupiter.api.DisplayName;
@@ -56,7 +56,7 @@ class SteadyControllerTest {
         Promotion promotion = SteadyFixtures.createPromotion();
         User user = UserFixtures.createUser();
         Steady steady = SteadyFixtures.createSteady(steadyRequest, promotion);
-        List<SteadyQuestion> steadyQuestions = SteadyFixtures.createSteadyQuestions(steadyRequest.questionList(), steady);
+        List<SteadyQuestion> steadyQuestions = SteadyFixtures.createSteadyQuestions(steadyRequest.questions(), steady);
 
         given(steadyService.create(steadyRequest)).willReturn(steady.getId());
 
@@ -81,7 +81,7 @@ class SteadyControllerTest {
                                 fieldWithPath("deadline").type(JsonFieldType.STRING).description("모집 마감일"),
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("모집글 제목"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("모집글 내용"),
-                                fieldWithPath("questionList").type(JsonFieldType.ARRAY).description("스테디 질문 리스트")
+                                fieldWithPath("questions").type(JsonFieldType.ARRAY).description("스테디 질문 리스트")
                         )
                 ))
                 .andDo(print());

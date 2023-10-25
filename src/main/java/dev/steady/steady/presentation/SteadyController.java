@@ -1,7 +1,7 @@
 package dev.steady.steady.presentation;
 
-import dev.steady.steady.service.SteadyService;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
+import dev.steady.steady.service.SteadyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +13,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/steadies")
+@RequestMapping("/api/v1/steadies")
 public class SteadyController {
 
     private final SteadyService steadyService;
