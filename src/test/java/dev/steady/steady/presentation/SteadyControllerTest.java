@@ -1,4 +1,4 @@
-package dev.steady.steady.api;
+package dev.steady.steady.presentation;
 
 import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,7 +53,7 @@ class SteadyControllerTest extends ControllerTestConfig {
         Promotion promotion = SteadyFixtures.createPromotion();
         User user = UserFixtures.createUser();
         Steady steady = SteadyFixtures.createSteady(steadyRequest, promotion);
-        List<SteadyQuestion> steadyQuestions = SteadyFixtures.createSteadyQuestions(steadyRequest.questionList(), steady);
+        List<SteadyQuestion> steadyQuestions = SteadyFixtures.createSteadyQuestions(steadyRequest.questions(), steady);
 
         given(steadyService.create(steadyRequest)).willReturn(steady.getId());
 

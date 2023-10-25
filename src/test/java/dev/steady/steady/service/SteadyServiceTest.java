@@ -5,9 +5,9 @@ import dev.steady.steady.domain.Promotion;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
+import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.fixture.SteadyFixtures;
-import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.User;
 import dev.steady.user.fixture.UserFixtures;
 import dev.steady.user.infrastructure.UserRepository;
@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atMostOnce;
 
 @ExtendWith(MockitoExtension.class)
 class SteadyServiceTest {
@@ -53,7 +53,7 @@ class SteadyServiceTest {
         SteadyCreateRequest steadyRequest = SteadyFixtures.createSteadyRequest();
         Promotion promotion = SteadyFixtures.createPromotion();
         Steady steady = SteadyFixtures.createSteady(steadyRequest, promotion);
-        List<SteadyQuestion> steadyQuestions = SteadyFixtures.createSteadyQuestions(steadyRequest.questionList(), steady);
+        List<SteadyQuestion> steadyQuestions = SteadyFixtures.createSteadyQuestions(steadyRequest.questions(), steady);
 
         given(authContext.getUserId()).willReturn(user.getId());
         given(userRepository.findById(any())).willReturn(Optional.ofNullable(user));
