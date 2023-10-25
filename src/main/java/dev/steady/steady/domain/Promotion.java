@@ -12,15 +12,15 @@ public class Promotion {
 
     private final static int INITIAL_PROMOTION_COUNT = 3;
 
-    @Column(name = "promotion_count", nullable = false)
-    private int promotion_count;
+    @Column(nullable = false)
+    private int promotionCount;
 
-    @Column(name = "promoted_at", nullable = false)
-    private LocalDateTime promoted_at;
+    @Column(nullable = false)
+    private LocalDateTime promotedAt;
 
     public Promotion() {
-        this.promotion_count = INITIAL_PROMOTION_COUNT;
-        this.promoted_at = LocalDateTime.now();
+        this.promotionCount = INITIAL_PROMOTION_COUNT;
+        this.promotedAt = LocalDateTime.now();
     }
 
 }

@@ -1,4 +1,4 @@
-package dev.steady.peerReview.domain;
+package dev.steady.review.domain;
 
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
@@ -10,11 +10,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "peer_review", uniqueConstraints =
-        @UniqueConstraint(name = "UniqueReviewId", columnNames = {"reviewer_id", "reviewee_id", "steady"})
-)
+@Table(name = "reviews")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PeerReview {
+public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,21 +27,20 @@ public class PeerReview {
     private User reviewee;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "steady")
     private Steady steady;
 
-    @Column(name = "comment", nullable = false)
+    @Column(nullable = false)
     private String comment;
 
-    @Column(name = "is_public", nullable = false)
+    @Column(nullable = false)
     private boolean isPublic;
 
     @Builder
-    private PeerReview(User reviewer,
-                       User reviewee,
-                       Steady steady,
-                       String comment,
-                       boolean isPublic) {
+    private Review(User reviewer,
+                   User reviewee,
+                   Steady steady,
+                   String comment,
+                   boolean isPublic) {
         this.reviewer = reviewer;
         this.reviewee = reviewee;
         this.steady = steady;
