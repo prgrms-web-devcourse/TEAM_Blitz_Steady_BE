@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "questions")
+@Table(name = "steady_questions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Question {
+public class SteadyQuestion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,7 @@ public class Question {
     private SteadyForm steadyForm;
 
     @Builder
-    private Question(SteadyForm steadyForm) {
+    private SteadyQuestion(SteadyForm steadyForm) {
         this.steadyForm = steadyForm;
     }
 
