@@ -1,7 +1,6 @@
 package dev.steady.steady.domain;
 
 import dev.steady.global.entity.BaseEntity;
-import dev.steady.steadyForm.domain.SteadyForm;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,45 +17,47 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Steady extends BaseEntity {
 
+    private final static int INITIAL_NUMBER_OF_MEMBER = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
+    @Column(nullable = false)
     private SteadyType type;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(nullable = false)
     private SteadyStatus status;
 
-    @Column(name = "recruit_count", nullable = false)
+    @Column(nullable = false)
     private int recruitCount;
 
+    @Column(nullable = false)
+    private int numberOfParticipants;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "steady_mode", nullable = false)
+    @Column(nullable = false)
     private SteadyMode steadyMode;
 
-    @Column(name = "opening_date", nullable = false)
+    @Column(nullable = false)
     private LocalDate openingDate;
 
-    @Column(name = "deadline", nullable = false)
+    @Column(nullable = false)
     private LocalDate deadline;
 
-    @Column(name = "title", nullable = false)
+    @Column(nullable = false)
     private String title;
 
-    @Column(name = "content", nullable = false)
+    @Column(nullable = false)
     private String content;
 
     @Embedded
     private Promotion promotion;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private SteadyForm steadyForm;
 
     @OneToMany(mappedBy = "steady", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participant> participants = new ArrayList<>();
@@ -64,26 +65,24 @@ public class Steady extends BaseEntity {
     @Builder
     private Steady(String name,
                    SteadyType type,
-                   SteadyStatus status,
                    int recruitCount,
                    SteadyMode steadyMode,
                    LocalDate openingDate,
                    LocalDate deadline,
                    String title,
                    String content,
-                   Promotion promotion,
-                   SteadyForm steadyForm) {
+                   Promotion promotion) {
         this.name = name;
         this.type = type;
-        this.status = status;
+        this.status = SteadyStatus.RECRUITING;
         this.recruitCount = recruitCount;
+        this.numberOfParticipants = INITIAL_NUMBER_OF_MEMBER;
         this.steadyMode = steadyMode;
         this.openingDate = openingDate;
         this.deadline = deadline;
         this.title = title;
         this.content = content;
         this.promotion = promotion;
-        this.steadyForm = steadyForm;
     }
 
     public void addParticipant(Participant participant) {

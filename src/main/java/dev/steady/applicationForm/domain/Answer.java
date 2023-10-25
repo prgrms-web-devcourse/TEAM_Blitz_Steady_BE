@@ -1,7 +1,6 @@
 package dev.steady.applicationForm.domain;
 
 
-import dev.steady.steadyForm.domain.Question;
 import dev.steady.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -20,17 +19,13 @@ public class Answer {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Question question;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @Column(name = "content", nullable = false)
+    @Column(nullable = false)
     private String content;
 
     @Builder
-    private Answer(Question question, User user, String content) {
-        this.question = question;
+    private Answer(User user, String content) {
         this.user = user;
         this.content = content;
     }

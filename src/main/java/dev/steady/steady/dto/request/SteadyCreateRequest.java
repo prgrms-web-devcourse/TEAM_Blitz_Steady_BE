@@ -1,10 +1,13 @@
 package dev.steady.steady.dto.request;
 
-import dev.steady.steady.domain.*;
-import dev.steady.steadyForm.domain.SteadyForm;
+import dev.steady.steady.domain.Promotion;
+import dev.steady.steady.domain.Steady;
+import dev.steady.steady.domain.SteadyMode;
+import dev.steady.steady.domain.SteadyType;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Builder
 public record SteadyCreateRequest(
@@ -16,14 +19,13 @@ public record SteadyCreateRequest(
         LocalDate deadline,
         String title,
         String content,
-        Long steadyFormId
+        List<String> questions
 ) {
 
-    public Steady toEntity(Promotion promotion, SteadyForm steadyForm) {
+    public Steady toEntity(Promotion promotion) {
         return Steady.builder()
                 .name(name)
                 .type(type)
-                .status(SteadyStatus.RECRUITING)
                 .recruitCount(recruitCount)
                 .steadyMode(steadyMode)
                 .openingDate(openingDate)
@@ -31,7 +33,6 @@ public record SteadyCreateRequest(
                 .title(title)
                 .content(content)
                 .promotion(promotion)
-                .steadyForm(steadyForm)
                 .build();
     }
 

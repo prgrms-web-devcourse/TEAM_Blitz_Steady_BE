@@ -1,6 +1,5 @@
-package dev.steady.steadyForm.domain;
+package dev.steady.steady.domain;
 
-import dev.steady.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,22 +10,26 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "forms")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SteadyForm {
+public class SteadyQuestion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(nullable = false)
+    private String content;
+
+    @Column(nullable = false)
+    private int order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private Steady steady;
 
     @Builder
-    private SteadyForm(String name, User user) {
-        this.name = name;
-        this.user = user;
+    public SteadyQuestion(String content, int order, Steady steady) {
+        this.content = content;
+        this.order = order;
+        this.steady = steady;
     }
 
 }

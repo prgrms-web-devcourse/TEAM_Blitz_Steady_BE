@@ -1,14 +1,13 @@
-package dev.steady.steady.api;
+package dev.steady.steady.presentation;
 
 import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.steady.steady.application.SteadyService;
 import dev.steady.steady.domain.Promotion;
 import dev.steady.steady.domain.Steady;
+import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.fixture.SteadyFixtures;
-import dev.steady.steadyForm.domain.SteadyForm;
-import dev.steady.steadyForm.fixture.SteadyFormFixtures;
+import dev.steady.steady.service.SteadyService;
 import dev.steady.user.domain.User;
 import dev.steady.user.fixture.UserFixtures;
 import org.junit.jupiter.api.DisplayName;
@@ -22,13 +21,14 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -55,8 +55,8 @@ class SteadyControllerTest {
         SteadyCreateRequest steadyRequest = SteadyFixtures.createSteadyRequest();
         Promotion promotion = SteadyFixtures.createPromotion();
         User user = UserFixtures.createUser();
-        SteadyForm steadyForm = SteadyFormFixtures.createForm(user);
-        Steady steady = SteadyFixtures.createSteady(steadyRequest, promotion, steadyForm);
+        Steady steady = SteadyFixtures.createSteady(steadyRequest, promotion);
+        List<SteadyQuestion> steadyQuestions = SteadyFixtures.createSteadyQuestions(steadyRequest.questions(), steady);
 
         given(steadyService.create(steadyRequest)).willReturn(steady.getId());
 
@@ -81,7 +81,7 @@ class SteadyControllerTest {
                                 fieldWithPath("deadline").type(JsonFieldType.STRING).description("모집 마감일"),
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("모집글 제목"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("모집글 내용"),
-                                fieldWithPath("steadyFormId").type(JsonFieldType.NUMBER).description("스테디 신청서 폼")
+                                fieldWithPath("questions").type(JsonFieldType.ARRAY).description("스테디 질문 리스트")
                         )
                 ))
                 .andDo(print());
