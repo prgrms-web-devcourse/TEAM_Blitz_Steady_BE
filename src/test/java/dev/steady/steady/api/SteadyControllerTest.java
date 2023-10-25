@@ -2,6 +2,7 @@ package dev.steady.steady.api;
 
 import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.steady.common.config.ControllerTestConfig;
 import dev.steady.steady.application.SteadyService;
 import dev.steady.steady.domain.Promotion;
 import dev.steady.steady.domain.Steady;
@@ -22,13 +23,12 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 
-
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -37,13 +37,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureRestDocs
 @WebMvcTest(SteadyController.class)
-class SteadyControllerTest {
+class SteadyControllerTest extends ControllerTestConfig {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @MockBean
     private SteadyService steadyService;
@@ -83,8 +80,7 @@ class SteadyControllerTest {
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("모집글 내용"),
                                 fieldWithPath("steadyFormId").type(JsonFieldType.NUMBER).description("스테디 신청서 폼")
                         )
-                ))
-                .andDo(print());
+                ));
     }
 
 }
