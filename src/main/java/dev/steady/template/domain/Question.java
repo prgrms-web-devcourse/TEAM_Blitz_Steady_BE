@@ -1,5 +1,6 @@
 package dev.steady.template.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,11 +27,11 @@ public class Question {
     private Template template;
 
     @Column(nullable = false)
-    private String title;
+    private String content;
 
-    public Question(Template template, String title) {
+    public Question(Template template, String content) {
         this.template = template;
-        this.title = title;
+        this.content = content;
     }
 
 }
