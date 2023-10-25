@@ -1,7 +1,6 @@
 package dev.steady.steady.domain;
 
 import dev.steady.global.entity.BaseEntity;
-import dev.steady.steadyForm.domain.SteadyForm;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -55,27 +54,22 @@ public class Steady extends BaseEntity {
     @Embedded
     private Promotion promotion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private SteadyForm steadyForm;
-
     @OneToMany(mappedBy = "steady", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participant> participants = new ArrayList<>();
 
     @Builder
     private Steady(String name,
                    SteadyType type,
-                   SteadyStatus status,
                    int recruitCount,
                    SteadyMode steadyMode,
                    LocalDate openingDate,
                    LocalDate deadline,
                    String title,
                    String content,
-                   Promotion promotion,
-                   SteadyForm steadyForm) {
+                   Promotion promotion) {
         this.name = name;
         this.type = type;
-        this.status = status;
+        this.status = SteadyStatus.RECRUITING;
         this.recruitCount = recruitCount;
         this.steadyMode = steadyMode;
         this.openingDate = openingDate;
@@ -83,7 +77,6 @@ public class Steady extends BaseEntity {
         this.title = title;
         this.content = content;
         this.promotion = promotion;
-        this.steadyForm = steadyForm;
     }
 
     public void addParticipant(Participant participant) {
