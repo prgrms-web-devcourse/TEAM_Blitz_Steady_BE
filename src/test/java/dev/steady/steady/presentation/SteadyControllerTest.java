@@ -54,6 +54,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                         ),
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("스테디 이름"),
+                                fieldWithPath("bio").type(JsonFieldType.STRING).description("스테디 소개"),
                                 fieldWithPath("type").type(JsonFieldType.STRING).description("스테디 종류"),
                                 fieldWithPath("recruitCount").type(JsonFieldType.NUMBER).description("모집 인원"),
                                 fieldWithPath("steadyMode").type(JsonFieldType.STRING).description("스테디 진행 방식"),
@@ -61,6 +62,8 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("deadline").type(JsonFieldType.STRING).description("모집 마감일"),
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("모집글 제목"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("모집글 내용"),
+                                fieldWithPath("positions").type(JsonFieldType.ARRAY).description("스테디 모집 분야"),
+                                fieldWithPath("stacks").type(JsonFieldType.ARRAY).description("스테디 기술 스택"),
                                 fieldWithPath("questions").type(JsonFieldType.ARRAY).description("스테디 질문 리스트")
                         )
                 ));
