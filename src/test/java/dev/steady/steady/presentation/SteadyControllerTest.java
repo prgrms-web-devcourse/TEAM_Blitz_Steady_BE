@@ -1,21 +1,16 @@
 package dev.steady.steady.presentation;
 
 import com.epages.restdocs.apispec.Schema;
-import dev.steady.common.config.ControllerTestConfig;
+import dev.steady.global.config.ControllerTestConfig;
 import dev.steady.steady.domain.Promotion;
 import dev.steady.steady.domain.Steady;
-import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.fixture.SteadyFixtures;
-import dev.steady.user.domain.User;
-import dev.steady.user.fixture.UserFixtures;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
-
-import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
