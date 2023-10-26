@@ -1,4 +1,4 @@
-package dev.steady.steady.domain;
+package dev.steady.user.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
