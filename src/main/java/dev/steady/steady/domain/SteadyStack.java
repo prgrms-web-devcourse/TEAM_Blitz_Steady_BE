@@ -19,11 +19,11 @@ public class SteadyStack extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "stack_id")
+    @JoinColumn(name = "stack_id")
     private Stack stack;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "steady_id")
+    @JoinColumn(name = "steady_id")
     private Steady steady;
 
     @Builder

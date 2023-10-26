@@ -21,16 +21,16 @@ public class SteadyQuestion extends BaseEntity {
     private String content;
 
     @Column(nullable = false)
-    private int order;
+    private int sequence;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "steady_id")
     private Steady steady;
 
     @Builder
-    public SteadyQuestion(String content, int order, Steady steady) {
+    public SteadyQuestion(String content, int sequence, Steady steady) {
         this.content = content;
-        this.order = order;
+        this.sequence = sequence;
         this.steady = steady;
     }
 

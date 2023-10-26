@@ -19,11 +19,11 @@ public class SteadyPosition extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "position_id")
+    @JoinColumn(name = "position_id")
     private Position position;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "steady_id")
+    @JoinColumn(name = "steady_id")
     private Steady steady;
 
     @Builder
