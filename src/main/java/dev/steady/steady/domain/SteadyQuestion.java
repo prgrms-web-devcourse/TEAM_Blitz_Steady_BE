@@ -27,7 +27,7 @@ public class SteadyQuestion {
     private Steady steady;
 
     @Builder
-    public SteadyQuestion(String content, int order, Steady steady) {
+    private SteadyQuestion(String content, int order, Steady steady) {
         this.content = content;
         this.order = order;
         this.steady = steady;

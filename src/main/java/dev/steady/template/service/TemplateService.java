@@ -1,7 +1,6 @@
 package dev.steady.template.service;
 
 import dev.steady.global.auth.AuthContext;
-import dev.steady.template.domain.Question;
 import dev.steady.template.domain.Template;
 import dev.steady.template.domain.repository.QuestionRepository;
 import dev.steady.template.domain.repository.TemplateRepository;
@@ -21,7 +20,6 @@ public class TemplateService {
 
     private final TemplateRepository templateRepository;
     private final UserRepository userRepository;
-    private final QuestionRepository questionRepository;
 
     @Transactional
     public Long createTemplate(CreateTemplateRequest request, AuthContext authContext) {
