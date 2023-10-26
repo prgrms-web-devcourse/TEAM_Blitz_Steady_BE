@@ -36,18 +36,16 @@ class SteadyControllerTest extends ControllerTestConfig {
         // given
         SteadyCreateRequest steadyRequest = SteadyFixtures.createSteadyRequest();
         Promotion promotion = SteadyFixtures.createPromotion();
-        User user = UserFixtures.createUser();
         Steady steady = SteadyFixtures.createSteady(steadyRequest, promotion);
-        List<SteadyQuestion> steadyQuestions = SteadyFixtures.createSteadyQuestions(steadyRequest.questions(), steady);
 
         given(steadyService.create(steadyRequest)).willReturn(steady.getId());
 
         mockMvc.perform(post("/api/v1/steadies")
-                        .header(HttpHeaders.AUTHORIZATION, "token")
+                        .header(HttpHeaders.AUTHORIZATION, TOKEN)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(steadyRequest)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", String.format("/api/v1/steadies/%d/detail", steady.getId())))
+                .andExpect(header().string(HttpHeaders.LOCATION, String.format("/api/v1/steadies/%d/detail", steady.getId())))
                 .andDo(document("steady-create",
                         resourceDetails().tag("스테디").description("스테디 생성 요청")
                                 .requestSchema(Schema.schema("SteadyCreateRequest")),

@@ -23,6 +23,7 @@ public class SteadyQuestion {
     private int order;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "steady_id")
     private Steady steady;
 
     @Builder

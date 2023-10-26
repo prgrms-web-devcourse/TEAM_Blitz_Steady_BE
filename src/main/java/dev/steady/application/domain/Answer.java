@@ -1,4 +1,4 @@
-package dev.steady.applicationForm.domain;
+package dev.steady.application.domain;
 
 
 import dev.steady.steady.domain.SteadyQuestion;

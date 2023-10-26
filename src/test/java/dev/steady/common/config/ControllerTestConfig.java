@@ -27,8 +27,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @ExtendWith(RestDocumentationExtension.class)
 public abstract class ControllerTestConfig {
 
+    protected final static String TOKEN = "Bearer aaaaaa.bbbbbb.cccccc";
+
     @Autowired
-    protected ObjectMapper objectMapper = new ObjectMapper();
+    protected ObjectMapper objectMapper;
     @Autowired
     protected MockMvc mockMvc;
     @MockBean

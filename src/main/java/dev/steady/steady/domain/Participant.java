@@ -17,9 +17,11 @@ public class Participant {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "steady_id")
     private Steady steady;
 
     @Column(name = "is_leader", nullable = false)

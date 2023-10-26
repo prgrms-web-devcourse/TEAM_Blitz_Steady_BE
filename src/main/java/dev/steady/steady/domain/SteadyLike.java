@@ -18,9 +18,11 @@ public class SteadyLike {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "steady_id")
     private Steady steady;
 
     @Builder
