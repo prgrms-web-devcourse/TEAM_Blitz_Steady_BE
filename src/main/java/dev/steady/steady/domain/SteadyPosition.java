@@ -1,5 +1,6 @@
 package dev.steady.steady.domain;
 
+import dev.steady.global.entity.BaseEntity;
 import dev.steady.user.domain.Position;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "steady_positions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SteadyPosition {
+public class SteadyPosition extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

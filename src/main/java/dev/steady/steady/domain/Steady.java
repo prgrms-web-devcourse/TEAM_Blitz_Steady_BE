@@ -26,6 +26,9 @@ public class Steady extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = true)
+    private String bio;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SteadyType type;
@@ -64,6 +67,7 @@ public class Steady extends BaseEntity {
 
     @Builder
     private Steady(String name,
+                   String bio,
                    SteadyType type,
                    int recruitCount,
                    SteadyMode steadyMode,
@@ -73,6 +77,7 @@ public class Steady extends BaseEntity {
                    String content,
                    Promotion promotion) {
         this.name = name;
+        this.bio = bio;
         this.type = type;
         this.status = SteadyStatus.RECRUITING;
         this.recruitCount = recruitCount;

@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 public record SteadyCreateRequest(
         String name,
+        String bio,
         SteadyType type,
         int recruitCount,
         SteadyMode steadyMode,
@@ -19,12 +20,15 @@ public record SteadyCreateRequest(
         LocalDate deadline,
         String title,
         String content,
+        List<String> positions,
+        List<String> stacks,
         List<String> questions
 ) {
 
     public Steady toEntity(Promotion promotion) {
         return Steady.builder()
                 .name(name)
+                .bio(bio)
                 .type(type)
                 .recruitCount(recruitCount)
                 .steadyMode(steadyMode)
