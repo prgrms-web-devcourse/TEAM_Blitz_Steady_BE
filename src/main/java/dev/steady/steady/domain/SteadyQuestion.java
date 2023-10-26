@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "forms")
+@Table(name = "steady_questions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SteadyQuestion {
 
