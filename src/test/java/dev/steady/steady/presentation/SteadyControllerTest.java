@@ -1,25 +1,19 @@
 package dev.steady.steady.presentation;
 
 import com.epages.restdocs.apispec.Schema;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.steady.common.config.ControllerTestConfig;
 import dev.steady.steady.domain.Promotion;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.fixture.SteadyFixtures;
-import dev.steady.steady.service.SteadyService;
 import dev.steady.user.domain.User;
 import dev.steady.user.fixture.UserFixtures;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
@@ -31,22 +25,10 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureRestDocs
-@WebMvcTest(SteadyController.class)
-class SteadyControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @MockBean
-    private SteadyService steadyService;
+class SteadyControllerTest extends ControllerTestConfig {
 
     @Test
     @DisplayName("새로운 스테디를 생성하고 조회 URI를 반환한다.")
@@ -54,18 +36,16 @@ class SteadyControllerTest {
         // given
         SteadyCreateRequest steadyRequest = SteadyFixtures.createSteadyRequest();
         Promotion promotion = SteadyFixtures.createPromotion();
-        User user = UserFixtures.createUser();
         Steady steady = SteadyFixtures.createSteady(steadyRequest, promotion);
-        List<SteadyQuestion> steadyQuestions = SteadyFixtures.createSteadyQuestions(steadyRequest.questions(), steady);
 
         given(steadyService.create(steadyRequest)).willReturn(steady.getId());
 
         mockMvc.perform(post("/api/v1/steadies")
-                        .header(HttpHeaders.AUTHORIZATION, "token")
+                        .header(HttpHeaders.AUTHORIZATION, TOKEN)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(steadyRequest)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", String.format("/api/v1/steadies/%d/detail", steady.getId())))
+                .andExpect(header().string(HttpHeaders.LOCATION, String.format("/api/v1/steadies/%d/detail", steady.getId())))
                 .andDo(document("steady-create",
                         resourceDetails().tag("스테디").description("스테디 생성 요청")
                                 .requestSchema(Schema.schema("SteadyCreateRequest")),
@@ -83,8 +63,7 @@ class SteadyControllerTest {
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("모집글 내용"),
                                 fieldWithPath("questions").type(JsonFieldType.ARRAY).description("스테디 질문 리스트")
                         )
-                ))
-                .andDo(print());
+                ));
     }
 
 }

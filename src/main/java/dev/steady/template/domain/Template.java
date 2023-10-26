@@ -1,16 +1,18 @@
-package dev.steady.steady.domain;
+package dev.steady.template.domain;
 
 import dev.steady.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Participant {
+public class Template {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,18 +22,15 @@ public class Participant {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "steady_id")
-    private Steady steady;
+    @Column(nullable = false)
+    private String title;
 
-    @Column(name = "is_leader", nullable = false)
-    private boolean isLeader;
+    @OneToMany(mappedBy = "template")
+    private List<Question> questions = new ArrayList<>();
 
-    @Builder
-    private Participant(User user, Steady steady, boolean isLeader) {
+    public Template(User user, String title) {
         this.user = user;
-        this.steady = steady;
-        this.isLeader = isLeader;
+        this.title = title;
     }
 
 }

@@ -1,4 +1,4 @@
-package dev.steady.applicationForm.domain;
+package dev.steady.application.domain;
 
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "applications")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ApplicationForm {
+public class Application {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,7 @@ public class ApplicationForm {
 
     @Column
     @Enumerated(EnumType.STRING)
-    private ApplicationFormStatus applicationFormStatus;
+    private ApplicationStatus applicationStatus;
     // TODO: 2023-10-22 영경님 이거 네이밍 하십쇼 (패키지명, 도메인명)
 
 
