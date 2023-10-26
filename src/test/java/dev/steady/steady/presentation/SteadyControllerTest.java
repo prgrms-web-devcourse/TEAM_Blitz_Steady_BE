@@ -38,7 +38,7 @@ class SteadyControllerTest extends ControllerTestConfig {
         Promotion promotion = SteadyFixtures.createPromotion();
         Steady steady = SteadyFixtures.createSteady(steadyRequest, promotion);
 
-        given(steadyService.create(steadyRequest)).willReturn(steady.getId());
+        given(steadyService.create(steadyRequest, authContext)).willReturn(steady.getId());
 
         mockMvc.perform(post("/api/v1/steadies")
                         .header(HttpHeaders.AUTHORIZATION, TOKEN)

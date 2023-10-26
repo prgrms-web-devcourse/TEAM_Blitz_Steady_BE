@@ -13,6 +13,7 @@ public class SteadyFixtures {
     public static SteadyCreateRequest createSteadyRequest() {
         return SteadyCreateRequest.builder()
                 .name("테스트 스테디")
+                .name("무슨 스터디")
                 .type(SteadyType.STUDY)
                 .recruitCount(6)
                 .steadyMode(SteadyMode.ONLINE)
@@ -20,6 +21,8 @@ public class SteadyFixtures {
                 .deadline(LocalDate.now().plusDays(14))
                 .title("스테디원 모집합니다")
                 .content("많관부")
+                .positions(List.of("백엔드"))
+                .stacks(List.of("Java"))
                 .questions(List.of("1번 질문", "2번 질문", "3번 질문"))
                 .build();
     }
@@ -29,7 +32,7 @@ public class SteadyFixtures {
                 .mapToObj(index -> {
                     SteadyQuestion steadyQuestion = SteadyQuestion.builder()
                             .content(questions.get(index))
-                            .order(index + 1)
+                            .sequence(index + 1)
                             .steady(steady)
                             .build();
                     ReflectionTestUtils.setField(steadyQuestion, "id", Long.valueOf(index + 1));

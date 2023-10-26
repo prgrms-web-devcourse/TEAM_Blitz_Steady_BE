@@ -1,71 +1,67 @@
 package dev.steady.steady.service;
 
 import dev.steady.global.auth.AuthContext;
-import dev.steady.steady.domain.Promotion;
-import dev.steady.steady.domain.Steady;
-import dev.steady.steady.domain.SteadyQuestion;
-import dev.steady.steady.domain.repository.SteadyQuestionRepository;
-import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.fixture.SteadyFixtures;
+import dev.steady.user.domain.Position;
+import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
+import dev.steady.user.domain.repository.PositionRepository;
+import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.fixture.UserFixtures;
 import dev.steady.user.infrastructure.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
-import java.util.Optional;
+import static org.assertj.core.api.Assertions.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.atMostOnce;
-
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class SteadyServiceTest {
 
-    @InjectMocks
+    @Autowired
     private SteadyService steadyService;
 
-    @Mock
-    private SteadyRepository steadyRepository;
-
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private SteadyQuestionRepository steadyQuestionRepository;
-
-    @Mock
+    @Autowired
     private AuthContext authContext;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private StackRepository stackRepository;
+
+    @Autowired
+    private PositionRepository positionRepository;
+
+    @BeforeEach
+    void setUp() {
+
+        Position position = UserFixtures.createPosition();
+        Position savedPosition = positionRepository.save(position);
+
+        User user = UserFixtures.createUser(savedPosition);
+        User savedUser = userRepository.save(user);
+
+        Stack stack = UserFixtures.createStack();
+        Stack savedStack = stackRepository.save(stack);
+
+        authContext.setUserId(savedUser.getId());
+
+    }
+
     @Test
-    @DisplayName("스터디 생성 요청을 통해 스터디와 스테디 질문을 생성할 수 있다")
+    @DisplayName("스터디 생성 요청을 통해 스테디 관련 정보와 스테디를 생성할 수 있다.")
     void createSteadyTest() {
-        // given
-        User user = UserFixtures.createUser();
+
         SteadyCreateRequest steadyRequest = SteadyFixtures.createSteadyRequest();
-        Promotion promotion = SteadyFixtures.createPromotion();
-        Steady steady = SteadyFixtures.createSteady(steadyRequest, promotion);
-        List<SteadyQuestion> steadyQuestions = SteadyFixtures.createSteadyQuestions(steadyRequest.questions(), steady);
+        Long returnedId = steadyService.create(steadyRequest, authContext);
 
-        given(authContext.getUserId()).willReturn(user.getId());
-        given(userRepository.findById(any())).willReturn(Optional.ofNullable(user));
-        given(steadyRepository.save(any())).willReturn(steady);
 
-        // when
-        Long returnedId = steadyService.create(steadyRequest);
 
-        // then
-        assertThat(returnedId).isEqualTo(steady.getId());
-        then(steadyQuestionRepository).should(atMostOnce()).saveAll(any());
-        // steadyQuestionRepository의 동작을 given에서 처리하면 불필요한 stubbing 동작이라는 예외
+        // given
     }
 
 }

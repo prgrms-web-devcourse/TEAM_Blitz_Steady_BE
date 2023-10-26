@@ -1,5 +1,6 @@
 package dev.steady.steady.presentation;
 
+import dev.steady.global.auth.AuthContext;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.service.SteadyService;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +17,12 @@ import java.net.URI;
 @RequestMapping("/api/v1/steadies")
 public class SteadyController {
 
+    private final AuthContext authContext;
     private final SteadyService steadyService;
 
     @PostMapping
     public ResponseEntity<Void> createSteady(@RequestBody SteadyCreateRequest request) {
-        Long steadyId = steadyService.create(request);
+        Long steadyId = steadyService.create(request, authContext);
         return ResponseEntity.created(URI.create(String.format("/api/v1/steadies/%d/detail", steadyId))).build();
     }
 

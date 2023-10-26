@@ -6,7 +6,9 @@ import dev.steady.template.domain.Template;
 import dev.steady.template.domain.repository.QuestionRepository;
 import dev.steady.template.domain.repository.TemplateRepository;
 import dev.steady.template.dto.request.CreateTemplateRequest;
+import dev.steady.user.domain.Position;
 import dev.steady.user.domain.User;
+import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.fixture.UserFixtures;
 import dev.steady.user.infrastructure.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -35,6 +37,9 @@ class TemplateServiceTest {
     @Autowired
     private TemplateRepository templateRepository;
 
+    @Autowired
+    private PositionRepository positionRepository;
+
     @AfterEach
     void tearDown() {
         questionRepository.deleteAll();
@@ -46,7 +51,10 @@ class TemplateServiceTest {
     @Test
     void createTemplateTest() {
 
-        User user = userRepository.save(UserFixtures.createUser());
+        Position position = UserFixtures.createPosition();
+        Position savedPosition = positionRepository.save(position);
+        User user = UserFixtures.createUser(savedPosition);
+        userRepository.save(user);
         AuthContext authContext = new AuthContext();
         authContext.setUserId(user.getId());
         List<String> questions = List.of("Q1", "Q2");

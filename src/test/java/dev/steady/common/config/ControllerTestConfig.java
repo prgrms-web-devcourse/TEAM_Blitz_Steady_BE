@@ -1,6 +1,7 @@
 package dev.steady.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.steady.global.auth.AuthContext;
 import dev.steady.steady.presentation.SteadyController;
 import dev.steady.steady.service.SteadyService;
 import dev.steady.template.presentation.TemplateController;
@@ -33,6 +34,8 @@ public abstract class ControllerTestConfig {
     protected ObjectMapper objectMapper;
     @Autowired
     protected MockMvc mockMvc;
+    @MockBean
+    protected AuthContext authContext;
     @MockBean
     protected SteadyService steadyService;
     @MockBean

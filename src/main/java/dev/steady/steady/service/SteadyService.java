@@ -26,7 +26,6 @@ import java.util.stream.IntStream;
 @Transactional(readOnly = true)
 public class SteadyService {
 
-    private final AuthContext authContext;
     private final UserRepository userRepository;
     private final StackRepository stackRepository;
     private final SteadyRepository steadyRepository;
@@ -36,7 +35,7 @@ public class SteadyService {
     private final SteadyPositionRepository steadyPositionRepository;
 
     @Transactional
-    public Long create(SteadyCreateRequest request) {
+    public Long create(SteadyCreateRequest request, AuthContext authContext) {
         Promotion promotion = new Promotion();
         Steady steady = request.toEntity(promotion);
 
@@ -69,7 +68,7 @@ public class SteadyService {
         return IntStream.range(0, questions.size())
                 .mapToObj(index -> SteadyQuestion.builder()
                         .content(questions.get(index))
-                        .order(index + 1)
+                        .sequence(index + 1)
                         .steady(steady)
                         .build())
                 .toList();
