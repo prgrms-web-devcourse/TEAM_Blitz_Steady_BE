@@ -19,4 +19,17 @@ public class UserFixtures {
         return user;
     }
 
+    public static User createAnotherUser() {
+        User user = User.builder()
+                .platform_id("2")
+                .platform(Platform.KAKAO)
+                .profileImage("1234")
+                .nickname("Jun")
+                .bio("저에요")
+                .isDeleted(null)
+                .build();
+        ReflectionTestUtils.setField(user, "id", 2L);
+        return user;
+    }
+
 }
