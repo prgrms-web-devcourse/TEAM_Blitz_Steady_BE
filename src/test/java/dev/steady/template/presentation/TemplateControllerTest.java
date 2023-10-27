@@ -1,6 +1,6 @@
 package dev.steady.template.presentation;
 
-import dev.steady.common.config.ControllerTestConfig;
+import dev.steady.global.config.ControllerTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,5 +11,7 @@ class TemplateControllerTest extends ControllerTestConfig {
     void createTemplateTest() {
         // TODO: 2023/10/26 인증인가 개발 이후에 테스트코드 작성 - Beomjun
     }
+
+    // TODO: 2023/10/27 인증인가 개발 이후에 getTemplates 메서드 테스트 코드 작성 - Beomjun 
 
 }
