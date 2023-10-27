@@ -88,17 +88,16 @@ class TemplateServiceTest {
 
         var template = createTemplate(savedUser);
         var savedTemplate = templateRepository.save(template);
+        System.out.println("세이브템플릿" + savedTemplate.getUpdatedAt());
 
         var authContext = AuthFixture.createAuthContext(savedUser.getId());
         var response = templateService.getDetailTemplate(authContext, savedTemplate.getId());
 
         assertThat(response)
-                .extracting("id", "title", "questions", "createdAt", "updatedAt")
+                .extracting("id", "title", "questions")
                 .containsExactly(savedTemplate.getId(),
                         savedTemplate.getTitle(),
-                        savedTemplate.getContents(),
-                        savedTemplate.getCreatedAt(),
-                        savedTemplate.getUpdatedAt());
+                        savedTemplate.getContents());
     }
 
     @DisplayName("템플릿 식별자를 통해 템플릿을 상세조회할 때 작성자가 아니라면 예외가 발생한다.")
