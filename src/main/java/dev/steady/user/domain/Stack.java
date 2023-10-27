@@ -20,9 +20,13 @@ public class Stack extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String imageUrl;
+
     @Builder
-    private Stack(String name) {
+    private Stack(String name, String imageUrl) {
         this.name = name;
+        this.imageUrl = imageUrl;
     }
 
 }

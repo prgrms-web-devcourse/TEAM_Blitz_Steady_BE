@@ -15,6 +15,7 @@ public class UserFixtures {
     public static Stack createStack() {
         return Stack.builder()
                 .name("Java")
+                .imageUrl("www")
                 .build();
     }
 
