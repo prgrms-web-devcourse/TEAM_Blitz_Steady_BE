@@ -44,4 +44,8 @@ public class Account {
         this.platform = platform;
     }
 
+    public void registUser(User user) {
+        this.user = user;
+    }
+
 }
