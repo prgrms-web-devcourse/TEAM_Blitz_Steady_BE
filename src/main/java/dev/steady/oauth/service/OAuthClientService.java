@@ -2,6 +2,7 @@ package dev.steady.oauth.service;
 
 import dev.steady.oauth.client.OAuthClient;
 import dev.steady.oauth.domain.Platform;
+import dev.steady.oauth.dto.response.OAuthUserInfoResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -20,6 +21,12 @@ public class OAuthClientService {
                         OAuthClient::getPlatform,
                         Function.identity()
                 ));
+    }
+
+    public OAuthUserInfoResponse getUserInfo(Platform platform, String authCode) {
+        OAuthClient oAuthClient = clientMap.get(platform);
+        String accessToken = oAuthClient.getAccessToken(authCode);
+        return oAuthClient.getPlatformUserInfo(accessToken);
     }
 
 }

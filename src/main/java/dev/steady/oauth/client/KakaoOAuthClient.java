@@ -3,6 +3,7 @@ package dev.steady.oauth.client;
 import dev.steady.oauth.config.KakaoOAuthProperties;
 import dev.steady.oauth.domain.Platform;
 import dev.steady.oauth.dto.KakaoToken;
+import dev.steady.oauth.dto.response.KakaoUserInfoResponse;
 import dev.steady.oauth.dto.response.OAuthUserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -46,14 +47,24 @@ public class KakaoOAuthClient implements OAuthClient {
                 KakaoToken.class
         );
 
-        if (token == null) throw new AssertionError("토큰을 발급받을 수 없습니다.");
+        if (token == null) throw new AssertionError("토큰을 발급 받을 수 없습니다.");
         return token.accessToken();
     }
 
     @Override
     public OAuthUserInfoResponse getPlatformUserInfo(String accessToken) {
-        // TODO: 2023-10-25 플랫폼 사용자 정보 요청 로직 추가
-        return null;
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        httpHeaders.setBearerAuth(accessToken);
+
+        KakaoUserInfoResponse response = restTemplate.postForObject(
+                REQUEST_USER_INFO_URL,
+                new HttpEntity<>(httpHeaders),
+                KakaoUserInfoResponse.class
+        );
+
+        if (response == null) throw new AssertionError("사용자 정보를 가져올 수 없습니다.");
+        return response;
     }
 
 }
