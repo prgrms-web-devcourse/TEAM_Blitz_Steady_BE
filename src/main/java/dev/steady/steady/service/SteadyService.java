@@ -34,7 +34,7 @@ public class SteadyService {
         Steady steady = request.toEntity(promotion);
 
         Long userId = authContext.getUserId();
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException());
+        User user = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
         createSteadyLeader(steady, user);
         Steady savedSteady = steadyRepository.save(steady);
 
@@ -56,7 +56,7 @@ public class SteadyService {
         return IntStream.range(0, questions.size())
                 .mapToObj(index -> SteadyQuestion.builder()
                         .content(questions.get(index))
-                        .order(index + 1)
+                        .sequence(index + 1)
                         .steady(steady)
                         .build())
                 .toList();
