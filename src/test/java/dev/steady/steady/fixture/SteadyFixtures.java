@@ -2,6 +2,8 @@ package dev.steady.steady.fixture;
 
 import dev.steady.steady.domain.*;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
+import dev.steady.user.domain.Stack;
+import dev.steady.user.domain.User;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
@@ -41,8 +43,20 @@ public class SteadyFixtures {
                 .toList();
     }
 
-    public static Steady createSteady(SteadyCreateRequest request, Promotion promotion) {
-        Steady steady = request.toEntity(promotion);
+    public static List<SteadyStack> createSteadyStacks(List<String> stacks, Stack stack) {
+        return IntStream.range(0, stacks.size())
+                .mapToObj(index -> {
+                    SteadyStack steadyStack = SteadyStack.builder()
+                            .stack(stack)
+                            .build();
+                    ReflectionTestUtils.setField(steadyStack, "id", Long.valueOf(index + 1));
+                    return steadyStack;
+                })
+                .toList();
+    }
+
+    public static Steady createSteady(SteadyCreateRequest request, User user, Promotion promotion, List<SteadyStack> steadyStacks) {
+        Steady steady = request.toEntity(user, promotion, steadyStacks);
         ReflectionTestUtils.setField(steady, "id", 1L);
         return steady;
     }

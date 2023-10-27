@@ -32,4 +32,8 @@ public class SteadyStack extends BaseEntity {
         this.steady = steady;
     }
 
+    public void setSteady(Steady steady) {
+        this.steady = steady;
+    }
+
 }

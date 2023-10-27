@@ -1,6 +1,8 @@
 package dev.steady.steady.service;
 
 import dev.steady.global.auth.AuthContext;
+import dev.steady.steady.domain.Steady;
+import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.fixture.SteadyFixtures;
 import dev.steady.user.domain.Position;
@@ -16,7 +18,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
 class SteadyServiceTest {
@@ -31,6 +36,9 @@ class SteadyServiceTest {
     private UserRepository userRepository;
 
     @Autowired
+    private SteadyRepository steadyRepository;
+
+    @Autowired
     private StackRepository stackRepository;
 
     @Autowired
@@ -39,15 +47,12 @@ class SteadyServiceTest {
     @BeforeEach
     void setUp() {
 
-        Position position = UserFixtures.createPosition();
-        Position savedPosition = positionRepository.save(position);
-
-        User user = UserFixtures.createUser(savedPosition);
-        User savedUser = userRepository.save(user);
-
-        Stack stack = UserFixtures.createStack();
-        Stack savedStack = stackRepository.save(stack);
-
+        var position = UserFixtures.createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = UserFixtures.createUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var stack = UserFixtures.createStack();
+        stackRepository.save(stack);
         authContext.setUserId(savedUser.getId());
 
     }
@@ -55,13 +60,14 @@ class SteadyServiceTest {
     @Test
     @DisplayName("스터디 생성 요청을 통해 스테디 관련 정보와 스테디를 생성할 수 있다.")
     void createSteadyTest() {
-
         SteadyCreateRequest steadyRequest = SteadyFixtures.createSteadyRequest();
-        Long returnedId = steadyService.create(steadyRequest, authContext);
+        var returnedId = steadyService.create(steadyRequest, authContext);
+        Steady steady = steadyRepository.findById(returnedId).get();
 
-
-
-        // given
+        assertAll(
+                () -> assertThat(steady).isNotNull(),
+                () -> assertThat(steady.getId()).isEqualTo(returnedId)
+        );
     }
 
 }

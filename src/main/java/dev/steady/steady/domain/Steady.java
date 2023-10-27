@@ -1,11 +1,13 @@
 package dev.steady.steady.domain;
 
 import dev.steady.global.entity.BaseEntity;
+import dev.steady.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,8 +18,6 @@ import java.util.List;
 @Table(name = "steadies")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Steady extends BaseEntity {
-
-    private final static int INITIAL_NUMBER_OF_MEMBER = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,8 +62,11 @@ public class Steady extends BaseEntity {
     @Embedded
     private Promotion promotion;
 
-    @OneToMany(mappedBy = "steady", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participant> participants = new ArrayList<>();
+    @Embedded
+    private Participants participants;
+
+    @OneToMany(mappedBy = "steady", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SteadyStack> steadyStacks = new ArrayList<>();
 
     @Builder
     private Steady(String name,
@@ -75,23 +78,48 @@ public class Steady extends BaseEntity {
                    LocalDate deadline,
                    String title,
                    String content,
-                   Promotion promotion) {
+                   User user,
+                   Promotion promotion,
+                   List<SteadyStack> steadyStacks) {
+        this.participants = createParticipants(user);
+        this.numberOfParticipants = participants.getNumberOfParticipants();
         this.name = name;
         this.bio = bio;
         this.type = type;
         this.status = SteadyStatus.RECRUITING;
         this.recruitCount = recruitCount;
-        this.numberOfParticipants = INITIAL_NUMBER_OF_MEMBER;
         this.steadyMode = steadyMode;
         this.openingDate = openingDate;
         this.deadline = deadline;
         this.title = title;
         this.content = content;
         this.promotion = promotion;
+        updateSteadyStacks(steadyStacks);
+    }
+
+    private Participants createParticipants(User user) {
+        Participants participants = new Participants();
+        Participant participant = Participant.builder()
+                .user(user)
+                .steady(this)
+                .isLeader(true)
+                .build();
+        participants.add(participant);
+        return participants;
     }
 
     public void addParticipant(Participant participant) {
         participants.add(participant);
+    }
+
+    public void updateSteadyStacks(List<SteadyStack> steadyStacks) {
+        if (this.steadyStacks != null || !this.steadyStacks.isEmpty()) {
+            this.steadyStacks.clear();
+            for (SteadyStack steadyStack : steadyStacks) {
+                steadyStack.setSteady(this);
+            }
+            this.steadyStacks = steadyStacks;
+        }
     }
 
 }

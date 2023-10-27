@@ -1,9 +1,7 @@
 package dev.steady.steady.dto.request;
 
-import dev.steady.steady.domain.Promotion;
-import dev.steady.steady.domain.Steady;
-import dev.steady.steady.domain.SteadyMode;
-import dev.steady.steady.domain.SteadyType;
+import dev.steady.steady.domain.*;
+import dev.steady.user.domain.User;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -25,7 +23,7 @@ public record SteadyCreateRequest(
         List<String> questions
 ) {
 
-    public Steady toEntity(Promotion promotion) {
+    public Steady toEntity(User user, Promotion promotion, List<SteadyStack> steadyStacks) {
         return Steady.builder()
                 .name(name)
                 .bio(bio)
@@ -36,7 +34,9 @@ public record SteadyCreateRequest(
                 .deadline(deadline)
                 .title(title)
                 .content(content)
+                .user(user)
                 .promotion(promotion)
+                .steadyStacks(steadyStacks)
                 .build();
     }
 
