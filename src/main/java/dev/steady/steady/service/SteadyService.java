@@ -5,8 +5,10 @@ import dev.steady.steady.domain.*;
 import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
-import dev.steady.steady.domain.repository.SteadyStackRepository;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
+import dev.steady.steady.dto.request.SteadyPageRequest;
+import dev.steady.steady.dto.response.PageResponse;
+import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
@@ -14,7 +16,7 @@ import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.internal.constraintvalidators.bv.number.sign.PositiveOrZeroValidatorForNumber;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +51,12 @@ public class SteadyService {
         steadyPositionRepository.saveAll(steadyPositions);
 
         return savedSteady.getId();
+    }
+
+    public PageResponse<SteadySearchResponse> getSteadies(SteadyPageRequest request) {
+        Page<Steady> steadies = steadyRepository.findAll(request.toPageable());
+        Page<SteadySearchResponse> searchResponses = steadies.map(SteadySearchResponse::from);
+        return PageResponse.from(searchResponses);
     }
 
     private List<SteadyQuestion> createSteadyQuestions(List<String> questions, Steady steady) {

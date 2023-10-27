@@ -4,25 +4,28 @@ import dev.steady.global.auth.AuthContext;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
+import dev.steady.steady.dto.request.SteadyPageRequest;
+import dev.steady.steady.dto.response.PageResponse;
+import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.steady.fixture.SteadyFixtures;
-import dev.steady.user.domain.Position;
-import dev.steady.user.domain.Stack;
-import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.fixture.UserFixtures;
 import dev.steady.user.infrastructure.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@Transactional
 @SpringBootTest
 class SteadyServiceTest {
 
@@ -46,7 +49,6 @@ class SteadyServiceTest {
 
     @BeforeEach
     void setUp() {
-
         var position = UserFixtures.createPosition();
         var savedPosition = positionRepository.save(position);
         var user = UserFixtures.createUser(savedPosition);
@@ -54,7 +56,10 @@ class SteadyServiceTest {
         var stack = UserFixtures.createStack();
         stackRepository.save(stack);
         authContext.setUserId(savedUser.getId());
+    }
 
+    @AfterEach
+    void tearDown() {
     }
 
     @Test
@@ -70,4 +75,11 @@ class SteadyServiceTest {
         );
     }
 
+    @Test
+    @DisplayName("스테디 페이징 조회 요청을 통해 페이징 처리 된 응답을 반환할 수 있다.")
+    void getSteadiesPageTest() {
+        SteadyPageRequest asc = new SteadyPageRequest(0, "asc");
+        PageResponse<SteadySearchResponse> steadies = steadyService.getSteadies(asc);
+
+    }
 }
