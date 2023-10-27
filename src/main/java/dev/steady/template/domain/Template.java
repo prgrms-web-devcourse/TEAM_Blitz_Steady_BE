@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Getter
 @Entity
+@Table(name = "templates")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Template extends BaseEntity {
 

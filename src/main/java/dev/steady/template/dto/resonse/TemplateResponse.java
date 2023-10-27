@@ -4,7 +4,11 @@ import dev.steady.template.domain.Template;
 
 import java.time.LocalDateTime;
 
-public record TemplateResponse(Long id, String title, LocalDateTime createdAt) {
+public record TemplateResponse(
+        Long id,
+        String title,
+        LocalDateTime createdAt
+) {
 
     public static TemplateResponse from(Template template) {
         return new TemplateResponse(template.getId(),

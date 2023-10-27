@@ -23,14 +23,12 @@ public class TemplateController {
     public ResponseEntity<Void> createTemplate(@RequestBody CreateTemplateRequest request,
                                                AuthContext authContext) {
         templateService.createTemplate(request, authContext);
-
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
     public ResponseEntity<TemplateResponses> getTemplates(AuthContext authContext) {
         TemplateResponses templates = templateService.getTemplates(authContext);
-
         return ResponseEntity.ok(templates);
     }
 
