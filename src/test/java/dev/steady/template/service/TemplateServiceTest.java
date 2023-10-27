@@ -88,7 +88,6 @@ class TemplateServiceTest {
 
         var template = createTemplate(savedUser);
         var savedTemplate = templateRepository.save(template);
-        System.out.println("세이브템플릿" + savedTemplate.getUpdatedAt());
 
         var authContext = AuthFixture.createAuthContext(savedUser.getId());
         var response = templateService.getDetailTemplate(authContext, savedTemplate.getId());
