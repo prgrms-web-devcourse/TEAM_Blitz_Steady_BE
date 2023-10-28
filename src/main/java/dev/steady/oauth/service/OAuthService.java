@@ -1,14 +1,14 @@
 package dev.steady.oauth.service;
 
+import dev.steady.auth.domain.Account;
 import dev.steady.auth.domain.JwtProvider;
-import dev.steady.auth.dto.request.AccountCreateRequest;
+import dev.steady.auth.domain.repository.AccountRepository;
 import dev.steady.auth.dto.request.TokenRequest;
-import dev.steady.auth.dto.response.AccountResponse;
 import dev.steady.auth.dto.response.TokenResponse;
-import dev.steady.auth.service.AccountService;
 import dev.steady.oauth.domain.Platform;
 import dev.steady.oauth.dto.response.LogInResponse;
 import dev.steady.oauth.dto.response.OAuthUserInfoResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class OAuthService {
 
     private final AuthCodeRequestService authCodeRequestService;
     private final OAuthClientService oAuthClientService;
-    private final AccountService accountService;
+    private final AccountRepository accountRepository;
     private final JwtProvider jwtProvider;
 
     public String getAuthCodeRequestUrlProvider(Platform platform) {
@@ -29,17 +29,18 @@ public class OAuthService {
         OAuthUserInfoResponse userInfo = oAuthClientService.getUserInfo(platform, authCode);
 
         try {
-            AccountResponse accountResponse = accountService.findByPlatformAndPlatformId(userInfo.getPlatform(), userInfo.getPlatformId());
-            if (accountResponse.user() == null) {
-                return LogInResponse.of(accountResponse.id(), true);
+            Account account = accountRepository.findByPlatformAndPlatformId(userInfo.getPlatform(), userInfo.getPlatformId())
+                    .orElseThrow(() -> new EntityNotFoundException(String.format("플랫폼 %s의 id %s에 해당하는 계정이 없습니다.", userInfo.getPlatform(), userInfo.getPlatformId())));
+            if (account.getUser() == null) {
+                return LogInResponse.of(account.getId(), true);
             } else {
-                TokenRequest tokenRequest = TokenRequest.from(accountResponse);
+                TokenRequest tokenRequest = TokenRequest.from(account);
                 String accessToken = jwtProvider.provideAccessToken(tokenRequest);
 
                 // TODO: 2023-10-26 리프레시 토큰 생성 로직 추가
 
                 TokenResponse token = TokenResponse.of(accessToken, "리프레시 토큰");
-                return LogInResponse.of(accountResponse.id(), false, token);
+                return LogInResponse.of(account.getId(), false, token);
             }
         } catch (Exception e) {
             Long accountId = signUp(userInfo);
@@ -48,8 +49,8 @@ public class OAuthService {
     }
 
     public Long signUp(OAuthUserInfoResponse userInfo) {
-        AccountCreateRequest request = AccountCreateRequest.from(userInfo);
-        return accountService.create(request);
+        Account account = OAuthUserInfoResponse.toEntity(userInfo);
+        return accountRepository.save(account).getId();
     }
 
 }
