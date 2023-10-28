@@ -18,8 +18,8 @@ public record SteadyCreateRequest(
         LocalDate deadline,
         String title,
         String content,
-        List<String> positions,
-        List<String> stacks,
+        List<Long> positions,
+        List<Long> stacks,
         List<String> questions
 ) {
 

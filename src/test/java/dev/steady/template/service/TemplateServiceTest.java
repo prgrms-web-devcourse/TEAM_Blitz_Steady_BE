@@ -4,7 +4,6 @@ import dev.steady.global.auth.AuthFixture;
 import dev.steady.template.domain.repository.QuestionRepository;
 import dev.steady.template.domain.repository.TemplateRepository;
 import dev.steady.template.dto.request.CreateTemplateRequest;
-import dev.steady.user.domain.Position;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.fixture.UserFixtures;
 import dev.steady.user.infrastructure.UserRepository;

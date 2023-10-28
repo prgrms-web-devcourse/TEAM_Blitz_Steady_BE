@@ -1,7 +1,6 @@
 package dev.steady.steady.dto.response;
 
 import dev.steady.steady.domain.Steady;
-import dev.steady.steady.domain.SteadyStack;
 import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.SteadyType;
 import dev.steady.user.domain.User;
@@ -14,7 +13,7 @@ public record SteadySearchResponse(
         Long id,
         String nickname,
         String profileImage,
-        String title, // 모집글 제목
+        String title,
         SteadyType type,
         SteadyStatus status,
         LocalDate deadline,

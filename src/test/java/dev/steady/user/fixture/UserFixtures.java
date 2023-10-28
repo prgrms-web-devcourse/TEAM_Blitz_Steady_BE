@@ -3,7 +3,6 @@ package dev.steady.user.fixture;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
-import org.springframework.test.util.ReflectionTestUtils;
 
 public class UserFixtures {
 

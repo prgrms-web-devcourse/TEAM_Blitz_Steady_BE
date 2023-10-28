@@ -69,10 +69,11 @@ public class SteadyService {
                 .toList();
     }
 
-    private List<SteadyPosition> createSteadyPositions(List<String> positions, Steady steady) {
+    private List<SteadyPosition> createSteadyPositions(List<Long> positions, Steady steady) {
         return IntStream.range(0, positions.size())
                 .mapToObj(index -> {
-                    Position position = positionRepository.getPositionByName(positions.get(index));
+                    Position position = positionRepository.findById(positions.get(index))
+                            .orElseThrow(IllegalArgumentException::new);
                     return SteadyPosition.builder()
                             .position(position)
                             .steady(steady)
@@ -80,10 +81,11 @@ public class SteadyService {
                 }).toList();
     }
 
-    private List<SteadyStack> createSteadyStacks(List<String> stacks) {
+    private List<SteadyStack> createSteadyStacks(List<Long> stacks) {
         return IntStream.range(0, stacks.size())
                 .mapToObj(index -> {
-                    Stack stack = stackRepository.getStackByName(stacks.get(index));
+                    Stack stack = stackRepository.findById(stacks.get(index))
+                            .orElseThrow(IllegalArgumentException::new);;
                     return SteadyStack.builder()
                             .stack(stack)
                             .build();

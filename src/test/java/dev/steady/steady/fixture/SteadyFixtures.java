@@ -23,8 +23,8 @@ public class SteadyFixtures {
                 .deadline(LocalDate.now().plusDays(14))
                 .title("스테디원 모집합니다")
                 .content("많관부")
-                .positions(List.of("백엔드"))
-                .stacks(List.of("Java"))
+                .positions(List.of(1L))
+                .stacks(List.of(1L))
                 .questions(List.of("1번 질문", "2번 질문", "3번 질문"))
                 .build();
     }

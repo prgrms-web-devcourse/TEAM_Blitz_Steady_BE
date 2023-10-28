@@ -2,7 +2,7 @@ package dev.steady.template.domain.repository;
 
 import dev.steady.global.config.JpaConfig;
 import dev.steady.template.domain.Template;
-import dev.steady.user.domain.Position;
+import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.fixture.UserFixtures;
 import dev.steady.user.infrastructure.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -26,10 +26,13 @@ class TemplateRepositoryTest {
     @Autowired
     private TemplateRepository templateRepository;
 
+    @Autowired
+    private PositionRepository positionRepository;
+
     @DisplayName("템플릿을 생성한 유저의 ID로 조회할 수 있다.")
     @Test
     void findTemplateUserIdTest() {
-        var position = UserFixtures.createPosition();
+        var position = positionRepository.save(UserFixtures.createPosition());
         var user1 = UserFixtures.createUser(position);
         var savedUser1 = userRepository.save(user1);
 
