@@ -7,7 +7,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     default User getUserBy(Long userId) {
         return findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException());
+                .orElseThrow(IllegalArgumentException::new);
     }
 
 }

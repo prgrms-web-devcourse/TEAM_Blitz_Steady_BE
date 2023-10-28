@@ -37,7 +37,7 @@ public class SteadyFixtures {
                             .sequence(index + 1)
                             .steady(steady)
                             .build();
-                    ReflectionTestUtils.setField(steadyQuestion, "id", Long.valueOf(index + 1));
+                    ReflectionTestUtils.setField(steadyQuestion, "id", index + 1L);
                     return steadyQuestion;
                 })
                 .toList();

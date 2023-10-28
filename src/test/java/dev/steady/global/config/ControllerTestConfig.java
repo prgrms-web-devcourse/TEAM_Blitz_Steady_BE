@@ -1,4 +1,4 @@
-package dev.steady.common.config;
+package dev.steady.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.steady.global.auth.AuthContext;

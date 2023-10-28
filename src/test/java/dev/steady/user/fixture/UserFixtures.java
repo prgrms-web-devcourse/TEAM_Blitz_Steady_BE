@@ -3,6 +3,7 @@ package dev.steady.user.fixture;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class UserFixtures {
 
@@ -26,6 +27,16 @@ public class UserFixtures {
                 .bio("나에요")
                 .position(position)
                 .build();
+    }
+
+    public static User createAnotherUser(Position position) {
+        User user = User.builder()
+                .profileImage("1234")
+                .nickname("Jun")
+                .bio("저에요")
+                .position(position)
+                .build();
+        return user;
     }
 
 }
