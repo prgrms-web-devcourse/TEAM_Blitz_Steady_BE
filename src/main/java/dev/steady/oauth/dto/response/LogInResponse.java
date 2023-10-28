@@ -13,12 +13,12 @@ public record LogInResponse(
         this(id, isNew, null);
     }
 
-    public static LogInResponse of(Long id, boolean isNew){
-        return new LogInResponse(id, isNew);
+    public static LogInResponse forUserNotExist(Long id) {
+        return new LogInResponse(id, false);
     }
 
-    public static LogInResponse of(Long id, boolean isNew, TokenResponse token){
-        return new LogInResponse(id, isNew, token);
+    public static LogInResponse forUserExist(Long id, TokenResponse token) {
+        return new LogInResponse(id, true, token);
     }
 
 }
