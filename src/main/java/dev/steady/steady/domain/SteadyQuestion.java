@@ -1,6 +1,14 @@
 package dev.steady.steady.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,16 +28,16 @@ public class SteadyQuestion {
     private String content;
 
     @Column(nullable = false)
-    private int order;
+    private int sequence;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "steady_id")
     private Steady steady;
 
     @Builder
-    private SteadyQuestion(String content, int order, Steady steady) {
+    private SteadyQuestion(String content, int sequence, Steady steady) {
         this.content = content;
-        this.order = order;
+        this.sequence = sequence;
         this.steady = steady;
     }
 

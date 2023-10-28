@@ -1,6 +1,10 @@
 package dev.steady.steady.fixture;
 
-import dev.steady.steady.domain.*;
+import dev.steady.steady.domain.Promotion;
+import dev.steady.steady.domain.Steady;
+import dev.steady.steady.domain.SteadyMode;
+import dev.steady.steady.domain.SteadyQuestion;
+import dev.steady.steady.domain.SteadyType;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -29,10 +33,10 @@ public class SteadyFixtures {
                 .mapToObj(index -> {
                     SteadyQuestion steadyQuestion = SteadyQuestion.builder()
                             .content(questions.get(index))
-                            .order(index + 1)
+                            .sequence(index + 1)
                             .steady(steady)
                             .build();
-                    ReflectionTestUtils.setField(steadyQuestion, "id", Long.valueOf(index + 1));
+                    ReflectionTestUtils.setField(steadyQuestion, "id", index + 1L);
                     return steadyQuestion;
                 })
                 .toList();

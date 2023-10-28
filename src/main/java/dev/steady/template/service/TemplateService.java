@@ -2,10 +2,10 @@ package dev.steady.template.service;
 
 import dev.steady.global.auth.AuthContext;
 import dev.steady.template.domain.Template;
-import dev.steady.template.domain.repository.QuestionRepository;
 import dev.steady.template.domain.repository.TemplateRepository;
 import dev.steady.template.dto.request.CreateTemplateRequest;
 import dev.steady.template.dto.resonse.TemplateResponses;
+import dev.steady.template.dto.resonse.TemplateDetailResponse;
 import dev.steady.user.domain.User;
 import dev.steady.user.infrastructure.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +37,16 @@ public class TemplateService {
 
         List<Template> templates = templateRepository.findByUserId(user.getId());
         return TemplateResponses.from(templates);
+    }
+
+    @Transactional(readOnly = true)
+    public TemplateDetailResponse getDetailTemplate(AuthContext authContext, Long templateId) {
+        User user = userRepository.getUserBy(authContext.getUserId());
+
+        Template template = templateRepository.findById(templateId)
+                .orElseThrow(IllegalArgumentException::new);
+        template.validateOwner(user);
+        return TemplateDetailResponse.from(template);
     }
 
 }

@@ -17,6 +17,7 @@ import java.util.List;
 import static dev.steady.template.fixture.TemplateFixture.createAnotherTemplate;
 import static dev.steady.template.fixture.TemplateFixture.createTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
@@ -72,11 +73,47 @@ class TemplateServiceTest {
         templateRepository.saveAll(List.of(template1, template2));
 
         var authContext = AuthFixture.createAuthContext(savedUser.getId());
-        var templates = templateService.getTemplates(authContext);
+        var responses = templateService.getTemplates(authContext);
 
-        assertThat(templates.templates()).hasSize(2)
+        assertThat(responses.templates()).hasSize(2)
                 .extracting("title")
                 .containsExactlyInAnyOrder(template1.getTitle(), template2.getTitle());
+    }
+
+    @DisplayName("템플릿 식별자를 통해 템플릿을 상세조회한다.")
+    @Test
+    void getDetailTemplateTest() {
+        var user = UserFixtures.createUser();
+        var savedUser = userRepository.save(user);
+
+        var template = createTemplate(savedUser);
+        var savedTemplate = templateRepository.save(template);
+
+        var authContext = AuthFixture.createAuthContext(savedUser.getId());
+        var response = templateService.getDetailTemplate(authContext, savedTemplate.getId());
+
+        assertThat(response)
+                .extracting("id", "title", "questions")
+                .containsExactly(savedTemplate.getId(),
+                        savedTemplate.getTitle(),
+                        savedTemplate.getContents());
+    }
+
+    @DisplayName("템플릿 식별자를 통해 템플릿을 상세조회할 때 작성자가 아니라면 예외가 발생한다.")
+    @Test
+    void getDetailTemplateFailTest() {
+        var user = UserFixtures.createUser();
+        var savedUser = userRepository.save(user);
+        var anotherUser = UserFixtures.createAnotherUser();
+        userRepository.save(anotherUser);
+
+        var template = createTemplate(savedUser);
+        var savedTemplate = templateRepository.save(template);
+
+        var authContext = AuthFixture.createAuthContext(anotherUser.getId());
+
+        assertThatThrownBy(() -> templateService.getDetailTemplate(authContext, savedTemplate.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 }
