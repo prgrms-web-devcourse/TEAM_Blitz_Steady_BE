@@ -3,7 +3,6 @@ package dev.steady.oauth.service;
 import dev.steady.auth.domain.Account;
 import dev.steady.auth.domain.JwtProvider;
 import dev.steady.auth.domain.repository.AccountRepository;
-import dev.steady.auth.dto.request.TokenRequest;
 import dev.steady.auth.dto.response.TokenResponse;
 import dev.steady.oauth.domain.Platform;
 import dev.steady.oauth.dto.response.LogInResponse;
@@ -34,8 +33,7 @@ public class OAuthService {
             if (account.getUser() == null) {
                 return LogInResponse.forUserNotExist(account.getId());
             } else {
-                TokenRequest tokenRequest = TokenRequest.from(account);
-                String accessToken = jwtProvider.provideAccessToken(tokenRequest);
+                String accessToken = jwtProvider.provideAccessToken(account);
 
                 // TODO: 2023-10-26 리프레시 토큰 생성 로직 추가
 

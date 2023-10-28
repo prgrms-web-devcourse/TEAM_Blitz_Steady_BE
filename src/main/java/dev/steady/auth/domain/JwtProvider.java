@@ -1,6 +1,5 @@
 package dev.steady.auth.domain;
 
-import dev.steady.auth.dto.request.TokenRequest;
 import dev.steady.oauth.config.JwtProperties;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -21,12 +20,12 @@ public class JwtProvider {
         this.key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
     }
 
-    public String provideAccessToken(TokenRequest request) {
+    public String provideAccessToken(Account account) {
         Date now = new Date();
         Date expiredAt = new Date(now.getTime() + jwtProperties.getAccessTokenExpiration());
 
         return Jwts.builder()
-                .subject(String.valueOf(request.userId()))
+                .subject(String.valueOf(account.getUser().getId()))
                 .issuedAt(now)
                 .expiration(expiredAt)
                 .signWith(key)
