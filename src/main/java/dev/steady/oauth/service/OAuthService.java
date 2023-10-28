@@ -32,7 +32,7 @@ public class OAuthService {
             Account account = accountRepository.findByPlatformAndPlatformId(userInfo.getPlatform(), userInfo.getPlatformId())
                     .orElseThrow(() -> new EntityNotFoundException(String.format("플랫폼 %s의 id %s에 해당하는 계정이 없습니다.", userInfo.getPlatform(), userInfo.getPlatformId())));
             if (account.getUser() == null) {
-                return LogInResponse.of(account.getId(), true);
+                return LogInResponse.forUserNotExist(account.getId());
             } else {
                 TokenRequest tokenRequest = TokenRequest.from(account);
                 String accessToken = jwtProvider.provideAccessToken(tokenRequest);
@@ -40,11 +40,11 @@ public class OAuthService {
                 // TODO: 2023-10-26 리프레시 토큰 생성 로직 추가
 
                 TokenResponse token = TokenResponse.of(accessToken, "리프레시 토큰");
-                return LogInResponse.of(account.getId(), false, token);
+                return LogInResponse.forUserExist(account.getId(), token);
             }
         } catch (Exception e) {
             Long accountId = signUp(userInfo);
-            return LogInResponse.of(accountId, true);
+            return LogInResponse.forUserNotExist(accountId);
         }
     }
 
