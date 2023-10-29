@@ -28,7 +28,7 @@ public class SteadyQuestion extends BaseEntity {
     private Steady steady;
 
     @Builder
-    public SteadyQuestion(String content, int sequence, Steady steady) {
+    private SteadyQuestion(String content, int sequence, Steady steady) {
         this.content = content;
         this.sequence = sequence;
         this.steady = steady;
