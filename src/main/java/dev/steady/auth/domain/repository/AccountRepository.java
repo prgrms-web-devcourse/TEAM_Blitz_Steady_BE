@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
+    boolean existsByPlatformAndPlatformId(Platform platform, String platformId);
+
     Optional<Account> findByPlatformAndPlatformId(Platform platform, String platformId);
 
 }
