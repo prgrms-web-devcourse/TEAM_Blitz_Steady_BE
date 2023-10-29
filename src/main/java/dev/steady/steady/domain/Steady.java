@@ -64,7 +64,7 @@ public class Steady extends BaseEntity {
     @Embedded
     private Participants participants;
 
-    @OneToMany(mappedBy = "steady", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "steady", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SteadyStack> steadyStacks = new ArrayList<>();
 
     @Builder
@@ -93,7 +93,7 @@ public class Steady extends BaseEntity {
         this.title = title;
         this.content = content;
         this.promotion = promotion;
-        updateSteadyStacks(steadyStacks);
+        this.steadyStacks = updateSteadyStacks(steadyStacks);
     }
 
     private Participants createParticipants(User user) {
@@ -111,14 +111,11 @@ public class Steady extends BaseEntity {
         participants.add(participant);
     }
 
-    public void updateSteadyStacks(List<SteadyStack> steadyStacks) {
-        if (this.steadyStacks != null || !this.steadyStacks.isEmpty()) {
-            this.steadyStacks.clear();
-            for (SteadyStack steadyStack : steadyStacks) {
-                steadyStack.setSteady(this);
-            }
-            this.steadyStacks = steadyStacks;
+    public List<SteadyStack> updateSteadyStacks(List<SteadyStack> steadyStacks) {
+        for (SteadyStack steadyStack : steadyStacks) {
+            steadyStack.setSteady(this);
         }
+        return steadyStacks;
     }
 
 }
