@@ -1,7 +1,7 @@
 package dev.steady.auth.oauth.service;
 
+import dev.steady.auth.domain.Platform;
 import dev.steady.auth.oauth.domain.AuthCodeRequestUrlProvider;
-import dev.steady.auth.oauth.domain.Platform;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

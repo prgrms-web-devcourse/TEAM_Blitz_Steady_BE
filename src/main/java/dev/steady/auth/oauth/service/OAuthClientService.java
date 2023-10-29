@@ -1,7 +1,7 @@
 package dev.steady.auth.oauth.service;
 
+import dev.steady.auth.domain.Platform;
 import dev.steady.auth.oauth.client.OAuthClient;
-import dev.steady.auth.oauth.domain.Platform;
 import dev.steady.auth.oauth.dto.response.OAuthUserInfoResponse;
 import org.springframework.stereotype.Component;
 

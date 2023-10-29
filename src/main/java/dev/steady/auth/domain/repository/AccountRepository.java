@@ -1,7 +1,7 @@
 package dev.steady.auth.domain.repository;
 
 import dev.steady.auth.domain.Account;
-import dev.steady.auth.oauth.domain.Platform;
+import dev.steady.auth.domain.Platform;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

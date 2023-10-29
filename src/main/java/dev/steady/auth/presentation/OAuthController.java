@@ -1,6 +1,6 @@
 package dev.steady.auth.presentation;
 
-import dev.steady.auth.oauth.domain.Platform;
+import dev.steady.auth.domain.Platform;
 import dev.steady.auth.oauth.dto.response.LogInResponse;
 import dev.steady.auth.oauth.service.OAuthService;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package dev.steady.auth.oauth.domain;
+package dev.steady.auth.domain;
 
 import java.util.Arrays;
 

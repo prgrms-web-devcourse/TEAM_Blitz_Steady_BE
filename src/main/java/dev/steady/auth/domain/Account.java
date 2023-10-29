@@ -1,6 +1,5 @@
 package dev.steady.auth.domain;
 
-import dev.steady.auth.oauth.domain.Platform;
 import dev.steady.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

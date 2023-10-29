@@ -1,7 +1,7 @@
 package dev.steady.auth.oauth.client;
 
 import dev.steady.auth.config.KakaoOAuthProperties;
-import dev.steady.auth.oauth.domain.Platform;
+import dev.steady.auth.domain.Platform;
 import dev.steady.auth.oauth.dto.KakaoToken;
 import dev.steady.auth.oauth.dto.response.KakaoUserInfoResponse;
 import dev.steady.auth.oauth.dto.response.OAuthUserInfoResponse;

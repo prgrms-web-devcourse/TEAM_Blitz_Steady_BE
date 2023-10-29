@@ -1,6 +1,6 @@
 package dev.steady.auth.oauth.dto.response;
 
-import dev.steady.auth.oauth.domain.Platform;
+import dev.steady.auth.domain.Platform;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

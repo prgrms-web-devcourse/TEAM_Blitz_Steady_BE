@@ -1,7 +1,7 @@
 package dev.steady.auth.dto.response;
 
 import dev.steady.auth.domain.Account;
-import dev.steady.auth.oauth.domain.Platform;
+import dev.steady.auth.domain.Platform;
 import dev.steady.user.domain.User;
 
 public record AccountResponse(
