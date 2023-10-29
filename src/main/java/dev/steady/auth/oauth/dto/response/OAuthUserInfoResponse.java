@@ -1,7 +1,7 @@
-package dev.steady.oauth.dto.response;
+package dev.steady.auth.oauth.dto.response;
 
 import dev.steady.auth.domain.Account;
-import dev.steady.oauth.domain.Platform;
+import dev.steady.auth.oauth.domain.Platform;
 
 public interface OAuthUserInfoResponse {
 

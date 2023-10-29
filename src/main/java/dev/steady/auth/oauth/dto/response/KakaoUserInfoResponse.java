@@ -1,13 +1,13 @@
-package dev.steady.oauth.dto.response;
+package dev.steady.auth.oauth.dto.response;
 
-import dev.steady.oauth.domain.Platform;
+import dev.steady.auth.oauth.domain.Platform;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
 public class KakaoUserInfoResponse implements OAuthUserInfoResponse {
-    
+
     private Long id;
 
     @Override

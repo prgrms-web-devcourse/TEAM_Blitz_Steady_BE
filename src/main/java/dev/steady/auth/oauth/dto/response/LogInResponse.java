@@ -1,4 +1,4 @@
-package dev.steady.oauth.dto.response;
+package dev.steady.auth.oauth.dto.response;
 
 import dev.steady.auth.dto.response.TokenResponse;
 

@@ -1,4 +1,4 @@
-package dev.steady.oauth.dto;
+package dev.steady.auth.oauth.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

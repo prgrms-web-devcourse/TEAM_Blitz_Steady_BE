@@ -1,12 +1,12 @@
-package dev.steady.oauth.service;
+package dev.steady.auth.oauth.service;
 
 import dev.steady.auth.domain.Account;
 import dev.steady.auth.domain.JwtProvider;
 import dev.steady.auth.domain.repository.AccountRepository;
 import dev.steady.auth.dto.response.TokenResponse;
-import dev.steady.oauth.domain.Platform;
-import dev.steady.oauth.dto.response.LogInResponse;
-import dev.steady.oauth.dto.response.OAuthUserInfoResponse;
+import dev.steady.auth.oauth.domain.Platform;
+import dev.steady.auth.oauth.dto.response.LogInResponse;
+import dev.steady.auth.oauth.dto.response.OAuthUserInfoResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
