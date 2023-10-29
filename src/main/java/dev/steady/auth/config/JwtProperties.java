@@ -1,4 +1,4 @@
-package dev.steady.oauth.config;
+package dev.steady.auth.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
