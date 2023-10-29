@@ -1,10 +1,10 @@
-package dev.steady.oauth.client;
+package dev.steady.auth.oauth.client;
 
-import dev.steady.oauth.config.KakaoOAuthProperties;
-import dev.steady.oauth.domain.Platform;
-import dev.steady.oauth.dto.KakaoToken;
-import dev.steady.oauth.dto.response.KakaoUserInfoResponse;
-import dev.steady.oauth.dto.response.OAuthUserInfoResponse;
+import dev.steady.auth.config.KakaoOAuthProperties;
+import dev.steady.auth.oauth.domain.Platform;
+import dev.steady.auth.oauth.dto.KakaoToken;
+import dev.steady.auth.oauth.dto.response.KakaoUserInfoResponse;
+import dev.steady.auth.oauth.dto.response.OAuthUserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

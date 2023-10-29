@@ -1,6 +1,6 @@
-package dev.steady.oauth.domain;
+package dev.steady.auth.oauth.domain;
 
-import dev.steady.oauth.config.KakaoOAuthProperties;
+import dev.steady.auth.config.KakaoOAuthProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;

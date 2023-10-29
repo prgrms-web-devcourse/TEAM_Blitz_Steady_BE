@@ -1,8 +1,8 @@
-package dev.steady.oauth.presentation;
+package dev.steady.auth.presentation;
 
-import dev.steady.oauth.domain.Platform;
-import dev.steady.oauth.dto.response.LogInResponse;
-import dev.steady.oauth.service.OAuthService;
+import dev.steady.auth.oauth.domain.Platform;
+import dev.steady.auth.oauth.dto.response.LogInResponse;
+import dev.steady.auth.oauth.service.OAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
