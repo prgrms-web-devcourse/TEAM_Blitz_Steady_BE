@@ -5,10 +5,10 @@ import dev.steady.auth.domain.Platform;
 
 public interface OAuthUserInfoResponse {
 
-    static Account toEntity(OAuthUserInfoResponse response) {
+    default Account toAccountEntity() {
         return Account.builder()
-                .platform(response.getPlatform())
-                .platformId(response.getPlatformId())
+                .platform(this.getPlatform())
+                .platformId(this.getPlatformId())
                 .build();
     }
 

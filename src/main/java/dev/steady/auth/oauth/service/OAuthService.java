@@ -48,7 +48,7 @@ public class OAuthService {
     }
 
     public Long signUp(OAuthUserInfoResponse userInfo) {
-        Account account = OAuthUserInfoResponse.toEntity(userInfo);
+        Account account = userInfo.toAccountEntity();
         return accountRepository.save(account).getId();
     }
 
