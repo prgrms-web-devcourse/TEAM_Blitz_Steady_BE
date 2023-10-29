@@ -26,13 +26,8 @@ public class SteadyStack extends BaseEntity {
     @JoinColumn(name = "steady_id")
     private Steady steady;
 
-    @Builder
-    private SteadyStack(Stack stack, Steady steady) {
+    public SteadyStack(Stack stack, Steady steady) {
         this.stack = stack;
-        this.steady = steady;
-    }
-
-    public void setSteady(Steady steady) {
         this.steady = steady;
     }
 
