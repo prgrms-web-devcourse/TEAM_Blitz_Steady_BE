@@ -1,34 +1,40 @@
 package dev.steady.user.fixture;
 
-import dev.steady.user.domain.Platform;
+import dev.steady.user.domain.Position;
+import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
-import org.springframework.test.util.ReflectionTestUtils;
 
 public class UserFixtures {
 
-    public static User createUser() {
-        User user = User.builder()
-                .platform_id("1")
-                .platform(Platform.KAKAO)
+    public static Position createPosition() {
+        return Position.builder()
+                .name("백엔드")
+                .build();
+    }
+
+    public static Stack createStack() {
+        return Stack.builder()
+                .name("Java")
+                .imageUrl("www")
+                .build();
+    }
+
+    public static User createUser(Position position) {
+        return User.builder()
                 .profileImage("123")
                 .nickname("weonest")
                 .bio("나에요")
-                .isDeleted(null)
+                .position(position)
                 .build();
-        ReflectionTestUtils.setField(user, "id", 1L);
-        return user;
     }
 
-    public static User createAnotherUser() {
+    public static User createAnotherUser(Position position) {
         User user = User.builder()
-                .platform_id("2")
-                .platform(Platform.KAKAO)
                 .profileImage("1234")
                 .nickname("Jun")
                 .bio("저에요")
-                .isDeleted(null)
+                .position(position)
                 .build();
-        ReflectionTestUtils.setField(user, "id", 2L);
         return user;
     }
 

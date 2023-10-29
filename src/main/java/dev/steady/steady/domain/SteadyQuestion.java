@@ -1,5 +1,6 @@
 package dev.steady.steady.domain;
 
+import dev.steady.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "steady_questions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SteadyQuestion {
+public class SteadyQuestion extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,6 +1,12 @@
-package dev.steady.steady.domain;
+package dev.steady.user.domain;
 
-import jakarta.persistence.*;
+import dev.steady.global.entity.BaseEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "positions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Position {
+public class Position extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

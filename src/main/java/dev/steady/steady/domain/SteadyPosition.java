@@ -1,8 +1,7 @@
 package dev.steady.steady.domain;
 
 import dev.steady.global.entity.BaseEntity;
-import dev.steady.user.domain.User;
-import jakarta.persistence.Column;
+import dev.steady.user.domain.Position;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -10,42 +9,34 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Table(name = "steady_positions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Participant extends BaseEntity {
+public class SteadyPosition extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "position_id")
+    private Position position;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "steady_id")
     private Steady steady;
 
-    @Column(name = "is_leader", nullable = false)
-    private boolean isLeader;
-
-    private Participant(User user, Steady steady, boolean isLeader) {
-        this.user = user;
+    @Builder
+    private SteadyPosition(Position position, Steady steady) {
+        this.position = position;
         this.steady = steady;
-        this.isLeader = isLeader;
-    }
-
-    public static Participant createLeader(User user, Steady steady) {
-        return new Participant(user, steady, true);
-    }
-
-    public static Participant createMember(User user, Steady steady) {
-        return new Participant(user, steady, false);
     }
 
 }

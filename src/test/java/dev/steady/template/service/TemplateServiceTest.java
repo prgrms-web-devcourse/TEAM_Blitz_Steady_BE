@@ -4,6 +4,7 @@ import dev.steady.global.auth.AuthFixture;
 import dev.steady.template.domain.repository.QuestionRepository;
 import dev.steady.template.domain.repository.TemplateRepository;
 import dev.steady.template.dto.request.CreateTemplateRequest;
+import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.fixture.UserFixtures;
 import dev.steady.user.infrastructure.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -35,6 +36,9 @@ class TemplateServiceTest {
     @Autowired
     private TemplateRepository templateRepository;
 
+    @Autowired
+    private PositionRepository positionRepository;
+
     @AfterEach
     void tearDown() {
         questionRepository.deleteAll();
@@ -45,8 +49,8 @@ class TemplateServiceTest {
     @DisplayName("템플릿 양식을 입력받아 템플릿을 생성한다.")
     @Test
     void createTemplateTest() {
-
-        var user = userRepository.save(UserFixtures.createUser());
+        var position = positionRepository.save(UserFixtures.createPosition());
+        var user = userRepository.save(UserFixtures.createUser(position));
         var authContext = AuthFixture.createAuthContext(user.getId());
         var questions = List.of("Q1", "Q2");
         var request = new CreateTemplateRequest("Sample Title", questions);
@@ -65,7 +69,8 @@ class TemplateServiceTest {
     @DisplayName("사용자의 계정 정보를 받아 템플릿 목록을 조회한다.")
     @Test
     void getTemplatesTest(){
-        var user = UserFixtures.createUser();
+        var position = positionRepository.save(UserFixtures.createPosition());
+        var user = UserFixtures.createUser(position);
         var savedUser = userRepository.save(user);
 
         var template1 = createTemplate(savedUser);
@@ -83,7 +88,8 @@ class TemplateServiceTest {
     @DisplayName("템플릿 식별자를 통해 템플릿을 상세조회한다.")
     @Test
     void getDetailTemplateTest() {
-        var user = UserFixtures.createUser();
+        var position = positionRepository.save(UserFixtures.createPosition());
+        var user = UserFixtures.createUser(position);
         var savedUser = userRepository.save(user);
 
         var template = createTemplate(savedUser);
@@ -102,9 +108,10 @@ class TemplateServiceTest {
     @DisplayName("템플릿 식별자를 통해 템플릿을 상세조회할 때 작성자가 아니라면 예외가 발생한다.")
     @Test
     void getDetailTemplateFailTest() {
-        var user = UserFixtures.createUser();
+        var position = positionRepository.save(UserFixtures.createPosition());
+        var user = UserFixtures.createUser(position);
         var savedUser = userRepository.save(user);
-        var anotherUser = UserFixtures.createAnotherUser();
+        var anotherUser = UserFixtures.createAnotherUser(position);
         userRepository.save(anotherUser);
 
         var template = createTemplate(savedUser);

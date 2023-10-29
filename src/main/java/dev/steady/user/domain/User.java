@@ -2,19 +2,18 @@ package dev.steady.user.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -27,37 +26,25 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "platform", nullable = false)
-    private Platform platform;
-
-    @Column(name = "platform_id", nullable = false)
-    private String platform_id;
-
-    @Column(name = "profile_image", nullable = false)
+    @Column(nullable = false)
     private String profileImage;
 
-    @Column(name = "nickname", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String nickname;
 
-    @Column(name = "bio", nullable = true)
+    @Column(nullable = true)
     private String bio;
 
-    @Column(name = "is_deleted", nullable = true)
-    private LocalDateTime isDeleted;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "position_id")
+    private Position position;
 
     @Builder
-    private User(String platform_id,
-                Platform platform,
-                String profileImage,
-                String nickname,
-                String bio,
-                LocalDateTime isDeleted) {
-        this.platform_id = platform_id;
-        this.platform = platform;
+    public User(String profileImage, String nickname, String bio, Position position) {
         this.profileImage = profileImage;
         this.nickname = nickname;
         this.bio = bio;
-        this.isDeleted = isDeleted;
+        this.position = position;
     }
+
 }

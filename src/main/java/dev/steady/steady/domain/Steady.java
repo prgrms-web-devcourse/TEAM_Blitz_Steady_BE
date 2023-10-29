@@ -1,7 +1,19 @@
 package dev.steady.steady.domain;
 
 import dev.steady.global.entity.BaseEntity;
-import jakarta.persistence.*;
+import dev.steady.user.domain.Stack;
+import dev.steady.user.domain.User;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,14 +29,15 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Steady extends BaseEntity {
 
-    private final static int INITIAL_NUMBER_OF_MEMBER = 1;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = true)
+    private String bio;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -59,11 +72,15 @@ public class Steady extends BaseEntity {
     @Embedded
     private Promotion promotion;
 
+    @Embedded
+    private Participants participants;
+
     @OneToMany(mappedBy = "steady", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participant> participants = new ArrayList<>();
+    private List<SteadyStack> steadyStacks = new ArrayList<>();
 
     @Builder
     private Steady(String name,
+                   String bio,
                    SteadyType type,
                    int recruitCount,
                    SteadyMode steadyMode,
@@ -71,22 +88,39 @@ public class Steady extends BaseEntity {
                    LocalDate deadline,
                    String title,
                    String content,
-                   Promotion promotion) {
+                   User user,
+                   Promotion promotion,
+                   List<Stack> stacks) {
+        this.participants = createParticipants(user);
+        this.numberOfParticipants = participants.getNumberOfParticipants();
         this.name = name;
+        this.bio = bio;
         this.type = type;
         this.status = SteadyStatus.RECRUITING;
         this.recruitCount = recruitCount;
-        this.numberOfParticipants = INITIAL_NUMBER_OF_MEMBER;
         this.steadyMode = steadyMode;
         this.openingDate = openingDate;
         this.deadline = deadline;
         this.title = title;
         this.content = content;
         this.promotion = promotion;
+        this.steadyStacks = updateSteadyStacks(stacks);
+    }
+
+    private Participants createParticipants(User user) {
+        Participants participants = new Participants();
+        participants.add(Participant.createLeader(user, this));
+        return participants;
     }
 
     public void addParticipant(Participant participant) {
         participants.add(participant);
+    }
+
+    public List<SteadyStack> updateSteadyStacks(List<Stack> stacks) {
+        return stacks.stream()
+                .map(stack -> new SteadyStack(stack, this))
+                .toList();
     }
 
 }

@@ -1,71 +1,110 @@
 package dev.steady.steady.service;
 
-import dev.steady.global.auth.AuthContext;
-import dev.steady.steady.domain.Promotion;
+import dev.steady.global.auth.AuthFixture;
 import dev.steady.steady.domain.Steady;
-import dev.steady.steady.domain.SteadyQuestion;
+import dev.steady.steady.domain.repository.ParticipantRepository;
+import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
-import dev.steady.steady.dto.request.SteadyCreateRequest;
+import dev.steady.steady.domain.repository.SteadyStackRepository;
+import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.fixture.SteadyFixtures;
-import dev.steady.user.domain.User;
+import dev.steady.user.domain.repository.PositionRepository;
+import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.fixture.UserFixtures;
 import dev.steady.user.infrastructure.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.atMostOnce;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
-@ExtendWith(MockitoExtension.class)
+@Transactional
+@SpringBootTest
 class SteadyServiceTest {
 
-    @InjectMocks
+    @Autowired
     private SteadyService steadyService;
 
-    @Mock
-    private SteadyRepository steadyRepository;
-
-    @Mock
+    @Autowired
     private UserRepository userRepository;
 
-    @Mock
+    @Autowired
+    private SteadyRepository steadyRepository;
+
+    @Autowired
+    private StackRepository stackRepository;
+
+    @Autowired
+    private PositionRepository positionRepository;
+
+    @Autowired
+    private ParticipantRepository participantRepository;
+
+    @Autowired
+    private SteadyStackRepository steadyStackRepository;
+
+    @Autowired
     private SteadyQuestionRepository steadyQuestionRepository;
 
-    @Mock
-    private AuthContext authContext;
+    @Autowired
+    private SteadyPositionRepository steadyPositionRepository;
 
     @Test
-    @DisplayName("스터디 생성 요청을 통해 스터디와 스테디 질문을 생성할 수 있다")
+    @DisplayName("스터디 생성 요청을 통해 스테디와 스테디 관련 정보를 생성할 수 있다.")
     void createSteadyTest() {
-        // given
-        User user = UserFixtures.createUser();
-        SteadyCreateRequest steadyRequest = SteadyFixtures.createSteadyRequest();
-        Promotion promotion = SteadyFixtures.createPromotion();
-        Steady steady = SteadyFixtures.createSteady(steadyRequest, promotion);
-        List<SteadyQuestion> steadyQuestions = SteadyFixtures.createSteadyQuestions(steadyRequest.questions(), steady);
+        var position = UserFixtures.createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = UserFixtures.createUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var stack = UserFixtures.createStack();
+        var savedStack = stackRepository.save(stack);
+        var authContext = AuthFixture.createAuthContext(savedUser.getId());
 
-        given(authContext.getUserId()).willReturn(user.getId());
-        given(userRepository.findById(any())).willReturn(Optional.ofNullable(user));
-        given(steadyRepository.save(any())).willReturn(steady);
+        var steadyRequest = SteadyFixtures.createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyId = steadyService.create(steadyRequest, authContext);
 
-        // when
-        Long returnedId = steadyService.create(steadyRequest);
+        var steady = steadyRepository.findById(steadyId).get();
+        var participants = participantRepository.findBySteadyId(steadyId);
+        var steadyStacks = steadyStackRepository.findBySteadyId(steadyId);
+        var steadyQuestions = steadyQuestionRepository.findBySteadyId(steadyId);
+        var steadyPositions = steadyPositionRepository.findBySteadyId(steadyId);
 
-        // then
-        assertThat(returnedId).isEqualTo(steady.getId());
-        then(steadyQuestionRepository).should(atMostOnce()).saveAll(any());
-        // steadyQuestionRepository의 동작을 given에서 처리하면 불필요한 stubbing 동작이라는 예외
+        assertAll(
+                () -> assertThat(steady.getId()).isEqualTo(steadyId),
+                () -> assertThat(participants.size()).isEqualTo(steady.getParticipants().getNumberOfParticipants()),
+                () -> assertThat(steadyStacks.size()).isEqualTo(steady.getSteadyStacks().size()),
+                () -> assertThat(steadyQuestions.size()).isEqualTo(steadyRequest.questions().size()),
+                () -> assertThat(steadyPositions.size()).isEqualTo(steadyRequest.positions().size())
+        );
+    }
+
+    @Test
+    @DisplayName("스테디 페이징 조회 요청을 통해 페이징 처리 된 응답을 반환할 수 있다.")
+    void getSteadiesPageTest() {
+        var position = UserFixtures.createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = UserFixtures.createUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var stack = UserFixtures.createStack();
+        var savedStack = stackRepository.save(stack);
+        var authContext = AuthFixture.createAuthContext(savedUser.getId());
+
+        var steadyRequest = SteadyFixtures.createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        steadyService.create(steadyRequest, authContext);
+
+        var steadyPageRequest = new SteadyPageRequest(0, "asc");
+        var steadiesResponse = steadyService.getSteadies(steadyPageRequest);
+
+        List<Steady> steadies = steadyRepository.findAll();
+        var content = steadiesResponse.content();
+
+        assertThat(content.size()).isEqualTo(steadies.size());
     }
 
 }

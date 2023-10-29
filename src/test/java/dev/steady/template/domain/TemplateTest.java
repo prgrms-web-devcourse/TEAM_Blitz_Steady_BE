@@ -13,10 +13,11 @@ class TemplateTest {
     @DisplayName("템플릿의 생성자가 아니면 예외가 발생한다.")
     @Test
     void validateOwnerTest() {
-        User user = UserFixtures.createUser();
+        var position = UserFixtures.createPosition();
+        User user = UserFixtures.createUser(position);
         Template template = TemplateFixture.createTemplate(user);
 
-        assertThatThrownBy(() -> template.validateOwner(UserFixtures.createAnotherUser()))
+        assertThatThrownBy(() -> template.validateOwner(UserFixtures.createAnotherUser(position)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
