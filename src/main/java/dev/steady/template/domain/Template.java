@@ -58,4 +58,10 @@ public class Template extends BaseEntity {
         return questions.getContents();
     }
 
+    public void update(User user, String title, List<String> questions) {
+        validateOwner(user);
+        this.title = title;
+        this.questions.update(questions, this);
+    }
+
 }

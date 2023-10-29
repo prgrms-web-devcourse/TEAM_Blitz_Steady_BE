@@ -3,9 +3,7 @@ package dev.steady.template.domain;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Builder.Default;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,19 +12,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Builder
 @Embeddable
 @EqualsAndHashCode
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Questions {
 
-    @Default
-    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
     public Questions(Template template, List<String> questions) {
-        this.questions = questions.stream()
+        List<Question> values = createQuestions(template, questions);
+        this.questions = values;
+    }
+
+    public void update(List<String> questions, Template template) {
+        this.questions.clear();
+        List<Question> values = createQuestions(template, questions);
+        this.questions.addAll(values);
+    }
+
+    private List<Question> createQuestions(Template template, List<String> questions) {
+        return questions.stream()
                 .map(question -> new Question(template, question))
                 .toList();
     }
