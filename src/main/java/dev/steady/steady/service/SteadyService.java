@@ -1,5 +1,8 @@
 package dev.steady.steady.service;
 
+import dev.steady.application.domain.Application;
+import dev.steady.application.domain.ApplicationStatus;
+import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.global.auth.AuthContext;
 import dev.steady.steady.domain.Promotion;
 import dev.steady.steady.domain.Steady;
@@ -11,6 +14,7 @@ import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.dto.response.PageResponse;
+import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
@@ -28,13 +32,13 @@ import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class SteadyService {
 
     private final UserRepository userRepository;
     private final StackRepository stackRepository;
     private final SteadyRepository steadyRepository;
     private final PositionRepository positionRepository;
+    private final ApplicationRepository applicationRepository;
     private final SteadyQuestionRepository steadyQuestionRepository;
     private final SteadyPositionRepository steadyPositionRepository;
 
@@ -56,10 +60,31 @@ public class SteadyService {
         return savedSteady.getId();
     }
 
+    @Transactional(readOnly = true)
     public PageResponse<SteadySearchResponse> getSteadies(SteadyPageRequest request) {
         Page<Steady> steadies = steadyRepository.findAll(request.toPageable());
         Page<SteadySearchResponse> searchResponses = steadies.map(SteadySearchResponse::from);
         return PageResponse.from(searchResponses);
+    }
+
+    @Transactional(readOnly = true)
+    public SteadyDetailResponse getDetailSteady(Long steadyId, AuthContext authContext) {
+        Steady steady = steadyRepository.findById(steadyId)
+                .orElseThrow(IllegalArgumentException::new);
+        List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steady.getId());
+
+        Long leaderId = steady.getParticipants().getLeader().getId();
+        if (leaderId == authContext.getUserId()) {
+            return SteadyDetailResponse.of(steady, positions, true, false);
+        }
+
+        List<Application> list = applicationRepository.findBySteadyIdAndUserIdAndStatus(
+                steady.getId(), authContext.getUserId(), ApplicationStatus.WAITING);
+        if (!list.isEmpty()) {
+            return SteadyDetailResponse.of(steady, positions, false, true);
+        }
+
+        return SteadyDetailResponse.of(steady, positions, false, false);
     }
 
     private List<Stack> getStacks(List<Long> stacks) {
@@ -89,7 +114,6 @@ public class SteadyService {
     }
 
 
-
     private SteadyPosition getSteadyPosition(List<Long> positions, Steady steady, int index) {
         Position position = positionRepository.findById(positions.get(index))
                 .orElseThrow(IllegalArgumentException::new);
@@ -99,7 +123,5 @@ public class SteadyService {
                 .steady(steady)
                 .build();
     }
-
-
 
 }

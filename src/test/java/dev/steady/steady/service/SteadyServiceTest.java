@@ -8,6 +8,8 @@ import dev.steady.steady.domain.repository.SteadyQuestionRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.domain.repository.SteadyStackRepository;
 import dev.steady.steady.dto.request.SteadyPageRequest;
+import dev.steady.steady.dto.response.LeaderResponse;
+import dev.steady.steady.dto.response.SteadyStackResponse;
 import dev.steady.steady.fixture.SteadyFixtures;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
@@ -105,6 +107,52 @@ class SteadyServiceTest {
         var content = steadiesResponse.content();
 
         assertThat(content.size()).isEqualTo(steadies.size());
+    }
+
+    @Test
+    @DisplayName("스테디 식별자를 통해 스테디 상세 조회를 할 수 있다.")
+    void getSteadyTest() {
+        var position = UserFixtures.createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = UserFixtures.createUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var stack = UserFixtures.createStack();
+        var savedStack = stackRepository.save(stack);
+        var authContext = AuthFixture.createAuthContext(savedUser.getId());
+
+        var steadyRequest = SteadyFixtures.createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyId = steadyService.create(steadyRequest, authContext);
+
+        var steady = steadyRepository.findById(steadyId).get();
+        var positions = steadyPositionRepository.findBySteadyId(steadyId);
+
+        var response = steadyService.getDetailSteady(steadyId, authContext);
+
+        assertThat(response)
+                .extracting("id", "leaderResponse", "name", "bio", "type", "status",
+                        "recruitCount", "numberOfParticipants", "steadyMode", "openingDate", "deadline",
+                        "title", "content", "positions", "stacks", "isLeader", "isSubmittedUser")
+                .containsExactly(steady.getId(),
+                        LeaderResponse.from(steady.getParticipants().getLeader()),
+                        steady.getName(),
+                        steady.getTitle(),
+                        steady.getType(),
+                        steady.getStatus(),
+                        steady.getRecruitCount(),
+                        steady.getNumberOfParticipants(),
+                        steady.getSteadyMode(),
+                        steady.getOpeningDate(),
+                        steady.getDeadline(),
+                        steady.getTitle(),
+                        steady.getContent(),
+                        positions.stream()
+                                .map(v -> v.getPosition().getName())
+                                .toList(),
+                        steady.getSteadyStacks().stream()
+                                .map(SteadyStackResponse::from)
+                                .toList(),
+                        true,
+                        false);
     }
 
 }
