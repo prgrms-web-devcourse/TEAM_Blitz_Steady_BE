@@ -20,9 +20,9 @@ public class Participants {
 
     public User getLeader() {
         return steadyParticipants.stream()
-                .filter(participant -> participant.isLeader() == true)
+                .filter(Participant::isLeader)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException())
+                .orElseThrow(IllegalArgumentException::new)
                 .getUser();
     }
 
