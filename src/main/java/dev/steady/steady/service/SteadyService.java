@@ -37,10 +37,10 @@ public class SteadyService {
 
     @Transactional
     public Long create(SteadyCreateRequest request, AuthContext authContext) {
-        Promotion promotion = new Promotion();
         Long userId = authContext.getUserId();
         User user = userRepository.getUserBy(userId);
         List<SteadyStack> steadyStacks = createSteadyStacks(request.stacks());
+        Promotion promotion = new Promotion();
         Steady steady = request.toEntity(user, promotion, steadyStacks);
         Steady savedSteady = steadyRepository.save(steady);
 
