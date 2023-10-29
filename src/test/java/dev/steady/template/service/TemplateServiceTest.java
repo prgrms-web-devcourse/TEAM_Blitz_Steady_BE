@@ -142,13 +142,13 @@ class TemplateServiceTest {
         var template = createTemplate(savedUser);
         var savedTemplate = templateRepository.save(template);
 
-        List<String> questions = List.of("변경된 질문1", "변경된 질문2", "변경된 질문3");
-        String title = "변경된 제목";
-        UpdateTemplateRequest request = new UpdateTemplateRequest(title, questions);
+        var questions = List.of("변경된 질문1", "변경된 질문2", "변경된 질문3");
+        var title = "변경된 제목";
+        var request = new UpdateTemplateRequest(title, questions);
         templateService.updateTemplate(savedTemplate.getId(), request, AuthFixture.createAuthContext(savedUser.getId()));
 
-        Template updatedTemplate = tm.execute(status -> {
-            Template findTemplate = templateRepository.findById(savedTemplate.getId()).get();
+        var updatedTemplate = tm.execute(status -> {
+            var findTemplate = templateRepository.findById(savedTemplate.getId()).get();
             findTemplate.getContents();
             return findTemplate;
         });
