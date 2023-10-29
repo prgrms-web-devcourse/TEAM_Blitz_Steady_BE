@@ -14,11 +14,11 @@ public record LogInResponse(
     }
 
     public static LogInResponse forUserNotExist(Long id) {
-        return new LogInResponse(id, false);
+        return new LogInResponse(id, true);
     }
 
     public static LogInResponse forUserExist(Long id, TokenResponse token) {
-        return new LogInResponse(id, true, token);
+        return new LogInResponse(id, false, token);
     }
 
 }
