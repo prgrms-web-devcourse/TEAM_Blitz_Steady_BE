@@ -27,23 +27,24 @@ public class OAuthService {
     public LogInResponse logIn(Platform platform, String authCode) {
         OAuthUserInfoResponse userInfo = oAuthClientService.getUserInfo(platform, authCode);
 
-        try {
-            Account account = accountRepository.findByPlatformAndPlatformId(userInfo.getPlatform(), userInfo.getPlatformId())
-                    .orElseThrow(() -> new EntityNotFoundException(String.format("플랫폼 %s의 id %s에 해당하는 계정이 없습니다.", userInfo.getPlatform(), userInfo.getPlatformId())));
-            if (account.getUser() == null) {
-                return LogInResponse.forUserNotExist(account.getId());
-            } else {
-                String accessToken = jwtProvider.provideAccessToken(account);
-
-                // TODO: 2023-10-26 리프레시 토큰 생성 로직 추가
-
-                TokenResponse token = TokenResponse.of(accessToken, "리프레시 토큰");
-                return LogInResponse.forUserExist(account.getId(), token);
-            }
-        } catch (Exception e) {
+        if (!accountRepository.existsByPlatformAndPlatformId(userInfo.getPlatform(), userInfo.getPlatformId())) {
             Long accountId = signUp(userInfo);
             return LogInResponse.forUserNotExist(accountId);
         }
+
+        Account account = accountRepository.findByPlatformAndPlatformId(userInfo.getPlatform(), userInfo.getPlatformId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format("플랫폼 %s의 id %s에 해당하는 계정이 없습니다.", userInfo.getPlatform(), userInfo.getPlatformId())));
+
+        if (account.hasNoUser()) {
+            return LogInResponse.forUserNotExist(account.getId());
+        }
+
+        String accessToken = jwtProvider.provideAccessToken(account);
+
+        // TODO: 2023-10-26 리프레시 토큰 생성 로직 추가
+
+        TokenResponse token = TokenResponse.of(accessToken, "리프레시 토큰");
+        return LogInResponse.forUserExist(account.getId(), token);
     }
 
     public Long signUp(OAuthUserInfoResponse userInfo) {

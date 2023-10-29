@@ -48,4 +48,8 @@ public class Account {
         this.user = user;
     }
 
+    public boolean hasNoUser() {
+        return this.user == null;
+    }
+
 }
