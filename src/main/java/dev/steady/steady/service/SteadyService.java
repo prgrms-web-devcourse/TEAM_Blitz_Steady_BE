@@ -71,25 +71,33 @@ public class SteadyService {
 
     private List<SteadyPosition> createSteadyPositions(List<Long> positions, Steady steady) {
         return IntStream.range(0, positions.size())
-                .mapToObj(index -> {
-                    Position position = positionRepository.findById(positions.get(index))
-                            .orElseThrow(IllegalArgumentException::new);
-                    return SteadyPosition.builder()
-                            .position(position)
-                            .steady(steady)
-                            .build();
-                }).toList();
+                .mapToObj(index -> getSteadyPosition(positions, steady, index))
+                .toList();
     }
 
     private List<SteadyStack> createSteadyStacks(List<Long> stacks) {
         return IntStream.range(0, stacks.size())
-                .mapToObj(index -> {
-                    Stack stack = stackRepository.findById(stacks.get(index))
-                            .orElseThrow(IllegalArgumentException::new);;
-                    return SteadyStack.builder()
-                            .stack(stack)
-                            .build();
-                }).toList();
+                .mapToObj(index -> getSteadyStack(stacks, index))
+                .toList();
+    }
+
+    private SteadyPosition getSteadyPosition(List<Long> positions, Steady steady, int index) {
+        Position position = positionRepository.findById(positions.get(index))
+                .orElseThrow(IllegalArgumentException::new);
+
+        return SteadyPosition.builder()
+                .position(position)
+                .steady(steady)
+                .build();
+    }
+
+    private SteadyStack getSteadyStack(List<Long> stacks, int index) {
+        Stack stack = stackRepository.findById(stacks.get(index))
+                .orElseThrow(IllegalArgumentException::new);
+
+        return SteadyStack.builder()
+                .stack(stack)
+                .build();
     }
 
 }
