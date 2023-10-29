@@ -10,6 +10,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -27,15 +28,22 @@ public class Application {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "steady_id")
     private Steady steady;
 
     @Column
     @Enumerated(EnumType.STRING)
-    private ApplicationStatus applicationStatus;
-    // TODO: 2023-10-22 영경님 이거 네이밍 하십쇼 (패키지명, 도메인명)
+    private ApplicationStatus status;
+
+    public Application(User user, Steady steady) {
+        this.user = user;
+        this.steady = steady;
+        this.status = ApplicationStatus.WAITING;
+    }
 
 
 }

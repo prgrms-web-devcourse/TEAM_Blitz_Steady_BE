@@ -26,6 +26,10 @@ public class Participants {
                 .getUser();
     }
 
+    public List<Participant> getAllMembers() {
+        return steadyParticipants;
+    }
+
     public int getNumberOfParticipants() {
         return steadyParticipants.size();
     }
