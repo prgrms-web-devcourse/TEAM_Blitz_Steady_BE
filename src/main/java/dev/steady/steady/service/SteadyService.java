@@ -1,7 +1,10 @@
 package dev.steady.steady.service;
 
 import dev.steady.global.auth.AuthContext;
-import dev.steady.steady.domain.*;
+import dev.steady.steady.domain.Promotion;
+import dev.steady.steady.domain.Steady;
+import dev.steady.steady.domain.SteadyPosition;
+import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;

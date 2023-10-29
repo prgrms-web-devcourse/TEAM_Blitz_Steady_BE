@@ -1,6 +1,9 @@
 package dev.steady.steady.dto.request;
 
-import dev.steady.steady.domain.*;
+import dev.steady.steady.domain.Promotion;
+import dev.steady.steady.domain.Steady;
+import dev.steady.steady.domain.SteadyMode;
+import dev.steady.steady.domain.SteadyType;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
 import lombok.Builder;
