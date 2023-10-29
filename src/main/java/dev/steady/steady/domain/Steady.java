@@ -1,6 +1,7 @@
 package dev.steady.steady.domain;
 
 import dev.steady.global.entity.BaseEntity;
+import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -89,7 +90,7 @@ public class Steady extends BaseEntity {
                    String content,
                    User user,
                    Promotion promotion,
-                   List<SteadyStack> steadyStacks) {
+                   List<Stack> stacks) {
         this.participants = createParticipants(user);
         this.numberOfParticipants = participants.getNumberOfParticipants();
         this.name = name;
@@ -103,17 +104,12 @@ public class Steady extends BaseEntity {
         this.title = title;
         this.content = content;
         this.promotion = promotion;
-        this.steadyStacks = updateSteadyStacks(steadyStacks);
+        this.steadyStacks = updateSteadyStacks(stacks);
     }
 
     private Participants createParticipants(User user) {
         Participants participants = new Participants();
-        Participant participant = Participant.builder()
-                .user(user)
-                .steady(this)
-                .isLeader(true)
-                .build();
-        participants.add(participant);
+        participants.add(Participant.createLeader(user, this));
         return participants;
     }
 
@@ -121,11 +117,10 @@ public class Steady extends BaseEntity {
         participants.add(participant);
     }
 
-    public List<SteadyStack> updateSteadyStacks(List<SteadyStack> steadyStacks) {
-        for (SteadyStack steadyStack : steadyStacks) {
-            steadyStack.setSteady(this);
-        }
-        return steadyStacks;
+    public List<SteadyStack> updateSteadyStacks(List<Stack> stacks) {
+        return stacks.stream()
+                .map(stack -> new SteadyStack(stack, this))
+                .toList();
     }
 
 }

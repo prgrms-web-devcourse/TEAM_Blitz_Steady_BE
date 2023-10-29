@@ -1,6 +1,7 @@
 package dev.steady.steady.dto.request;
 
 import dev.steady.steady.domain.*;
+import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
 import lombok.Builder;
 
@@ -23,7 +24,7 @@ public record SteadyCreateRequest(
         List<String> questions
 ) {
 
-    public Steady toEntity(User user, Promotion promotion, List<SteadyStack> steadyStacks) {
+    public Steady toEntity(User user, Promotion promotion, List<Stack> stacks) {
         return Steady.builder()
                 .name(name)
                 .bio(bio)
@@ -36,7 +37,7 @@ public record SteadyCreateRequest(
                 .content(content)
                 .user(user)
                 .promotion(promotion)
-                .steadyStacks(steadyStacks)
+                .stacks(stacks)
                 .build();
     }
 

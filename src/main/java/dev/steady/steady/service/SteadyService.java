@@ -39,9 +39,9 @@ public class SteadyService {
     public Long create(SteadyCreateRequest request, AuthContext authContext) {
         Long userId = authContext.getUserId();
         User user = userRepository.getUserBy(userId);
-        List<SteadyStack> steadyStacks = createSteadyStacks(request.stacks());
+        List<Stack> stacks = getStacks(request.stacks());
         Promotion promotion = new Promotion();
-        Steady steady = request.toEntity(user, promotion, steadyStacks);
+        Steady steady = request.toEntity(user, promotion, stacks);
         Steady savedSteady = steadyRepository.save(steady);
 
         List<SteadyQuestion> steadyQuestions = createSteadyQuestions(request.questions(), savedSteady);
@@ -57,6 +57,16 @@ public class SteadyService {
         Page<Steady> steadies = steadyRepository.findAll(request.toPageable());
         Page<SteadySearchResponse> searchResponses = steadies.map(SteadySearchResponse::from);
         return PageResponse.from(searchResponses);
+    }
+
+    private List<Stack> getStacks(List<Long> stacks) {
+        return stacks.stream()
+                .map(this::getStack)
+                .toList();
+    }
+
+    private Stack getStack(Long id) {
+        return stackRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 
     private List<SteadyQuestion> createSteadyQuestions(List<String> questions, Steady steady) {
@@ -75,11 +85,7 @@ public class SteadyService {
                 .toList();
     }
 
-    private List<SteadyStack> createSteadyStacks(List<Long> stacks) {
-        return IntStream.range(0, stacks.size())
-                .mapToObj(index -> getSteadyStack(stacks, index))
-                .toList();
-    }
+
 
     private SteadyPosition getSteadyPosition(List<Long> positions, Steady steady, int index) {
         Position position = positionRepository.findById(positions.get(index))
@@ -91,13 +97,6 @@ public class SteadyService {
                 .build();
     }
 
-    private SteadyStack getSteadyStack(List<Long> stacks, int index) {
-        Stack stack = stackRepository.findById(stacks.get(index))
-                .orElseThrow(IllegalArgumentException::new);
 
-        return SteadyStack.builder()
-                .stack(stack)
-                .build();
-    }
 
 }
