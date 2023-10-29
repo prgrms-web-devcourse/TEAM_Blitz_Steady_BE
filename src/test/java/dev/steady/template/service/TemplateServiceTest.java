@@ -70,8 +70,9 @@ class TemplateServiceTest {
 
         assertAll(
                 () -> assertThat(template).isNotNull(),
-                () -> assertThat(savedQuestions.size()).isEqualTo(questions.size())
+                () -> assertThat(savedQuestions).hasSameSizeAs(questions)
         );
+
     }
 
     @DisplayName("사용자의 계정 정보를 받아 템플릿 목록을 조회한다.")
