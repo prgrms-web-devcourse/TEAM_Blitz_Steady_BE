@@ -28,11 +28,18 @@ public class Participant extends BaseEntity {
     @Column(name = "is_leader", nullable = false)
     private boolean isLeader;
 
-    @Builder
     private Participant(User user, Steady steady, boolean isLeader) {
         this.user = user;
         this.steady = steady;
         this.isLeader = isLeader;
+    }
+
+    public static Participant createLeader(User user, Steady steady) {
+        return new Participant(user, steady, true);
+    }
+
+    public static Participant createMember(User user, Steady steady) {
+        return new Participant(user, steady, false);
     }
 
 }
