@@ -5,8 +5,8 @@ import dev.steady.template.domain.repository.QuestionRepository;
 import dev.steady.template.domain.repository.TemplateRepository;
 import dev.steady.template.dto.request.CreateTemplateRequest;
 import dev.steady.user.domain.repository.PositionRepository;
+import dev.steady.user.domain.repository.UserRepository;
 import dev.steady.user.fixture.UserFixtures;
-import dev.steady.user.infrastructure.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,7 +68,7 @@ class TemplateServiceTest {
 
     @DisplayName("사용자의 계정 정보를 받아 템플릿 목록을 조회한다.")
     @Test
-    void getTemplatesTest(){
+    void getTemplatesTest() {
         var position = positionRepository.save(UserFixtures.createPosition());
         var user = UserFixtures.createUser(position);
         var savedUser = userRepository.save(user);

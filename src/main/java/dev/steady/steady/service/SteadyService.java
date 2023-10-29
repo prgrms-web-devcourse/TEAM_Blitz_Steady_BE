@@ -17,7 +17,7 @@ import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
-import dev.steady.user.infrastructure.UserRepository;
+import dev.steady.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -89,7 +89,6 @@ public class SteadyService {
     }
 
 
-
     private SteadyPosition getSteadyPosition(List<Long> positions, Steady steady, int index) {
         Position position = positionRepository.findById(positions.get(index))
                 .orElseThrow(IllegalArgumentException::new);
@@ -99,7 +98,6 @@ public class SteadyService {
                 .steady(steady)
                 .build();
     }
-
 
 
 }
