@@ -4,7 +4,7 @@ import dev.steady.global.config.JpaConfig;
 import dev.steady.template.domain.Template;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.fixture.UserFixtures;
-import dev.steady.user.infrastructure.UserRepository;
+import dev.steady.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
