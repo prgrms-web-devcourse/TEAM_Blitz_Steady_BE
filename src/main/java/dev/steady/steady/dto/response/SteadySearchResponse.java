@@ -37,7 +37,7 @@ public record SteadySearchResponse(
                 steady.getStatus(),
                 steady.getDeadline(),
                 steady.getCreatedAt(),
-                steady.getRecruitCount(),
+                steady.getParticipantLimit(),
                 steady.getNumberOfParticipants(),
                 stacks);
     }
