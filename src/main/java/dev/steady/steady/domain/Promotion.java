@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Embeddable
 public class Promotion {
 
-    private final static int INITIAL_PROMOTION_COUNT = 3;
+    private static final int INITIAL_PROMOTION_COUNT = 3;
 
     @Column(nullable = false)
     private int promotionCount;
