@@ -4,14 +4,17 @@ import dev.steady.global.auth.AuthFixture;
 import dev.steady.template.domain.repository.QuestionRepository;
 import dev.steady.template.domain.repository.TemplateRepository;
 import dev.steady.template.dto.request.CreateTemplateRequest;
+import dev.steady.template.dto.request.UpdateTemplateRequest;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.fixture.UserFixtures;
 import dev.steady.user.infrastructure.UserRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
@@ -39,11 +42,15 @@ class TemplateServiceTest {
     @Autowired
     private PositionRepository positionRepository;
 
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
     @AfterEach
     void tearDown() {
         questionRepository.deleteAll();
         templateRepository.deleteAll();
         userRepository.deleteAll();
+        positionRepository.deleteAll();
     }
 
     @DisplayName("템플릿 양식을 입력받아 템플릿을 생성한다.")
@@ -62,8 +69,9 @@ class TemplateServiceTest {
 
         assertAll(
                 () -> assertThat(template).isNotNull(),
-                () -> assertThat(savedQuestions.size()).isEqualTo(questions.size())
+                () -> assertThat(savedQuestions).hasSameSizeAs(questions)
         );
+
     }
 
     @DisplayName("사용자의 계정 정보를 받아 템플릿 목록을 조회한다.")
@@ -121,6 +129,31 @@ class TemplateServiceTest {
 
         assertThatThrownBy(() -> templateService.getDetailTemplate(authContext, savedTemplate.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("템플릿 수정 요청을 받아서 기존 템플릿을 업데이트한다.")
+    @Test
+    void updateTemplateTest() {
+        var position = positionRepository.save(UserFixtures.createPosition());
+        var user = UserFixtures.createUser(position);
+        var savedUser = userRepository.save(user);
+
+        var template = createTemplate(savedUser);
+        var savedTemplate = templateRepository.save(template);
+
+        var questions = List.of("변경된 질문1", "변경된 질문2", "변경된 질문3");
+        var title = "변경된 제목";
+        var request = new UpdateTemplateRequest(title, questions);
+        templateService.updateTemplate(savedTemplate.getId(), request, AuthFixture.createAuthContext(savedUser.getId()));
+
+        var updatedTemplate = transactionTemplate.execute(status -> {
+            var findTemplate = templateRepository.findById(savedTemplate.getId()).get();
+            findTemplate.getContents();
+            return findTemplate;
+        });
+        Assertions.assertAll(
+                () -> assertThat(updatedTemplate.getTitle()).isEqualTo(title),
+                () -> assertThat(updatedTemplate.getContents()).isEqualTo(questions));
     }
 
 }

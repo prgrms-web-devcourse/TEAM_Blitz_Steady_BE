@@ -4,6 +4,7 @@ import dev.steady.global.auth.AuthContext;
 import dev.steady.template.domain.Template;
 import dev.steady.template.domain.repository.TemplateRepository;
 import dev.steady.template.dto.request.CreateTemplateRequest;
+import dev.steady.template.dto.request.UpdateTemplateRequest;
 import dev.steady.template.dto.resonse.TemplateDetailResponse;
 import dev.steady.template.dto.resonse.TemplateResponses;
 import dev.steady.user.domain.User;
@@ -47,6 +48,15 @@ public class TemplateService {
                 .orElseThrow(IllegalArgumentException::new);
         template.validateOwner(user);
         return TemplateDetailResponse.from(template);
+    }
+
+    @Transactional
+    public void updateTemplate(Long templateId, UpdateTemplateRequest request, AuthContext authContext) {
+        User user = userRepository.getUserBy(authContext.getUserId());
+        Template template = templateRepository.findById(templateId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        template.update(user, request.title(), request.questions());
     }
 
 }
