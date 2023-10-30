@@ -44,10 +44,18 @@ public class TemplateService {
     public TemplateDetailResponse getDetailTemplate(AuthContext authContext, Long templateId) {
         User user = userRepository.getUserBy(authContext.getUserId());
 
-        Template template = templateRepository.findById(templateId)
-                .orElseThrow(IllegalArgumentException::new);
+        Template template = templateRepository.getById(templateId);
         template.validateOwner(user);
         return TemplateDetailResponse.from(template);
+    }
+
+    @Transactional
+    public void deleteTemplate(AuthContext authContext, Long templateId) {
+        User user = userRepository.getUserBy(authContext.getUserId());
+
+        Template template = templateRepository.getById(templateId);
+        template.validateOwner(user);
+        templateRepository.delete(template);
     }
 
     @Transactional
