@@ -51,4 +51,20 @@ public class KakaoOAuthClient implements OAuthClient {
         return token.accessToken();
     }
 
+    @Override
+    public OAuthUserInfoResponse getPlatformUserInfo(String accessToken) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        httpHeaders.setBearerAuth(accessToken);
+
+        KakaoUserInfoResponse response = restTemplate.postForObject(
+                REQUEST_USER_INFO_URL,
+                new HttpEntity<>(httpHeaders),
+                KakaoUserInfoResponse.class
+        );
+
+        if (response == null) throw new AssertionError("사용자 정보를 가져올 수 없습니다.");
+        return response;
+    }
+
 }

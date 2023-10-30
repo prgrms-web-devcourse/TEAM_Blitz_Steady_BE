@@ -23,4 +23,10 @@ public class OAuthClientService {
                 ));
     }
 
+    public OAuthUserInfoResponse getUserInfo(Platform platform, String authCode) {
+        OAuthClient oAuthClient = clientMap.get(platform);
+        String accessToken = oAuthClient.getAccessToken(authCode);
+        return oAuthClient.getPlatformUserInfo(accessToken);
+    }
+
 }
