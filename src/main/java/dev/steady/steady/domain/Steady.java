@@ -107,17 +107,49 @@ public class Steady extends BaseEntity {
         this.steadyStacks = updateSteadyStacks(stacks);
     }
 
-    private Participants createParticipants(User user) {
-        Participants participants = new Participants();
-        participants.add(Participant.createLeader(user, this));
-        return participants;
+    public boolean isLeader(Long userId) {
+        Long leaderId = participants.getLeader().getId();
+        if (leaderId.equals(userId)) {
+            return true;
+        }
+        return false;
     }
 
     public void addParticipant(Participant participant) {
         participants.add(participant);
     }
 
-    public List<SteadyStack> updateSteadyStacks(List<Stack> stacks) {
+    public void update(String name,
+                       String bio,
+                       SteadyType type,
+                       SteadyStatus status,
+                       int participantLimit,
+                       SteadyMode steadyMode,
+                       LocalDate openingDate,
+                       LocalDate deadline,
+                       String title,
+                       String content,
+                       List<Stack> stacks) {
+        this.name = name;
+        this.bio = bio;
+        this.type = type;
+        this.status = status;
+        this.participantLimit = participantLimit;
+        this.steadyMode = steadyMode;
+        this.openingDate = openingDate;
+        this.deadline = deadline;
+        this.title = title;
+        this.content = content;
+        this.steadyStacks = updateSteadyStacks(stacks);
+    }
+
+    private Participants createParticipants(User user) {
+        Participants participants = new Participants();
+        participants.add(Participant.createLeader(user, this));
+        return participants;
+    }
+
+    private List<SteadyStack> updateSteadyStacks(List<Stack> stacks) {
         return stacks.stream()
                 .map(stack -> new SteadyStack(stack, this))
                 .toList();
