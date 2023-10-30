@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -104,7 +105,7 @@ public class Steady extends BaseEntity {
         this.title = title;
         this.content = content;
         this.promotion = promotion;
-        this.steadyStacks = updateSteadyStacks(stacks);
+        this.steadyStacks = createSteadyStack(stacks);
     }
 
     public boolean isLeader(Long userId) {
@@ -140,7 +141,8 @@ public class Steady extends BaseEntity {
         this.deadline = deadline;
         this.title = title;
         this.content = content;
-        this.steadyStacks = updateSteadyStacks(stacks);
+        this.steadyStacks.clear();
+        this.steadyStacks.addAll(createSteadyStack(stacks));
     }
 
     private Participants createParticipants(User user) {
@@ -149,10 +151,10 @@ public class Steady extends BaseEntity {
         return participants;
     }
 
-    private List<SteadyStack> updateSteadyStacks(List<Stack> stacks) {
+    private List<SteadyStack> createSteadyStack(List<Stack> stacks) {
         return stacks.stream()
                 .map(stack -> new SteadyStack(stack, this))
-                .toList();
+                .collect(Collectors.toList());
     }
 
 }
