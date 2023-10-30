@@ -44,4 +44,8 @@ public class Account {
         this.platform = platform;
     }
 
+    public boolean hasNoUser() {
+        return this.user == null;
+    }
+
 }
