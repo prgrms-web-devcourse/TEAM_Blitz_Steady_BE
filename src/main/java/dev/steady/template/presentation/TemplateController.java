@@ -8,6 +8,7 @@ import dev.steady.template.dto.resonse.TemplateResponses;
 import dev.steady.template.service.TemplateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,13 @@ public class TemplateController {
                                                                     AuthContext authContext) {
         TemplateDetailResponse detailTemplate = templateService.getDetailTemplate(authContext, templateId);
         return ResponseEntity.ok(detailTemplate);
+    }
+
+    @DeleteMapping("/{templateId}")
+    public ResponseEntity<Void> deleteTemplate(@PathVariable Long templateId,
+                                               AuthContext authContext) {
+        templateService.deleteTemplate(authContext, templateId);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{templateId}")
