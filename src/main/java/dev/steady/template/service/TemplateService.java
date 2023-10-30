@@ -57,7 +57,6 @@ public class TemplateService {
                 .orElseThrow(IllegalArgumentException::new);
 
         template.update(user, request.title(), request.questions());
-        templateRepository.save(template);
     }
 
 }
