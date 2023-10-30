@@ -14,7 +14,7 @@ public class SteadyFixtures {
                 .name("테스트 스테디")
                 .bio("무슨 스터디")
                 .type(SteadyType.STUDY)
-                .recruitCount(6)
+                .participantLimit(6)
                 .steadyMode(SteadyMode.ONLINE)
                 .openingDate(LocalDate.now().plusDays(7))
                 .deadline(LocalDate.now().plusDays(14))

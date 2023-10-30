@@ -48,7 +48,7 @@ public class Steady extends BaseEntity {
     private SteadyStatus status;
 
     @Column(nullable = false)
-    private int recruitCount;
+    private int participantLimit;
 
     @Column(nullable = false)
     private int numberOfParticipants;
@@ -82,7 +82,7 @@ public class Steady extends BaseEntity {
     private Steady(String name,
                    String bio,
                    SteadyType type,
-                   int recruitCount,
+                   int participantLimit,
                    SteadyMode steadyMode,
                    LocalDate openingDate,
                    LocalDate deadline,
@@ -97,7 +97,7 @@ public class Steady extends BaseEntity {
         this.bio = bio;
         this.type = type;
         this.status = SteadyStatus.RECRUITING;
-        this.recruitCount = recruitCount;
+        this.participantLimit = participantLimit;
         this.steadyMode = steadyMode;
         this.openingDate = openingDate;
         this.deadline = deadline;

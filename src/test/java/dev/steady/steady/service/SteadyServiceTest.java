@@ -130,7 +130,7 @@ class SteadyServiceTest {
 
         assertThat(response)
                 .extracting("id", "leaderResponse", "name", "bio", "type", "status",
-                        "recruitCount", "numberOfParticipants", "steadyMode", "openingDate", "deadline",
+                        "participantLimit", "numberOfParticipants", "steadyMode", "openingDate", "deadline",
                         "title", "content", "positions", "stacks", "isLeader", "isSubmittedUser")
                 .containsExactly(steady.getId(),
                         LeaderResponse.from(steady.getParticipants().getLeader()),
@@ -138,7 +138,7 @@ class SteadyServiceTest {
                         steady.getTitle(),
                         steady.getType(),
                         steady.getStatus(),
-                        steady.getRecruitCount(),
+                        steady.getParticipantLimit(),
                         steady.getNumberOfParticipants(),
                         steady.getSteadyMode(),
                         steady.getOpeningDate(),
