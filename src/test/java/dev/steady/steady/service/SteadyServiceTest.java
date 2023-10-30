@@ -66,10 +66,10 @@ class SteadyServiceTest {
         var savedUser = userRepository.save(user);
         var stack = UserFixtures.createStack();
         var savedStack = stackRepository.save(stack);
-        var authContext = AuthFixture.createAuthContext(savedUser.getId());
+        var userInfo = AuthFixture.createUserInfo(savedUser.getId());
 
         var steadyRequest = SteadyFixtures.createSteadyRequest(savedStack.getId(), savedPosition.getId());
-        var steadyId = steadyService.create(steadyRequest, authContext);
+        var steadyId = steadyService.create(steadyRequest, userInfo);
 
         var steady = steadyRepository.findById(steadyId).get();
         var participants = participantRepository.findBySteadyId(steadyId);
@@ -95,10 +95,10 @@ class SteadyServiceTest {
         var savedUser = userRepository.save(user);
         var stack = UserFixtures.createStack();
         var savedStack = stackRepository.save(stack);
-        var authContext = AuthFixture.createAuthContext(savedUser.getId());
+        var userInfo = AuthFixture.createUserInfo(savedUser.getId());
 
         var steadyRequest = SteadyFixtures.createSteadyRequest(savedStack.getId(), savedPosition.getId());
-        steadyService.create(steadyRequest, authContext);
+        steadyService.create(steadyRequest, userInfo);
 
         var steadyPageRequest = new SteadyPageRequest(0, "asc");
         var steadiesResponse = steadyService.getSteadies(steadyPageRequest);
@@ -118,15 +118,15 @@ class SteadyServiceTest {
         var savedUser = userRepository.save(user);
         var stack = UserFixtures.createStack();
         var savedStack = stackRepository.save(stack);
-        var authContext = AuthFixture.createAuthContext(savedUser.getId());
+        var userInfo = AuthFixture.createUserInfo(savedUser.getId());
 
         var steadyRequest = SteadyFixtures.createSteadyRequest(savedStack.getId(), savedPosition.getId());
-        var steadyId = steadyService.create(steadyRequest, authContext);
+        var steadyId = steadyService.create(steadyRequest, userInfo);
 
         var steady = steadyRepository.findById(steadyId).get();
         var positions = steadyPositionRepository.findBySteadyId(steadyId);
 
-        var response = steadyService.getDetailSteady(steadyId, authContext);
+        var response = steadyService.getDetailSteady(steadyId, userInfo);
 
         assertThat(response)
                 .extracting("id", "leaderResponse", "name", "bio", "type", "status",
