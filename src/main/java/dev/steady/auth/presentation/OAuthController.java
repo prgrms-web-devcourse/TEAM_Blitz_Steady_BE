@@ -25,11 +25,8 @@ public class OAuthController {
     }
 
     @GetMapping("/{oAuthProvider}/callback")
-    public ResponseEntity<LogInResponse> logIn(@PathVariable String oAuthProvider,
-                                               @RequestParam String code) {
-
+    public ResponseEntity<LogInResponse> logIn(@PathVariable String oAuthProvider, @RequestParam String code) {
         LogInResponse response = oAuthService.logIn(Platform.from(oAuthProvider), code);
-
         return ResponseEntity.ok(response);
     }
 

@@ -6,7 +6,6 @@ public record LogInResponse(
         Long id,
         boolean isNew,
         TokenResponse token
-
 ) {
 
     public LogInResponse(Long id, boolean isNew) {

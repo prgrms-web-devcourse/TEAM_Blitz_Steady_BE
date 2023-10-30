@@ -3,6 +3,7 @@ package dev.steady.auth.domain;
 import java.util.Arrays;
 
 public enum Platform {
+    
     KAKAO,
     NAVER,
     GOOGLE;

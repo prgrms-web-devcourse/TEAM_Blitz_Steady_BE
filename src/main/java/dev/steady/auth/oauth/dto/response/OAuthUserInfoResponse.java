@@ -6,10 +6,7 @@ import dev.steady.auth.domain.Platform;
 public interface OAuthUserInfoResponse {
 
     default Account toAccountEntity() {
-        return Account.builder()
-                .platform(this.getPlatform())
-                .platformId(this.getPlatformId())
-                .build();
+        return new Account(this.getPlatform(), this.getPlatformId());
     }
 
     Platform getPlatform();

@@ -13,7 +13,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,20 +27,19 @@ public class Account {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "platform", nullable = false)
+    @Column(nullable = false)
     private Platform platform;
 
-    @Column(name = "platform_id", nullable = false)
+    @Column(nullable = false)
     private String platformId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @Builder
-    private Account(String platformId, Platform platform) {
-        this.platformId = platformId;
+    public Account(Platform platform, String platformId) {
         this.platform = platform;
+        this.platformId = platformId;
     }
 
     public boolean hasNoUser() {
