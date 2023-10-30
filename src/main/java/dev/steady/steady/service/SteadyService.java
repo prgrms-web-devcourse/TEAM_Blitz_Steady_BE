@@ -106,6 +106,7 @@ public class SteadyService {
             return steadyId;
         }
         throw new IllegalArgumentException();
+        // TODO: 2023-10-30 상태가 진행중으로 바뀌면 시작 예정일과 마감 예정일이 필요한 건가?
     }
 
     private List<Stack> getStacks(List<Long> stacks) {

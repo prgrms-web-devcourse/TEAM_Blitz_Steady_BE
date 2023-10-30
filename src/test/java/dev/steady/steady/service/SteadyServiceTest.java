@@ -2,6 +2,7 @@ package dev.steady.steady.service;
 
 import dev.steady.global.auth.AuthFixture;
 import dev.steady.steady.domain.Steady;
+import dev.steady.steady.domain.SteadyStack;
 import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -79,10 +81,10 @@ class SteadyServiceTest {
 
         assertAll(
                 () -> assertThat(steady.getId()).isEqualTo(steadyId),
-                () -> assertThat(participants.size()).isEqualTo(steady.getParticipants().getNumberOfParticipants()),
-                () -> assertThat(steadyStacks.size()).isEqualTo(steady.getSteadyStacks().size()),
-                () -> assertThat(steadyQuestions.size()).isEqualTo(steadyRequest.questions().size()),
-                () -> assertThat(steadyPositions.size()).isEqualTo(steadyRequest.positions().size())
+                () -> assertThat(participants).hasSameSizeAs(steady.getParticipants().getAllMembers()),
+                () -> assertThat(steadyStacks).hasSameSizeAs(steady.getSteadyStacks()),
+                () -> assertThat(steadyQuestions).hasSameSizeAs(steadyRequest.questions()),
+                () -> assertThat(steadyPositions).hasSameSizeAs(steadyRequest.positions())
         );
     }
 
@@ -153,6 +155,49 @@ class SteadyServiceTest {
                                 .toList(),
                         true,
                         false);
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @DisplayName("스테디 수정 요청을 통해 스테디 정보를 수정할 수 있다.")
+    void steadyUpdateTest() {
+        var position = UserFixtures.createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = UserFixtures.createUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var stack = UserFixtures.createStack();
+        var savedStack = stackRepository.save(stack);
+        var userInfo = AuthFixture.createUserInfo(savedUser.getId());
+
+        var steadyRequest = SteadyFixtures.createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyId = steadyService.create(steadyRequest, userInfo);
+
+        var anotherPosition = UserFixtures.createAnotherPosition();
+        var savedAnotherPosition = positionRepository.save(anotherPosition);
+        var anotherStack = UserFixtures.createAnotherStack();
+        var savedAnotherStack = stackRepository.save(anotherStack);
+
+        var steadyUpdateRequest = SteadyFixtures.createSteadyUpdateRequest(savedAnotherPosition.getId(), savedAnotherStack.getId());
+        var updatedSteadyId = steadyService.updateSteady(steadyId, userInfo, steadyUpdateRequest);
+
+        var updatedSteady = steadyRepository.findById(updatedSteadyId).get();
+        List<SteadyStack> steadyStacks = steadyStackRepository.findBySteadyId(steadyId);
+
+        assertThat(steadyStacks).isEqualTo(updatedSteady.getSteadyStacks());
+        assertThat(updatedSteady)
+                .extracting("name", "bio", "type", "status",
+                        "participantLimit", "steadyMode", "openingDate", "deadline",
+                        "title", "content")
+                .containsExactly(steadyUpdateRequest.name(),
+                        steadyUpdateRequest.bio(),
+                        steadyUpdateRequest.type(),
+                        steadyUpdateRequest.status(),
+                        steadyUpdateRequest.participantLimit(),
+                        steadyUpdateRequest.steadyMode(),
+                        steadyUpdateRequest.openingDate(),
+                        steadyUpdateRequest.deadline(),
+                        steadyUpdateRequest.title(),
+                        steadyUpdateRequest.content());
     }
 
 }

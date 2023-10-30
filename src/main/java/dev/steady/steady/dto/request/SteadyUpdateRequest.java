@@ -3,10 +3,12 @@ package dev.steady.steady.dto.request;
 import dev.steady.steady.domain.SteadyMode;
 import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.SteadyType;
+import lombok.Builder;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Builder
 public record SteadyUpdateRequest(
         String name,
         String bio,

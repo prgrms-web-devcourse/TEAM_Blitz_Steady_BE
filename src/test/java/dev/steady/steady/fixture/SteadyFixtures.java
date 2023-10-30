@@ -1,8 +1,10 @@
 package dev.steady.steady.fixture;
 
 import dev.steady.steady.domain.SteadyMode;
+import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.SteadyType;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
+import dev.steady.steady.dto.request.SteadyUpdateRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,6 +25,23 @@ public class SteadyFixtures {
                 .positions(List.of(positionId))
                 .stacks(List.of(stackId))
                 .questions(List.of("1번 질문", "2번 질문", "3번 질문"))
+                .build();
+    }
+
+    public static SteadyUpdateRequest createSteadyUpdateRequest(Long stackId, Long positionId) {
+        return SteadyUpdateRequest.builder()
+                .name("업데이트 스테디")
+                .bio("업데이트 적용한 스터디")
+                .type(SteadyType.PROJECT)
+                .status(SteadyStatus.PROGRESSING)
+                .participantLimit(5)
+                .steadyMode(SteadyMode.BOTH)
+                .openingDate(LocalDate.now().plusDays(7))
+                .deadline(LocalDate.now().plusDays(14))
+                .title("스테디가 진행중입니다.")
+                .content("앞으로 화이팅!")
+                .positions(List.of(positionId))
+                .stacks(List.of(stackId))
                 .build();
     }
 
