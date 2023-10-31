@@ -122,8 +122,8 @@ public class SteadyService {
                 .toList();
     }
 
-    private Stack getStack(Long id) {
-        return stackRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    private Stack getStack(Long stackId) {
+        return stackRepository.findById(stackId).orElseThrow(IllegalArgumentException::new);
     }
 
     private List<SteadyPosition> createSteadyPositions(List<Long> positions, Steady steady) {

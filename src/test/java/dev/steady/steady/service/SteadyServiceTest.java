@@ -115,7 +115,7 @@ class SteadyServiceTest {
 
     @Test
     @DisplayName("스테디 식별자를 통해 스테디 상세 조회를 할 수 있다.")
-    void getSteadyTest() {
+    void getDetailSteadyTest() {
         var position = UserFixtures.createPosition();
         var savedPosition = positionRepository.save(position);
         var user = UserFixtures.createUser(savedPosition);
@@ -176,7 +176,7 @@ class SteadyServiceTest {
         var anotherStack = UserFixtures.createAnotherStack();
         var savedAnotherStack = stackRepository.save(anotherStack);
 
-        var steadyUpdateRequest = SteadyFixtures.createSteadyUpdateRequest(savedAnotherPosition.getId(), savedAnotherStack.getId());
+        var steadyUpdateRequest = SteadyFixtures.createSteadyUpdateRequest(savedAnotherStack.getId(), savedAnotherPosition.getId());
         var updatedSteadyId = steadyService.updateSteady(steadyId, userInfo, steadyUpdateRequest);
 
         var updatedSteady = steadyRepository.findById(updatedSteadyId).get();
