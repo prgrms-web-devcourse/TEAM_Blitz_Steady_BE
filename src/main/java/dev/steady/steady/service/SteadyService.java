@@ -87,6 +87,7 @@ public class SteadyService {
         return SteadyDetailResponse.of(steady, positions, false, false);
     }
 
+    @Transactional
     public Long updateSteady(Long steadyId, UserInfo userInfo, SteadyUpdateRequest request) {
         Steady steady = steadyRepository.findById(steadyId)
                 .orElseThrow(IllegalArgumentException::new);
