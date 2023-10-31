@@ -2,6 +2,7 @@ package dev.steady.auth.oauth.client;
 
 import dev.steady.auth.config.KakaoOAuthProperties;
 import dev.steady.auth.domain.Platform;
+import dev.steady.auth.exception.OAuthInvalidResponseException;
 import dev.steady.auth.oauth.dto.KakaoToken;
 import dev.steady.auth.oauth.dto.response.KakaoUserInfoResponse;
 import dev.steady.auth.oauth.dto.response.OAuthUserInfoResponse;
@@ -47,7 +48,7 @@ public class KakaoOAuthClient implements OAuthClient {
                 KakaoToken.class
         );
 
-        if (token == null) throw new AssertionError("토큰을 발급 받을 수 없습니다.");
+        if (token == null) throw new OAuthInvalidResponseException("토큰을 발급 받을 수 없습니다.");
         return token.accessToken();
     }
 
@@ -63,7 +64,7 @@ public class KakaoOAuthClient implements OAuthClient {
                 KakaoUserInfoResponse.class
         );
 
-        if (response == null) throw new AssertionError("사용자 정보를 가져올 수 없습니다.");
+        if (response == null) throw new OAuthInvalidResponseException("사용자 정보를 가져올 수 없습니다.");
         return response;
     }
 
