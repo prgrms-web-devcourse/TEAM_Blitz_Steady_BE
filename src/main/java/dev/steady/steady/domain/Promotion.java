@@ -23,4 +23,9 @@ public class Promotion {
         this.promotedAt = LocalDateTime.now();
     }
 
+    public void promote() {
+        this.promotionCount--;
+        this.promotedAt = LocalDateTime.now();
+    }
+
 }
