@@ -1,6 +1,5 @@
 package dev.steady.template.service;
 
-import dev.steady.global.auth.AuthFixture;
 import dev.steady.template.domain.repository.QuestionRepository;
 import dev.steady.template.domain.repository.TemplateRepository;
 import dev.steady.template.dto.request.CreateTemplateRequest;
@@ -9,15 +8,16 @@ import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.fixture.UserFixtures;
 import dev.steady.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
+import static dev.steady.global.auth.AuthFixture.createAuthContext;
 import static dev.steady.template.fixture.TemplateFixture.createAnotherTemplate;
 import static dev.steady.template.fixture.TemplateFixture.createTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,7 +58,7 @@ class TemplateServiceTest {
     void createTemplateTest() {
         var position = positionRepository.save(UserFixtures.createPosition());
         var user = userRepository.save(UserFixtures.createUser(position));
-        var authContext = AuthFixture.createAuthContext(user.getId());
+        var authContext = createAuthContext(user.getId());
         var questions = List.of("Q1", "Q2");
         var request = new CreateTemplateRequest("Sample Title", questions);
 
@@ -85,7 +85,7 @@ class TemplateServiceTest {
         var template2 = createAnotherTemplate(savedUser);
         templateRepository.saveAll(List.of(template1, template2));
 
-        var authContext = AuthFixture.createAuthContext(savedUser.getId());
+        var authContext = createAuthContext(savedUser.getId());
         var responses = templateService.getTemplates(authContext);
 
         assertThat(responses.templates()).hasSize(2)
@@ -103,7 +103,7 @@ class TemplateServiceTest {
         var template = createTemplate(savedUser);
         var savedTemplate = templateRepository.save(template);
 
-        var authContext = AuthFixture.createAuthContext(savedUser.getId());
+        var authContext = createAuthContext(savedUser.getId());
         var response = templateService.getDetailTemplate(authContext, savedTemplate.getId());
 
         assertThat(response)
@@ -125,7 +125,7 @@ class TemplateServiceTest {
         var template = createTemplate(savedUser);
         var savedTemplate = templateRepository.save(template);
 
-        var authContext = AuthFixture.createAuthContext(anotherUser.getId());
+        var authContext = createAuthContext(anotherUser.getId());
 
         assertThatThrownBy(() -> templateService.getDetailTemplate(authContext, savedTemplate.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -144,16 +144,55 @@ class TemplateServiceTest {
         var questions = List.of("변경된 질문1", "변경된 질문2", "변경된 질문3");
         var title = "변경된 제목";
         var request = new UpdateTemplateRequest(title, questions);
-        templateService.updateTemplate(savedTemplate.getId(), request, AuthFixture.createAuthContext(savedUser.getId()));
+        templateService.updateTemplate(savedTemplate.getId(), request, createAuthContext(savedUser.getId()));
 
         var updatedTemplate = transactionTemplate.execute(status -> {
             var findTemplate = templateRepository.findById(savedTemplate.getId()).get();
             findTemplate.getContents();
             return findTemplate;
         });
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(updatedTemplate.getTitle()).isEqualTo(title),
                 () -> assertThat(updatedTemplate.getContents()).isEqualTo(questions));
+    }
+
+    @DisplayName("템플릿 작성자는 템플릿을 삭제할 수 있다.")
+    @Test
+    void deleteTemplateTest() {
+        //given
+        var position = positionRepository.save(UserFixtures.createPosition());
+        var user = UserFixtures.createUser(position);
+        var savedUser = userRepository.save(user);
+
+        var template = createTemplate(savedUser);
+        var savedTemplate = templateRepository.save(template);
+
+        //when
+        templateService.deleteTemplate(createAuthContext(savedUser.getId()), savedTemplate.getId());
+
+        //then
+        assertThatThrownBy(() -> templateRepository.getById(savedTemplate.getId()))
+                .isInstanceOf(InvalidDataAccessApiUsageException.class);
+    }
+
+    @DisplayName("템플릿 작성자가 아니면 템플릿을 삭제할 수 없다.")
+    @Test
+    void deleteTemplateFailTest() {
+        //given
+        var position = positionRepository.save(UserFixtures.createPosition());
+        var user = UserFixtures.createUser(position);
+        var savedUser = userRepository.save(user);
+        var position2 = positionRepository.save(UserFixtures.createPosition());
+        var user2 = UserFixtures.createAnotherUser(position2);
+        var savedUser2 = userRepository.save(user2);
+
+        var template = createTemplate(savedUser);
+        var savedTemplate = templateRepository.save(template);
+
+        //when
+        //then
+        assertThatThrownBy(() -> templateService.deleteTemplate(createAuthContext(savedUser2.getId()), savedTemplate.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 }
