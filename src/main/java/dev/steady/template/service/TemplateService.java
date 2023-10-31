@@ -8,7 +8,7 @@ import dev.steady.template.dto.request.UpdateTemplateRequest;
 import dev.steady.template.dto.resonse.TemplateDetailResponse;
 import dev.steady.template.dto.resonse.TemplateResponses;
 import dev.steady.user.domain.User;
-import dev.steady.user.infrastructure.UserRepository;
+import dev.steady.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,6 +1,6 @@
 package dev.steady.global.auth;
 
-import dev.steady.user.infrastructure.UserRepository;
+import dev.steady.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -19,14 +19,14 @@ public class AuthorizedArgumentResolver implements HandlerMethodArgumentResolver
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterAnnotation(Auth.class) != null
-        && parameter.getParameterType().equals(UserInfo.class);
+                && parameter.getParameterType().equals(UserInfo.class);
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         UserInfo userInfo = UserInfo.from(authContext);
-        if (userRepository.existsById(userInfo.userId())){
+        if (userRepository.existsById(userInfo.userId())) {
             return userInfo;
         }
         throw new IllegalArgumentException();

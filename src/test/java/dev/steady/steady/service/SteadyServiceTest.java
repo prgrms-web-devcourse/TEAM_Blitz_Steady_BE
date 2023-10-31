@@ -15,7 +15,7 @@ import dev.steady.steady.fixture.SteadyFixtures;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.fixture.UserFixtures;
-import dev.steady.user.infrastructure.UserRepository;
+import dev.steady.user.domain.repository.UserRepository;
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

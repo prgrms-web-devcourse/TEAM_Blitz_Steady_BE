@@ -7,7 +7,7 @@ import dev.steady.template.dto.request.CreateTemplateRequest;
 import dev.steady.template.dto.request.UpdateTemplateRequest;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.fixture.UserFixtures;
-import dev.steady.user.infrastructure.UserRepository;
+import dev.steady.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
