@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -157,7 +158,6 @@ class SteadyServiceTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @DisplayName("스테디 수정 요청을 통해 스테디 정보를 수정할 수 있다.")
     void steadyUpdateTest() {
         var position = UserFixtures.createPosition();
@@ -196,6 +196,31 @@ class SteadyServiceTest {
                 () -> assertThat(updatedSteady.getSteadyStacks()).hasSameSizeAs(steadyStacks)
                         .extracting("id").containsExactly(steadyStacks.get(0).getId())
         );
+    }
+
+    @Test
+    @DisplayName("스테디 리더가 끌어올리기 요청을 통해 스테디를 끌어올릴 수 있다.")
+    void promoteSteadyTest() {
+        var position = UserFixtures.createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = UserFixtures.createUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var stack = UserFixtures.createStack();
+        var savedStack = stackRepository.save(stack);
+        var userInfo = AuthFixture.createUserInfo(savedUser.getId());
+
+        var steadyRequest = SteadyFixtures.createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyId = steadyService.create(steadyRequest, userInfo);
+
+        var steady = steadyRepository.findById(steadyId).get();
+        var createdAt = steady.getCreatedAt();
+
+        steadyService.promoteSteady(steadyId, userInfo);
+
+        var updatedSteady = steadyRepository.findById(steadyId).get();
+        var promotedAt = updatedSteady.getPromotion().getPromotedAt();
+
+        assertThat(createdAt.isBefore(promotedAt)).isTrue();
     }
 
 }
