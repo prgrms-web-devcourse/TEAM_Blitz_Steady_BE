@@ -90,8 +90,8 @@ public class Steady extends BaseEntity {
                    String title,
                    String content,
                    User user,
-                   Promotion promotion,
                    List<Stack> stacks) {
+        this.promotion = new Promotion();
         this.participants = createParticipants(user);
         this.numberOfParticipants = participants.getNumberOfParticipants();
         this.name = name;
@@ -106,6 +106,7 @@ public class Steady extends BaseEntity {
         this.content = content;
         this.promotion = promotion;
         this.steadyStacks = createSteadyStack(stacks);
+        // TODO: 2023-10-31 promotion 내부에서 생성하기
     }
 
     public boolean isLeader(Long userId) {

@@ -1,6 +1,5 @@
 package dev.steady.steady.dto.request;
 
-import dev.steady.steady.domain.Promotion;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyMode;
 import dev.steady.steady.domain.SteadyType;
@@ -27,7 +26,7 @@ public record SteadyCreateRequest(
         List<String> questions
 ) {
 
-    public Steady toEntity(User user, Promotion promotion, List<Stack> stacks) {
+    public Steady toEntity(User user, List<Stack> stacks) {
         return Steady.builder()
                 .name(name)
                 .bio(bio)
@@ -39,7 +38,6 @@ public record SteadyCreateRequest(
                 .title(title)
                 .content(content)
                 .user(user)
-                .promotion(promotion)
                 .stacks(stacks)
                 .build();
     }
