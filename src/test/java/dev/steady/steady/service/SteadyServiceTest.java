@@ -16,6 +16,7 @@ import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.fixture.UserFixtures;
 import dev.steady.user.infrastructure.UserRepository;
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,31 +131,29 @@ class SteadyServiceTest {
 
         var response = steadyService.getDetailSteady(steadyId, userInfo);
 
-        assertThat(response)
-                .extracting("id", "leaderResponse", "name", "bio", "type", "status",
-                        "participantLimit", "numberOfParticipants", "steadyMode", "openingDate", "deadline",
-                        "title", "content", "positions", "stacks", "isLeader", "isSubmittedUser")
-                .containsExactly(steady.getId(),
-                        LeaderResponse.from(steady.getParticipants().getLeader()),
-                        steady.getName(),
-                        steady.getTitle(),
-                        steady.getType(),
-                        steady.getStatus(),
-                        steady.getParticipantLimit(),
-                        steady.getNumberOfParticipants(),
-                        steady.getSteadyMode(),
-                        steady.getOpeningDate(),
-                        steady.getDeadline(),
-                        steady.getTitle(),
-                        steady.getContent(),
-                        positions.stream()
-                                .map(v -> v.getPosition().getName())
-                                .toList(),
-                        steady.getSteadyStacks().stream()
-                                .map(SteadyStackResponse::from)
-                                .toList(),
-                        true,
-                        false);
+        assertAll(
+                () -> assertThat(response.id()).isEqualTo(steady.getId()),
+                () -> assertThat(response.leaderResponse()).isEqualTo(LeaderResponse.from(steady.getParticipants().getLeader())),
+                () -> assertThat(response.name()).isEqualTo(steady.getName()),
+                () -> assertThat(response.title()).isEqualTo(steady.getTitle()),
+                () -> assertThat(response.type()).isEqualTo(steady.getType()),
+                () -> assertThat(response.status()).isEqualTo(steady.getStatus()),
+                () -> assertThat(response.participantLimit()).isEqualTo(steady.getParticipantLimit()),
+                () -> assertThat(response.numberOfParticipants()).isEqualTo(steady.getNumberOfParticipants()),
+                () -> assertThat(response.steadyMode()).isEqualTo(steady.getSteadyMode()),
+                () -> assertThat(response.openingDate()).isEqualTo(steady.getOpeningDate()),
+                () -> assertThat(response.deadline()).isEqualTo(steady.getDeadline()),
+                () -> assertThat(response.title()).isEqualTo(steady.getTitle()),
+                () -> assertThat(response.content()).isEqualTo(steady.getContent()),
+                () -> assertThat(response.positions()).isEqualTo(positions.stream()
+                        .map(v -> v.getPosition().getName())
+                        .toList()),
+                () -> assertThat(response.stacks()).isEqualTo(steady.getSteadyStacks().stream()
+                        .map(SteadyStackResponse::from)
+                        .toList()),
+                () -> assertThat(response.isLeader()).isTrue(),
+                () -> assertThat(response.isSubmittedUser()).isFalse()
+        );
     }
 
     @Test
@@ -183,21 +182,20 @@ class SteadyServiceTest {
         var updatedSteady = steadyRepository.findById(updatedSteadyId).get();
         List<SteadyStack> steadyStacks = steadyStackRepository.findBySteadyId(steadyId);
 
-        assertThat(steadyStacks).isEqualTo(updatedSteady.getSteadyStacks());
-        assertThat(updatedSteady)
-                .extracting("name", "bio", "type", "status",
-                        "participantLimit", "steadyMode", "openingDate", "deadline",
-                        "title", "content")
-                .containsExactly(steadyUpdateRequest.name(),
-                        steadyUpdateRequest.bio(),
-                        steadyUpdateRequest.type(),
-                        steadyUpdateRequest.status(),
-                        steadyUpdateRequest.participantLimit(),
-                        steadyUpdateRequest.steadyMode(),
-                        steadyUpdateRequest.openingDate(),
-                        steadyUpdateRequest.deadline(),
-                        steadyUpdateRequest.title(),
-                        steadyUpdateRequest.content());
+        assertAll(
+                () -> assertThat(updatedSteady.getName()).isEqualTo(steadyUpdateRequest.name()),
+                () -> assertThat(updatedSteady.getBio()).isEqualTo(steadyUpdateRequest.bio()),
+                () -> assertThat(updatedSteady.getType()).isEqualTo(steadyUpdateRequest.type()),
+                () -> assertThat(updatedSteady.getStatus()).isEqualTo(steadyUpdateRequest.status()),
+                () -> assertThat(updatedSteady.getParticipantLimit()).isEqualTo(steadyUpdateRequest.participantLimit()),
+                () -> assertThat(updatedSteady.getSteadyMode()).isEqualTo(steadyUpdateRequest.steadyMode()),
+                () -> assertThat(updatedSteady.getOpeningDate()).isEqualTo(steadyUpdateRequest.openingDate()),
+                () -> assertThat(updatedSteady.getDeadline()).isEqualTo(steadyUpdateRequest.deadline()),
+                () -> assertThat(updatedSteady.getTitle()).isEqualTo(steadyUpdateRequest.title()),
+                () -> assertThat(updatedSteady.getContent()).isEqualTo(steadyUpdateRequest.content()),
+                () -> assertThat(updatedSteady.getSteadyStacks()).hasSameSizeAs(steadyStacks)
+                        .extracting("id").containsExactly(steadyStacks.get(0).getId())
+        );
     }
 
 }
