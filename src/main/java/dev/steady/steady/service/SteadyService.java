@@ -121,8 +121,18 @@ public class SteadyService {
 
     private List<SteadyPosition> createSteadyPositions(List<Long> positions, Steady steady) {
         return IntStream.range(0, positions.size())
-                .mapToObj(index -> getSteadyPosition(positions, steady, index))
+                .mapToObj(index -> createSteadyPosition(positions, steady, index))
                 .toList();
+    }
+
+    private SteadyPosition createSteadyPosition(List<Long> positions, Steady steady, int index) {
+        Position position = positionRepository.findById(positions.get(index))
+                .orElseThrow(IllegalArgumentException::new);
+
+        return SteadyPosition.builder()
+                .position(position)
+                .steady(steady)
+                .build();
     }
 
     private List<SteadyQuestion> createSteadyQuestions(List<String> questions, Steady steady) {
@@ -133,16 +143,6 @@ public class SteadyService {
                         .steady(steady)
                         .build())
                 .toList();
-    }
-
-    private SteadyPosition getSteadyPosition(List<Long> positions, Steady steady, int index) {
-        Position position = positionRepository.findById(positions.get(index))
-                .orElseThrow(IllegalArgumentException::new);
-
-        return SteadyPosition.builder()
-                .position(position)
-                .steady(steady)
-                .build();
     }
 
 }
