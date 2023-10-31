@@ -1,4 +1,4 @@
-package dev.steady.user.infrastructure;
+package dev.steady.user.domain.repository;
 
 import dev.steady.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
