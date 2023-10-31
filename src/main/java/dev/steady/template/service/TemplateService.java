@@ -61,8 +61,7 @@ public class TemplateService {
     @Transactional
     public void updateTemplate(Long templateId, UpdateTemplateRequest request, AuthContext authContext) {
         User user = userRepository.getUserBy(authContext.getUserId());
-        Template template = templateRepository.findById(templateId)
-                .orElseThrow(IllegalArgumentException::new);
+        Template template = templateRepository.getById(templateId);
 
         template.update(user, request.title(), request.questions());
     }
