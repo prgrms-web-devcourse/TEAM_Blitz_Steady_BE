@@ -3,7 +3,7 @@ package dev.steady.steady.service;
 import dev.steady.application.domain.Application;
 import dev.steady.application.domain.ApplicationStatus;
 import dev.steady.application.domain.repository.ApplicationRepository;
-import dev.steady.global.auth.AuthContext;
+import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.domain.Promotion;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyPosition;
@@ -13,6 +13,7 @@ import dev.steady.steady.domain.repository.SteadyQuestionRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyPageRequest;
+import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
@@ -43,19 +44,19 @@ public class SteadyService {
     private final SteadyPositionRepository steadyPositionRepository;
 
     @Transactional
-    public Long create(SteadyCreateRequest request, AuthContext authContext) {
-        Long userId = authContext.getUserId();
+    public Long create(SteadyCreateRequest request, UserInfo userinfo) {
+        Long userId = userinfo.userId();
         User user = userRepository.getUserBy(userId);
         List<Stack> stacks = getStacks(request.stacks());
         Promotion promotion = new Promotion();
         Steady steady = request.toEntity(user, promotion, stacks);
         Steady savedSteady = steadyRepository.save(steady);
 
-        List<SteadyQuestion> steadyQuestions = createSteadyQuestions(request.questions(), savedSteady);
-        steadyQuestionRepository.saveAll(steadyQuestions);
-
         List<SteadyPosition> steadyPositions = createSteadyPositions(request.positions(), savedSteady);
         steadyPositionRepository.saveAll(steadyPositions);
+
+        List<SteadyQuestion> steadyQuestions = createSteadyQuestions(request.questions(), savedSteady);
+        steadyQuestionRepository.saveAll(steadyQuestions);
 
         return savedSteady.getId();
     }
@@ -68,23 +69,44 @@ public class SteadyService {
     }
 
     @Transactional(readOnly = true)
-    public SteadyDetailResponse getDetailSteady(Long steadyId, AuthContext authContext) {
+    public SteadyDetailResponse getDetailSteady(Long steadyId, UserInfo userinfo) {
         Steady steady = steadyRepository.findById(steadyId)
                 .orElseThrow(IllegalArgumentException::new);
         List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steady.getId());
 
-        Long leaderId = steady.getParticipants().getLeader().getId();
-        if (leaderId == authContext.getUserId()) {
+        if (steady.isLeader(userinfo.userId())) {
             return SteadyDetailResponse.of(steady, positions, true, false);
         }
 
         List<Application> list = applicationRepository.findBySteadyIdAndUserIdAndStatus(
-                steady.getId(), authContext.getUserId(), ApplicationStatus.WAITING);
+                steady.getId(), userinfo.userId(), ApplicationStatus.WAITING);
         if (!list.isEmpty()) {
             return SteadyDetailResponse.of(steady, positions, false, true);
         }
 
         return SteadyDetailResponse.of(steady, positions, false, false);
+    }
+
+    public Long updateSteady(Long steadyId, UserInfo userInfo, SteadyUpdateRequest request) {
+        Steady steady = steadyRepository.findById(steadyId)
+                .orElseThrow(IllegalArgumentException::new);
+        if (steady.isLeader(userInfo.userId())) {
+            List<Stack> stacks = getStacks(request.stacks());
+            steady.update(request.name(),
+                    request.bio(),
+                    request.type(),
+                    request.status(),
+                    request.participantLimit(),
+                    request.steadyMode(),
+                    request.openingDate(),
+                    request.deadline(),
+                    request.title(),
+                    request.content(),
+                    stacks);
+            return steadyId;
+        }
+        throw new IllegalArgumentException();
+        // TODO: 2023-10-30 상태가 진행중으로 바뀌면 시작 예정일과 마감 예정일이 필요한 건가?
     }
 
     private List<Stack> getStacks(List<Long> stacks) {
@@ -97,6 +119,22 @@ public class SteadyService {
         return stackRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 
+    private List<SteadyPosition> createSteadyPositions(List<Long> positions, Steady steady) {
+        return IntStream.range(0, positions.size())
+                .mapToObj(index -> createSteadyPosition(positions, steady, index))
+                .toList();
+    }
+
+    private SteadyPosition createSteadyPosition(List<Long> positions, Steady steady, int index) {
+        Position position = positionRepository.findById(positions.get(index))
+                .orElseThrow(IllegalArgumentException::new);
+
+        return SteadyPosition.builder()
+                .position(position)
+                .steady(steady)
+                .build();
+    }
+
     private List<SteadyQuestion> createSteadyQuestions(List<String> questions, Steady steady) {
         return IntStream.range(0, questions.size())
                 .mapToObj(index -> SteadyQuestion.builder()
@@ -105,23 +143,6 @@ public class SteadyService {
                         .steady(steady)
                         .build())
                 .toList();
-    }
-
-    private List<SteadyPosition> createSteadyPositions(List<Long> positions, Steady steady) {
-        return IntStream.range(0, positions.size())
-                .mapToObj(index -> getSteadyPosition(positions, steady, index))
-                .toList();
-    }
-
-
-    private SteadyPosition getSteadyPosition(List<Long> positions, Steady steady, int index) {
-        Position position = positionRepository.findById(positions.get(index))
-                .orElseThrow(IllegalArgumentException::new);
-
-        return SteadyPosition.builder()
-                .position(position)
-                .steady(steady)
-                .build();
     }
 
 }

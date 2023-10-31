@@ -2,6 +2,7 @@ package dev.steady.steady.service;
 
 import dev.steady.global.auth.AuthFixture;
 import dev.steady.steady.domain.Steady;
+import dev.steady.steady.domain.SteadyStack;
 import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
@@ -15,10 +16,12 @@ import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.fixture.UserFixtures;
 import dev.steady.user.infrastructure.UserRepository;
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -66,10 +69,10 @@ class SteadyServiceTest {
         var savedUser = userRepository.save(user);
         var stack = UserFixtures.createStack();
         var savedStack = stackRepository.save(stack);
-        var authContext = AuthFixture.createAuthContext(savedUser.getId());
+        var userInfo = AuthFixture.createUserInfo(savedUser.getId());
 
         var steadyRequest = SteadyFixtures.createSteadyRequest(savedStack.getId(), savedPosition.getId());
-        var steadyId = steadyService.create(steadyRequest, authContext);
+        var steadyId = steadyService.create(steadyRequest, userInfo);
 
         var steady = steadyRepository.findById(steadyId).get();
         var participants = participantRepository.findBySteadyId(steadyId);
@@ -79,10 +82,10 @@ class SteadyServiceTest {
 
         assertAll(
                 () -> assertThat(steady.getId()).isEqualTo(steadyId),
-                () -> assertThat(participants.size()).isEqualTo(steady.getParticipants().getNumberOfParticipants()),
-                () -> assertThat(steadyStacks.size()).isEqualTo(steady.getSteadyStacks().size()),
-                () -> assertThat(steadyQuestions.size()).isEqualTo(steadyRequest.questions().size()),
-                () -> assertThat(steadyPositions.size()).isEqualTo(steadyRequest.positions().size())
+                () -> assertThat(participants).hasSameSizeAs(steady.getParticipants().getAllMembers()),
+                () -> assertThat(steadyStacks).hasSameSizeAs(steady.getSteadyStacks()),
+                () -> assertThat(steadyQuestions).hasSameSizeAs(steadyRequest.questions()),
+                () -> assertThat(steadyPositions).hasSameSizeAs(steadyRequest.positions())
         );
     }
 
@@ -95,10 +98,10 @@ class SteadyServiceTest {
         var savedUser = userRepository.save(user);
         var stack = UserFixtures.createStack();
         var savedStack = stackRepository.save(stack);
-        var authContext = AuthFixture.createAuthContext(savedUser.getId());
+        var userInfo = AuthFixture.createUserInfo(savedUser.getId());
 
         var steadyRequest = SteadyFixtures.createSteadyRequest(savedStack.getId(), savedPosition.getId());
-        steadyService.create(steadyRequest, authContext);
+        steadyService.create(steadyRequest, userInfo);
 
         var steadyPageRequest = new SteadyPageRequest(0, "asc");
         var steadiesResponse = steadyService.getSteadies(steadyPageRequest);
@@ -118,41 +121,81 @@ class SteadyServiceTest {
         var savedUser = userRepository.save(user);
         var stack = UserFixtures.createStack();
         var savedStack = stackRepository.save(stack);
-        var authContext = AuthFixture.createAuthContext(savedUser.getId());
+        var userInfo = AuthFixture.createUserInfo(savedUser.getId());
 
         var steadyRequest = SteadyFixtures.createSteadyRequest(savedStack.getId(), savedPosition.getId());
-        var steadyId = steadyService.create(steadyRequest, authContext);
+        var steadyId = steadyService.create(steadyRequest, userInfo);
 
         var steady = steadyRepository.findById(steadyId).get();
         var positions = steadyPositionRepository.findBySteadyId(steadyId);
 
-        var response = steadyService.getDetailSteady(steadyId, authContext);
+        var response = steadyService.getDetailSteady(steadyId, userInfo);
 
-        assertThat(response)
-                .extracting("id", "leaderResponse", "name", "bio", "type", "status",
-                        "recruitCount", "numberOfParticipants", "steadyMode", "openingDate", "deadline",
-                        "title", "content", "positions", "stacks", "isLeader", "isSubmittedUser")
-                .containsExactly(steady.getId(),
-                        LeaderResponse.from(steady.getParticipants().getLeader()),
-                        steady.getName(),
-                        steady.getTitle(),
-                        steady.getType(),
-                        steady.getStatus(),
-                        steady.getRecruitCount(),
-                        steady.getNumberOfParticipants(),
-                        steady.getSteadyMode(),
-                        steady.getOpeningDate(),
-                        steady.getDeadline(),
-                        steady.getTitle(),
-                        steady.getContent(),
-                        positions.stream()
-                                .map(v -> v.getPosition().getName())
-                                .toList(),
-                        steady.getSteadyStacks().stream()
-                                .map(SteadyStackResponse::from)
-                                .toList(),
-                        true,
-                        false);
+        assertAll(
+                () -> assertThat(response.id()).isEqualTo(steady.getId()),
+                () -> assertThat(response.leaderResponse()).isEqualTo(LeaderResponse.from(steady.getParticipants().getLeader())),
+                () -> assertThat(response.name()).isEqualTo(steady.getName()),
+                () -> assertThat(response.title()).isEqualTo(steady.getTitle()),
+                () -> assertThat(response.type()).isEqualTo(steady.getType()),
+                () -> assertThat(response.status()).isEqualTo(steady.getStatus()),
+                () -> assertThat(response.participantLimit()).isEqualTo(steady.getParticipantLimit()),
+                () -> assertThat(response.numberOfParticipants()).isEqualTo(steady.getNumberOfParticipants()),
+                () -> assertThat(response.steadyMode()).isEqualTo(steady.getSteadyMode()),
+                () -> assertThat(response.openingDate()).isEqualTo(steady.getOpeningDate()),
+                () -> assertThat(response.deadline()).isEqualTo(steady.getDeadline()),
+                () -> assertThat(response.title()).isEqualTo(steady.getTitle()),
+                () -> assertThat(response.content()).isEqualTo(steady.getContent()),
+                () -> assertThat(response.positions()).isEqualTo(positions.stream()
+                        .map(v -> v.getPosition().getName())
+                        .toList()),
+                () -> assertThat(response.stacks()).isEqualTo(steady.getSteadyStacks().stream()
+                        .map(SteadyStackResponse::from)
+                        .toList()),
+                () -> assertThat(response.isLeader()).isTrue(),
+                () -> assertThat(response.isSubmittedUser()).isFalse()
+        );
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @DisplayName("스테디 수정 요청을 통해 스테디 정보를 수정할 수 있다.")
+    void steadyUpdateTest() {
+        var position = UserFixtures.createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = UserFixtures.createUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var stack = UserFixtures.createStack();
+        var savedStack = stackRepository.save(stack);
+        var userInfo = AuthFixture.createUserInfo(savedUser.getId());
+
+        var steadyRequest = SteadyFixtures.createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyId = steadyService.create(steadyRequest, userInfo);
+
+        var anotherPosition = UserFixtures.createAnotherPosition();
+        var savedAnotherPosition = positionRepository.save(anotherPosition);
+        var anotherStack = UserFixtures.createAnotherStack();
+        var savedAnotherStack = stackRepository.save(anotherStack);
+
+        var steadyUpdateRequest = SteadyFixtures.createSteadyUpdateRequest(savedAnotherPosition.getId(), savedAnotherStack.getId());
+        var updatedSteadyId = steadyService.updateSteady(steadyId, userInfo, steadyUpdateRequest);
+
+        var updatedSteady = steadyRepository.findById(updatedSteadyId).get();
+        List<SteadyStack> steadyStacks = steadyStackRepository.findBySteadyId(steadyId);
+
+        assertAll(
+                () -> assertThat(updatedSteady.getName()).isEqualTo(steadyUpdateRequest.name()),
+                () -> assertThat(updatedSteady.getBio()).isEqualTo(steadyUpdateRequest.bio()),
+                () -> assertThat(updatedSteady.getType()).isEqualTo(steadyUpdateRequest.type()),
+                () -> assertThat(updatedSteady.getStatus()).isEqualTo(steadyUpdateRequest.status()),
+                () -> assertThat(updatedSteady.getParticipantLimit()).isEqualTo(steadyUpdateRequest.participantLimit()),
+                () -> assertThat(updatedSteady.getSteadyMode()).isEqualTo(steadyUpdateRequest.steadyMode()),
+                () -> assertThat(updatedSteady.getOpeningDate()).isEqualTo(steadyUpdateRequest.openingDate()),
+                () -> assertThat(updatedSteady.getDeadline()).isEqualTo(steadyUpdateRequest.deadline()),
+                () -> assertThat(updatedSteady.getTitle()).isEqualTo(steadyUpdateRequest.title()),
+                () -> assertThat(updatedSteady.getContent()).isEqualTo(steadyUpdateRequest.content()),
+                () -> assertThat(updatedSteady.getSteadyStacks()).hasSameSizeAs(steadyStacks)
+                        .extracting("id").containsExactly(steadyStacks.get(0).getId())
+        );
     }
 
 }

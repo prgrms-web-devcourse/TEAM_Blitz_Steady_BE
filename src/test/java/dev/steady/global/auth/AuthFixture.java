@@ -8,4 +8,8 @@ public class AuthFixture {
         return authContext;
     }
 
+    public static UserInfo createUserInfo(Long userId) {
+        return new UserInfo(userId);
+    }
+
 }

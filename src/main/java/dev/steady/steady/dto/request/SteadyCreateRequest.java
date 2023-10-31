@@ -16,7 +16,7 @@ public record SteadyCreateRequest(
         String name,
         String bio,
         SteadyType type,
-        int recruitCount,
+        int participantLimit,
         SteadyMode steadyMode,
         LocalDate openingDate,
         LocalDate deadline,
@@ -32,7 +32,7 @@ public record SteadyCreateRequest(
                 .name(name)
                 .bio(bio)
                 .type(type)
-                .recruitCount(recruitCount)
+                .participantLimit(participantLimit)
                 .steadyMode(steadyMode)
                 .openingDate(openingDate)
                 .deadline(deadline)

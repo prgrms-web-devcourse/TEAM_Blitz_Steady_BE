@@ -12,9 +12,22 @@ public class UserFixtures {
                 .build();
     }
 
+    public static Position createAnotherPosition() {
+        return Position.builder()
+                .name("프론트엔드")
+                .build();
+    }
+
     public static Stack createStack() {
         return Stack.builder()
                 .name("Java")
+                .imageUrl("www")
+                .build();
+    }
+
+    public static Stack createAnotherStack() {
+        return Stack.builder()
+                .name("JavaScript")
                 .imageUrl("www")
                 .build();
     }

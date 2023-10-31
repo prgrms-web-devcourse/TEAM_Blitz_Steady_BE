@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -48,7 +49,7 @@ public class Steady extends BaseEntity {
     private SteadyStatus status;
 
     @Column(nullable = false)
-    private int recruitCount;
+    private int participantLimit;
 
     @Column(nullable = false)
     private int numberOfParticipants;
@@ -82,7 +83,7 @@ public class Steady extends BaseEntity {
     private Steady(String name,
                    String bio,
                    SteadyType type,
-                   int recruitCount,
+                   int participantLimit,
                    SteadyMode steadyMode,
                    LocalDate openingDate,
                    LocalDate deadline,
@@ -97,14 +98,51 @@ public class Steady extends BaseEntity {
         this.bio = bio;
         this.type = type;
         this.status = SteadyStatus.RECRUITING;
-        this.recruitCount = recruitCount;
+        this.participantLimit = participantLimit;
         this.steadyMode = steadyMode;
         this.openingDate = openingDate;
         this.deadline = deadline;
         this.title = title;
         this.content = content;
         this.promotion = promotion;
-        this.steadyStacks = updateSteadyStacks(stacks);
+        this.steadyStacks = createSteadyStack(stacks);
+    }
+
+    public boolean isLeader(Long userId) {
+        Long leaderId = participants.getLeader().getId();
+        if (leaderId.equals(userId)) {
+            return true;
+        }
+        return false;
+    }
+
+    public void addParticipant(Participant participant) {
+        participants.add(participant);
+    }
+
+    public void update(String name,
+                       String bio,
+                       SteadyType type,
+                       SteadyStatus status,
+                       int participantLimit,
+                       SteadyMode steadyMode,
+                       LocalDate openingDate,
+                       LocalDate deadline,
+                       String title,
+                       String content,
+                       List<Stack> stacks) {
+        this.name = name;
+        this.bio = bio;
+        this.type = type;
+        this.status = status;
+        this.participantLimit = participantLimit;
+        this.steadyMode = steadyMode;
+        this.openingDate = openingDate;
+        this.deadline = deadline;
+        this.title = title;
+        this.content = content;
+        this.steadyStacks.clear();
+        this.steadyStacks.addAll(createSteadyStack(stacks));
     }
 
     private Participants createParticipants(User user) {
@@ -113,14 +151,10 @@ public class Steady extends BaseEntity {
         return participants;
     }
 
-    public void addParticipant(Participant participant) {
-        participants.add(participant);
-    }
-
-    public List<SteadyStack> updateSteadyStacks(List<Stack> stacks) {
+    private List<SteadyStack> createSteadyStack(List<Stack> stacks) {
         return stacks.stream()
                 .map(stack -> new SteadyStack(stack, this))
-                .toList();
+                .collect(Collectors.toList());
     }
 
 }

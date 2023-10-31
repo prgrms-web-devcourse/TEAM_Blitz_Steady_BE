@@ -1,6 +1,7 @@
 package dev.steady.steady.presentation;
 
-import dev.steady.global.auth.AuthContext;
+import dev.steady.global.auth.Auth;
+import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.dto.response.PageResponse;
@@ -26,8 +27,9 @@ public class SteadyController {
     private final SteadyService steadyService;
 
     @PostMapping
-    public ResponseEntity<Void> createSteady(@RequestBody SteadyCreateRequest request, AuthContext authContext) {
-        Long steadyId = steadyService.create(request, authContext);
+    public ResponseEntity<Void> createSteady(@RequestBody SteadyCreateRequest request,
+                                             @Auth UserInfo userInfo) {
+        Long steadyId = steadyService.create(request, userInfo);
         return ResponseEntity.created(URI.create(String.format("/api/v1/steadies/%d/detail", steadyId))).build();
     }
 
@@ -39,9 +41,8 @@ public class SteadyController {
 
     @GetMapping("/{steadyId}")
     public ResponseEntity<SteadyDetailResponse> getDetailSteady(@PathVariable Long steadyId,
-                                                                @RequestBody SteadyPageRequest request,
-                                                                AuthContext authContext) {
-        SteadyDetailResponse response = steadyService.getDetailSteady(steadyId, authContext);
+                                                                @Auth UserInfo userInfo) {
+        SteadyDetailResponse response = steadyService.getDetailSteady(steadyId, userInfo);
         return ResponseEntity.ok(response);
     }
 
