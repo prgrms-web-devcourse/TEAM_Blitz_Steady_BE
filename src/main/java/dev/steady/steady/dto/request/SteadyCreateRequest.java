@@ -1,5 +1,6 @@
 package dev.steady.steady.dto.request;
 
+import dev.steady.steady.domain.ScheduledPeriod;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyMode;
 import dev.steady.steady.domain.SteadyType;
@@ -17,7 +18,7 @@ public record SteadyCreateRequest(
         SteadyType type,
         int participantLimit,
         SteadyMode steadyMode,
-        LocalDate openingDate,
+        String scheduledPeriod,
         LocalDate deadline,
         String title,
         String content,
@@ -33,7 +34,7 @@ public record SteadyCreateRequest(
                 .type(type)
                 .participantLimit(participantLimit)
                 .steadyMode(steadyMode)
-                .openingDate(openingDate)
+                .scheduledPeriod(ScheduledPeriod.valueOf(scheduledPeriod))
                 .deadline(deadline)
                 .title(title)
                 .content(content)

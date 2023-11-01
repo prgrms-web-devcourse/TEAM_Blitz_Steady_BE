@@ -1,5 +1,6 @@
 package dev.steady.steady.dto.response;
 
+import dev.steady.steady.domain.ScheduledPeriod;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyMode;
 import dev.steady.steady.domain.SteadyPosition;
@@ -19,7 +20,7 @@ public record SteadyDetailResponse(
         int participantLimit,
         int numberOfParticipants,
         SteadyMode steadyMode,
-        LocalDate openingDate,
+        ScheduledPeriod scheduledPeriod,
         LocalDate deadline,
         String title,
         String content,
@@ -40,7 +41,7 @@ public record SteadyDetailResponse(
                 steady.getParticipantLimit(),
                 steady.getNumberOfParticipants(),
                 steady.getSteadyMode(),
-                steady.getOpeningDate(),
+                steady.getScheduledPeriod(),
                 steady.getDeadline(),
                 steady.getTitle(),
                 steady.getContent(),
