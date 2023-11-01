@@ -47,7 +47,7 @@ public class SteadyController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/promote/{steadyId}")
+    @PatchMapping("/{steadyId}/promote")
     public ResponseEntity<Void> promoteSteady(@PathVariable Long steadyId, @Auth UserInfo userInfo) {
         steadyService.promoteSteady(steadyId, userInfo);
         return ResponseEntity.noContent().build();

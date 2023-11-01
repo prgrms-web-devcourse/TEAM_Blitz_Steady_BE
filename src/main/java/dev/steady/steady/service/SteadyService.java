@@ -103,14 +103,13 @@ public class SteadyService {
             return steadyId;
         }
         throw new IllegalArgumentException();
-        // TODO: 2023-10-30 상태가 진행중으로 바뀌면 시작 예정일과 마감 예정일이 필요한 건가?
     }
 
     @Transactional
     public void promoteSteady(Long steadyId, UserInfo userInfo) {
         Steady steady = steadyRepository.getSteady(steadyId);
         if (steady.isLeader(userInfo.userId())) {
-            steady.getPromotion().promote();
+            steady.usePromotion();
             return;
         }
         throw new IllegalArgumentException();
@@ -123,7 +122,8 @@ public class SteadyService {
     }
 
     private Stack getStack(Long stackId) {
-        return stackRepository.findById(stackId).orElseThrow(IllegalArgumentException::new);
+        return stackRepository.findById(stackId)
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     private List<SteadyPosition> createSteadyPositions(List<Long> positions, Steady steady) {
