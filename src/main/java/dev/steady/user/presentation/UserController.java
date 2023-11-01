@@ -1,7 +1,7 @@
 package dev.steady.user.presentation;
 
 import dev.steady.auth.service.AccountService;
-import dev.steady.user.dto.request.CreateUserRequest;
+import dev.steady.user.dto.request.UserCreateRequest;
 import dev.steady.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +20,7 @@ public class UserController {
     private final AccountService accountService;
 
     @PostMapping("/profile")
-    public Long createUser(@RequestBody CreateUserRequest request) {
+    public Long createUser(@RequestBody UserCreateRequest request) {
         Long userId = userService.createUser(request);
         accountService.registerUser(request.accountId(), userId);
 

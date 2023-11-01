@@ -8,7 +8,7 @@ import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
 import dev.steady.user.domain.repository.UserStackRepository;
-import dev.steady.user.dto.request.CreateUserRequest;
+import dev.steady.user.dto.request.UserCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class UserService {
     private final UserStackRepository userStackRepository;
 
     @Transactional
-    public Long createUser(CreateUserRequest request) {
+    public Long createUser(UserCreateRequest request) {
         Position position = getPosition(request.positionId());
 
         User user = request.toEntity(position);

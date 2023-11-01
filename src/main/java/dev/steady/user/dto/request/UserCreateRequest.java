@@ -5,13 +5,13 @@ import dev.steady.user.domain.User;
 
 import java.util.List;
 
-public record CreateUserRequest(
+public record UserCreateRequest(
         Long accountId,
         String nickname,
         Long positionId,
         List<Long> stackIds
 ) {
-    
+
     public User toEntity(Position position) {
         return new User(this.nickname, position);
     }

@@ -5,7 +5,7 @@ import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
 import dev.steady.user.domain.repository.UserStackRepository;
-import dev.steady.user.dto.request.CreateUserRequest;
+import dev.steady.user.dto.request.UserCreateRequest;
 import dev.steady.user.fixture.UserFixtures;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ class UserServiceTest {
         var stackIds = savedStacks.stream().map(Stack::getId).toList();
 
         // when
-        var request = new CreateUserRequest(1L, "Nickname", savedPosition.getId(), stackIds);
+        var request = new UserCreateRequest(1L, "Nickname", savedPosition.getId(), stackIds);
         var userId = userService.createUser(request);
 
         var userStacks = userStackRepository.findAllByUserId(userId);
