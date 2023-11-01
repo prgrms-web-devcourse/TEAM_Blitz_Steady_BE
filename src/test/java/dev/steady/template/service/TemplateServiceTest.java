@@ -78,7 +78,7 @@ class TemplateServiceTest {
 
     @DisplayName("사용자의 계정 정보를 받아 템플릿 목록을 조회한다.")
     @Test
-    void getTemplatesTest(){
+    void getTemplatesTest() {
         var position = positionRepository.save(UserFixtures.createPosition());
         var user = createUser(position);
         var savedUser = userRepository.save(user);
