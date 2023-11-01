@@ -8,7 +8,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,8 +27,7 @@ public class UserStack {
     @ManyToOne(fetch = FetchType.LAZY)
     private Stack stack;
 
-    @Builder
-    private UserStack(User user, Stack stack) {
+    public UserStack(User user, Stack stack) {
         this.user = user;
         this.stack = stack;
     }
