@@ -38,6 +38,10 @@ public class UserService {
         return savedUser.getId();
     }
 
+    public Boolean existsByNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
+
     private List<Stack> getStacks(List<Long> stackIds) {
         return stackIds.stream()
                 .map(stackId -> stackRepository.findById(stackId).orElseThrow(IllegalArgumentException::new))
