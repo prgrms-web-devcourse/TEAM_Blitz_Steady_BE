@@ -33,7 +33,7 @@ public class SteadyFixtures {
                 .name("업데이트 스테디")
                 .bio("업데이트 적용한 스터디")
                 .type(SteadyType.PROJECT)
-                .status(SteadyStatus.PROGRESSING)
+                .status(SteadyStatus.CLOSED)
                 .participantLimit(5)
                 .steadyMode(SteadyMode.BOTH)
                 .openingDate(LocalDate.now().plusDays(7))

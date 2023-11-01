@@ -90,8 +90,8 @@ public class Steady extends BaseEntity {
                    String title,
                    String content,
                    User user,
-                   Promotion promotion,
                    List<Stack> stacks) {
+        this.promotion = new Promotion();
         this.participants = createParticipants(user);
         this.numberOfParticipants = participants.getNumberOfParticipants();
         this.name = name;
@@ -104,20 +104,7 @@ public class Steady extends BaseEntity {
         this.deadline = deadline;
         this.title = title;
         this.content = content;
-        this.promotion = promotion;
         this.steadyStacks = createSteadyStack(stacks);
-    }
-
-    public boolean isLeader(Long userId) {
-        Long leaderId = participants.getLeader().getId();
-        if (leaderId.equals(userId)) {
-            return true;
-        }
-        return false;
-    }
-
-    public void addParticipant(Participant participant) {
-        participants.add(participant);
     }
 
     public void update(String name,
@@ -143,6 +130,22 @@ public class Steady extends BaseEntity {
         this.content = content;
         this.steadyStacks.clear();
         this.steadyStacks.addAll(createSteadyStack(stacks));
+    }
+
+    public boolean isLeader(Long userId) {
+        Long leaderId = participants.getLeader().getId();
+        if (leaderId.equals(userId)) {
+            return true;
+        }
+        return false;
+    }
+
+    public void addParticipant(Participant participant) {
+        participants.add(participant);
+    }
+
+    public void usePromotion() {
+        promotion.use();
     }
 
     private Participants createParticipants(User user) {

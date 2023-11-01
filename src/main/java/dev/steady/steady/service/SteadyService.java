@@ -4,7 +4,6 @@ import dev.steady.application.domain.Application;
 import dev.steady.application.domain.ApplicationStatus;
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.global.auth.UserInfo;
-import dev.steady.steady.domain.Promotion;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyPosition;
 import dev.steady.steady.domain.SteadyQuestion;
@@ -48,8 +47,7 @@ public class SteadyService {
         Long userId = userinfo.userId();
         User user = userRepository.getUserBy(userId);
         List<Stack> stacks = getStacks(request.stacks());
-        Promotion promotion = new Promotion();
-        Steady steady = request.toEntity(user, promotion, stacks);
+        Steady steady = request.toEntity(user, stacks);
         Steady savedSteady = steadyRepository.save(steady);
 
         List<SteadyPosition> steadyPositions = createSteadyPositions(request.positions(), savedSteady);
@@ -70,8 +68,7 @@ public class SteadyService {
 
     @Transactional(readOnly = true)
     public SteadyDetailResponse getDetailSteady(Long steadyId, UserInfo userinfo) {
-        Steady steady = steadyRepository.findById(steadyId)
-                .orElseThrow(IllegalArgumentException::new);
+        Steady steady = steadyRepository.getSteady(steadyId);
         List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steady.getId());
 
         if (steady.isLeader(userinfo.userId())) {
@@ -87,9 +84,9 @@ public class SteadyService {
         return SteadyDetailResponse.of(steady, positions, false, false);
     }
 
+    @Transactional
     public Long updateSteady(Long steadyId, UserInfo userInfo, SteadyUpdateRequest request) {
-        Steady steady = steadyRepository.findById(steadyId)
-                .orElseThrow(IllegalArgumentException::new);
+        Steady steady = steadyRepository.getSteady(steadyId);
         if (steady.isLeader(userInfo.userId())) {
             List<Stack> stacks = getStacks(request.stacks());
             steady.update(request.name(),
@@ -106,7 +103,16 @@ public class SteadyService {
             return steadyId;
         }
         throw new IllegalArgumentException();
-        // TODO: 2023-10-30 상태가 진행중으로 바뀌면 시작 예정일과 마감 예정일이 필요한 건가?
+    }
+
+    @Transactional
+    public void promoteSteady(Long steadyId, UserInfo userInfo) {
+        Steady steady = steadyRepository.getSteady(steadyId);
+        if (steady.isLeader(userInfo.userId())) {
+            steady.usePromotion();
+            return;
+        }
+        throw new IllegalArgumentException();
     }
 
     private List<Stack> getStacks(List<Long> stacks) {
@@ -115,8 +121,9 @@ public class SteadyService {
                 .toList();
     }
 
-    private Stack getStack(Long id) {
-        return stackRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    private Stack getStack(Long stackId) {
+        return stackRepository.findById(stackId)
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     private List<SteadyPosition> createSteadyPositions(List<Long> positions, Steady steady) {
