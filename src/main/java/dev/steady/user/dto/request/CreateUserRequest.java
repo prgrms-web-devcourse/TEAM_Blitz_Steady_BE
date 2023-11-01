@@ -11,6 +11,7 @@ public record CreateUserRequest(
         Long positionId,
         List<Long> stackIds
 ) {
+    
     public User toEntity(Position position) {
         return new User(this.nickname, position);
     }
