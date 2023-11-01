@@ -59,7 +59,7 @@ public class Steady extends BaseEntity {
     private SteadyMode steadyMode;
 
     @Column(nullable = false)
-    private LocalDate openingDate;
+    private ScheduledPeriod scheduledPeriod;
 
     @Column(nullable = false)
     private LocalDate deadline;
@@ -85,7 +85,7 @@ public class Steady extends BaseEntity {
                    SteadyType type,
                    int participantLimit,
                    SteadyMode steadyMode,
-                   LocalDate openingDate,
+                   ScheduledPeriod scheduledPeriod,
                    LocalDate deadline,
                    String title,
                    String content,
@@ -100,7 +100,7 @@ public class Steady extends BaseEntity {
         this.status = SteadyStatus.RECRUITING;
         this.participantLimit = participantLimit;
         this.steadyMode = steadyMode;
-        this.openingDate = openingDate;
+        this.scheduledPeriod = scheduledPeriod;
         this.deadline = deadline;
         this.title = title;
         this.content = content;
@@ -113,7 +113,7 @@ public class Steady extends BaseEntity {
                        SteadyStatus status,
                        int participantLimit,
                        SteadyMode steadyMode,
-                       LocalDate openingDate,
+                       String scheduledPeriod,
                        LocalDate deadline,
                        String title,
                        String content,
@@ -124,7 +124,7 @@ public class Steady extends BaseEntity {
         this.status = status;
         this.participantLimit = participantLimit;
         this.steadyMode = steadyMode;
-        this.openingDate = openingDate;
+        this.scheduledPeriod = ScheduledPeriod.valueOf(scheduledPeriod);
         this.deadline = deadline;
         this.title = title;
         this.content = content;

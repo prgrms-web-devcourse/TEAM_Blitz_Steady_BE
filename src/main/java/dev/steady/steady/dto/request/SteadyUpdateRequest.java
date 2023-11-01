@@ -16,7 +16,7 @@ public record SteadyUpdateRequest(
         SteadyStatus status,
         int participantLimit,
         SteadyMode steadyMode,
-        LocalDate openingDate,
+        String scheduledPeriod,
         LocalDate deadline,
         String title,
         String content,

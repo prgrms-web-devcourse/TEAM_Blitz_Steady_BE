@@ -1,5 +1,6 @@
 package dev.steady.steady.fixture;
 
+import dev.steady.steady.domain.ScheduledPeriod;
 import dev.steady.steady.domain.SteadyMode;
 import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.SteadyType;
@@ -18,7 +19,7 @@ public class SteadyFixtures {
                 .type(SteadyType.STUDY)
                 .participantLimit(6)
                 .steadyMode(SteadyMode.ONLINE)
-                .openingDate(LocalDate.now().plusDays(7))
+                .scheduledPeriod("ONE_WEEK")
                 .deadline(LocalDate.now().plusDays(14))
                 .title("스테디원 모집합니다")
                 .content("많관부")
@@ -36,7 +37,7 @@ public class SteadyFixtures {
                 .status(SteadyStatus.CLOSED)
                 .participantLimit(5)
                 .steadyMode(SteadyMode.BOTH)
-                .openingDate(LocalDate.now().plusDays(7))
+                .scheduledPeriod("TWO_WEEK")
                 .deadline(LocalDate.now().plusDays(14))
                 .title("스테디가 진행중입니다.")
                 .content("앞으로 화이팅!")

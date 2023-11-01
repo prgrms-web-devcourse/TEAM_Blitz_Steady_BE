@@ -95,7 +95,7 @@ public class SteadyService {
                     request.status(),
                     request.participantLimit(),
                     request.steadyMode(),
-                    request.openingDate(),
+                    request.scheduledPeriod(),
                     request.deadline(),
                     request.title(),
                     request.content(),
