@@ -33,7 +33,7 @@ class UserServiceTest {
     @Autowired
     private UserStackRepository userStackRepository;
 
-    @DisplayName("프로필 정보를 입력받아 유저를 생성한다.")
+    @DisplayName("프로필 정보를 입력 받아 유저를 생성한다.")
     @Test
     void createUser() {
         // given
