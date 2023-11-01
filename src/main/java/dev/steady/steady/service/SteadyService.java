@@ -115,6 +115,16 @@ public class SteadyService {
         throw new IllegalArgumentException();
     }
 
+    @Transactional
+    public void finishSteady(Long steadyId, UserInfo userInfo) {
+        Steady steady = steadyRepository.getSteady(steadyId);
+        if (steady.isLeader(userInfo.userId())) {
+            steady.finish();
+            return;
+        }
+        throw new IllegalArgumentException();
+    }
+
     private List<Stack> getStacks(List<Long> stacks) {
         return stacks.stream()
                 .map(this::getStack)

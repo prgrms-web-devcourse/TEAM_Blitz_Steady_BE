@@ -53,4 +53,10 @@ public class SteadyController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{steadyId}/finish")
+    public ResponseEntity<Void> finishSteady(@PathVariable Long steadyId, @Auth UserInfo userInfo) {
+        steadyService.finishSteady(steadyId, userInfo);
+        return ResponseEntity.noContent().build();
+    }
+
 }
