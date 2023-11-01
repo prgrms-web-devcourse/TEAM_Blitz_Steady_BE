@@ -38,7 +38,7 @@ public class UserService {
         return savedUser.getId();
     }
 
-    public Boolean existsByNickname(String nickname) {
+    public boolean existsByNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
 

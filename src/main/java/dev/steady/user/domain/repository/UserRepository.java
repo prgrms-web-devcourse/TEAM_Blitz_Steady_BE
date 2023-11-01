@@ -10,6 +10,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    Boolean existsByNickname(String nickname);
-    
+    boolean existsByNickname(String nickname);
+
 }

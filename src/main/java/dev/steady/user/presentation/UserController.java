@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping("/profile/exist")
-    public Boolean existsByNickname(@RequestParam String nickname) {
+    public boolean existsByNickname(@RequestParam String nickname) {
         return userService.existsByNickname(nickname);
     }
 
