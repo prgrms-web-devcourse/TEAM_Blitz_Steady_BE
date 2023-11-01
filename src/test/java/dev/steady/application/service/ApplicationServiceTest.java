@@ -47,7 +47,11 @@ class ApplicationServiceTest {
 
     @AfterEach
     void tearDown() {
-
+        applicationRepository.deleteAll();
+        steadyRepository.deleteAll();
+        userRepository.deleteAll();
+        positionRepository.deleteAll();
+        stackRepository.deleteAll();
     }
 
     @DisplayName("스테디 신청을 받아 신청서를 생성한다.")
