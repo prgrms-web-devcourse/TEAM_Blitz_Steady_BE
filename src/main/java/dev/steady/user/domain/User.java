@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
+    private static final String DEFAULT_PROFILE_IMAGE_URL = "default_profile_image_url.jpg";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,4 +49,10 @@ public class User {
         this.position = position;
     }
 
+    public User(String nickname, Position position) {
+        this.nickname = nickname;
+        this.position = position;
+        this.profileImage = DEFAULT_PROFILE_IMAGE_URL;
+    }
+    
 }

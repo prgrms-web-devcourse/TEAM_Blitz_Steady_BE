@@ -46,4 +46,10 @@ public class Account {
         return this.user == null;
     }
 
+    public void registerUser(User user) {
+        if (this.hasNoUser()) {
+            this.user = user;
+        }
+    }
+
 }
