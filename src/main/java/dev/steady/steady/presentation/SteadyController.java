@@ -35,7 +35,7 @@ public class SteadyController {
     }
 
     @GetMapping
-    public ResponseEntity<PageResponse<SteadySearchResponse>> getSteadiesPage(@RequestBody SteadyPageRequest request) {
+    public ResponseEntity<PageResponse<SteadySearchResponse>> getSteadiesPage(SteadyPageRequest request) {
         PageResponse<SteadySearchResponse> response = steadyService.getSteadies(request);
         return ResponseEntity.ok(response);
     }
