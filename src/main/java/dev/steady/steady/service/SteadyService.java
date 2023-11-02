@@ -116,10 +116,12 @@ public class SteadyService {
     }
 
     @Transactional
-    public void finishSteady(Long steadyId, UserInfo userInfo) {
+    public void deleteSteady(Long steadyId, UserInfo userInfo) {
         Steady steady = steadyRepository.getSteady(steadyId);
-        if (steady.isLeader(userInfo.userId())) {
-            steady.finish();
+        if (steady.isLeader(userInfo.userId()) && !steady.hasParticipants()) {
+            steadyPositionRepository.deleteBySteadyId(steadyId);
+            steadyQuestionRepository.deleteBySteadyId(steadyId);
+            steadyRepository.delete(steady);
             return;
         }
         throw new IllegalArgumentException();
