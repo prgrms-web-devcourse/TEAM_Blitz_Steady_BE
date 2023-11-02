@@ -9,4 +9,6 @@ public interface SteadyPositionRepository extends JpaRepository<SteadyPosition, 
 
     List<SteadyPosition> findBySteadyId(Long id);
 
+    void deleteBySteadyId(Long id);
+
 }

@@ -9,4 +9,6 @@ public interface SteadyQuestionRepository extends JpaRepository<SteadyQuestion, 
 
     List<SteadyQuestion> findBySteadyId(Long id);
 
+    void deleteBySteadyId(Long id);
+
 }

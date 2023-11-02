@@ -53,4 +53,10 @@ public class SteadyController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{steadyId}/delete")
+    public ResponseEntity<Void> deleteSteady(@PathVariable Long steadyId, @Auth UserInfo userInfo) {
+        steadyService.deleteSteady(steadyId, userInfo);
+        return ResponseEntity.noContent().build();
+    }
+
 }

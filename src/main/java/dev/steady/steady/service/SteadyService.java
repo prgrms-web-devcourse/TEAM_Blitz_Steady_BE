@@ -115,6 +115,18 @@ public class SteadyService {
         throw new IllegalArgumentException();
     }
 
+    @Transactional
+    public void deleteSteady(Long steadyId, UserInfo userInfo) {
+        Steady steady = steadyRepository.getSteady(steadyId);
+        if (steady.isLeader(userInfo.userId()) && !steady.hasParticipants()) {
+            steadyPositionRepository.deleteBySteadyId(steadyId);
+            steadyQuestionRepository.deleteBySteadyId(steadyId);
+            steadyRepository.delete(steady);
+            return;
+        }
+        throw new IllegalArgumentException();
+    }
+
     private List<Stack> getStacks(List<Long> stacks) {
         return stacks.stream()
                 .map(this::getStack)

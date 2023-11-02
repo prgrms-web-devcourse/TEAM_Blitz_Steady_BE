@@ -148,6 +148,10 @@ public class Steady extends BaseEntity {
         promotion.use();
     }
 
+    public boolean hasParticipants() {
+        return participants.getNumberOfParticipants() > 1;
+    }
+
     private Participants createParticipants(User user) {
         Participants participants = new Participants();
         participants.add(Participant.createLeader(user, this));
