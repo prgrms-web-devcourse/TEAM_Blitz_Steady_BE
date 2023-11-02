@@ -45,11 +45,10 @@ public class ApplicationService {
     public PageResponse<ApplicationSummaryResponse> getApplications(Long steadyId, UserInfo userInfo, Pageable pageable) {
         User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
-        steady.validateOwner(user);
+        steady.validateLeader(user);
         Page<Application> applications = applicationRepository.findAllBySteadyId(steadyId, pageable);
         Page<ApplicationSummaryResponse> responses = applications.map(ApplicationSummaryResponse::from);
         return PageResponse.from(responses);
-
     }
 
     private List<SurveyResult> createSurveyResult(Application application, List<SurveyResultRequest> surveys) {

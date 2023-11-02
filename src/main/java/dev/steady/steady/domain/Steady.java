@@ -132,7 +132,7 @@ public class Steady extends BaseEntity {
         this.steadyStacks.addAll(createSteadyStack(stacks));
     }
 
-    public void validateOwner(User user) {
+    public void validateLeader(User user) {
         if (isLeader(user.getId())) {
             return;
         }

@@ -7,6 +7,7 @@ public record ApplicationSummaryResponse(
         String nickname,
         String profileImage
 ) {
+
     public static ApplicationSummaryResponse from(Application applications) {
         return new ApplicationSummaryResponse(applications.getId(),
                 applications.getUser().getNickname(),
