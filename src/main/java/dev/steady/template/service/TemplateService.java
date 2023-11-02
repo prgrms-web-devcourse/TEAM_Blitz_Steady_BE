@@ -1,6 +1,5 @@
 package dev.steady.template.service;
 
-import dev.steady.global.auth.AuthContext;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.template.domain.Template;
 import dev.steady.template.domain.repository.TemplateRepository;

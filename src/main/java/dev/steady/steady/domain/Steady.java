@@ -141,10 +141,7 @@ public class Steady extends BaseEntity {
 
     public boolean isLeader(Long userId) {
         Long leaderId = participants.getLeader().getId();
-        if (leaderId.equals(userId)) {
-            return true;
-        }
-        return false;
+        return leaderId.equals(userId);
     }
 
     public void addParticipant(Participant participant) {

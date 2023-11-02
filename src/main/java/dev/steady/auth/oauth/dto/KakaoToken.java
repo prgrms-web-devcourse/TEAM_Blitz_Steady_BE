@@ -13,5 +13,5 @@ public record KakaoToken(
         Integer refreshTokenExpiresIn,
         String scope
 ) {
-    
+
 }

@@ -2,9 +2,9 @@ package dev.steady.application.presentation;
 
 import dev.steady.application.dto.request.ApplicationPageRequest;
 import dev.steady.application.dto.request.SurveyResultRequest;
+import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.application.service.ApplicationService;
-import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.dto.response.PageResponse;

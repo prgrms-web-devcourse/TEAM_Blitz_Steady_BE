@@ -34,15 +34,15 @@ public class Application extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "steady_id")
     private Steady steady;
 
-    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<SurveyResult> surveyResults = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
