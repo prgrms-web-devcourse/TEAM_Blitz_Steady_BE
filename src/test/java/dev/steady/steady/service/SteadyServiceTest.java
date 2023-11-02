@@ -306,7 +306,6 @@ class SteadyServiceTest {
 
         var anotherUser = createSecondUser(savedPosition);
         // when & then
-        var anotherUser = createSecondUser(savedPosition);
         userRepository.save(anotherUser);
         var anotherUserInfo = createUserInfo(anotherUser.getId());
         assertThatThrownBy(() -> steadyService.promoteSteady(steadyId, anotherUserInfo))
