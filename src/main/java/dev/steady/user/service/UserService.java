@@ -42,9 +42,15 @@ public class UserService {
         return userRepository.existsByNickname(nickname);
     }
 
-    private List<Stack> getStacks(List<Long> stackIds) {
+    @Transactional(readOnly = true)
+    public Stack getStack(Long stackId) {
+        return stackRepository.findById(stackId).orElseThrow(IllegalArgumentException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Stack> getStacks(List<Long> stackIds) {
         return stackIds.stream()
-                .map(stackId -> stackRepository.findById(stackId).orElseThrow(IllegalArgumentException::new))
+                .map(this::getStack)
                 .toList();
     }
 
