@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
 
@@ -38,6 +37,7 @@ public class UserService {
         return savedUser.getId();
     }
 
+    @Transactional(readOnly = true)
     public boolean existsByNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
@@ -54,11 +54,14 @@ public class UserService {
                 .toList();
     }
 
-    private Position getPosition(Long positionId) {
-        return positionRepository.findById(positionId).orElseThrow(IllegalArgumentException::new);
+    @Transactional(readOnly = true)
+    public Position getPosition(Long positionId) {
+        return positionRepository.findById(positionId)
+                .orElseThrow(IllegalArgumentException::new);
     }
 
-    private List<UserStack> createUserStacks(List<Long> stackIds, User user) {
+    @Transactional
+    public List<UserStack> createUserStacks(List<Long> stackIds, User user) {
         List<Stack> stacks = getStacks(stackIds);
         return stacks.stream().map(stack -> new UserStack(user, stack)).toList();
     }
