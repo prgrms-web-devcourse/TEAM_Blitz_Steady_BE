@@ -3,6 +3,7 @@ package dev.steady.steady.service;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyStack;
+import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
