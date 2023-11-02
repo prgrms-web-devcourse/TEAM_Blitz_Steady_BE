@@ -20,8 +20,8 @@ import java.util.List;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.template.fixture.TemplateFixture.createAnotherTemplate;
 import static dev.steady.template.fixture.TemplateFixture.createTemplate;
-import static dev.steady.user.fixture.UserFixtures.createAnotherUser;
-import static dev.steady.user.fixture.UserFixtures.createUser;
+import static dev.steady.user.fixture.UserFixtures.createSecondUser;
+import static dev.steady.user.fixture.UserFixtures.createFirstUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -59,7 +59,7 @@ class TemplateServiceTest {
     @Test
     void createTemplateTest() {
         var position = positionRepository.save(UserFixtures.createPosition());
-        var user = userRepository.save(createUser(position));
+        var user = userRepository.save(createFirstUser(position));
         var userInfo = createUserInfo(user.getId());
         var questions = List.of("Q1", "Q2");
         var request = new CreateTemplateRequest("Sample Title", questions);
@@ -80,7 +80,7 @@ class TemplateServiceTest {
     @Test
     void getTemplatesTest() {
         var position = positionRepository.save(UserFixtures.createPosition());
-        var user = createUser(position);
+        var user = createFirstUser(position);
         var savedUser = userRepository.save(user);
 
         var template1 = createTemplate(savedUser);
@@ -99,7 +99,7 @@ class TemplateServiceTest {
     @Test
     void getDetailTemplateTest() {
         var position = positionRepository.save(UserFixtures.createPosition());
-        var user = createUser(position);
+        var user = createFirstUser(position);
         var savedUser = userRepository.save(user);
 
         var template = createTemplate(savedUser);
@@ -119,9 +119,9 @@ class TemplateServiceTest {
     @Test
     void getDetailTemplateFailTest() {
         var position = positionRepository.save(UserFixtures.createPosition());
-        var user = createUser(position);
+        var user = createFirstUser(position);
         var savedUser = userRepository.save(user);
-        var anotherUser = createAnotherUser(position);
+        var anotherUser = createSecondUser(position);
         userRepository.save(anotherUser);
 
         var template = createTemplate(savedUser);
@@ -137,7 +137,7 @@ class TemplateServiceTest {
     @Test
     void updateTemplateTest() {
         var position = positionRepository.save(UserFixtures.createPosition());
-        var user = createUser(position);
+        var user = createFirstUser(position);
         var savedUser = userRepository.save(user);
 
         var template = createTemplate(savedUser);
@@ -163,7 +163,7 @@ class TemplateServiceTest {
     void deleteTemplateTest() {
         //given
         var position = positionRepository.save(UserFixtures.createPosition());
-        var user = createUser(position);
+        var user = createFirstUser(position);
         var savedUser = userRepository.save(user);
 
         var template = createTemplate(savedUser);
@@ -182,10 +182,10 @@ class TemplateServiceTest {
     void deleteTemplateFailTest() {
         //given
         var position = positionRepository.save(UserFixtures.createPosition());
-        var user = createUser(position);
+        var user = createFirstUser(position);
         var savedUser = userRepository.save(user);
         var position2 = positionRepository.save(UserFixtures.createPosition());
-        var user2 = createAnotherUser(position2);
+        var user2 = createSecondUser(position2);
         var savedUser2 = userRepository.save(user2);
 
         var template = createTemplate(savedUser);

@@ -30,10 +30,10 @@ import static dev.steady.steady.fixture.SteadyFixtures.createSteadyRequest;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyUpdateRequest;
 import static dev.steady.user.fixture.UserFixtures.createAnotherPosition;
 import static dev.steady.user.fixture.UserFixtures.createAnotherStack;
-import static dev.steady.user.fixture.UserFixtures.createAnotherUser;
+import static dev.steady.user.fixture.UserFixtures.createSecondUser;
 import static dev.steady.user.fixture.UserFixtures.createPosition;
 import static dev.steady.user.fixture.UserFixtures.createStack;
-import static dev.steady.user.fixture.UserFixtures.createUser;
+import static dev.steady.user.fixture.UserFixtures.createFirstUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -78,7 +78,7 @@ class SteadyServiceTest {
         // given
         var position = createPosition();
         var savedPosition = positionRepository.save(position);
-        var user = createUser(savedPosition);
+        var user = createFirstUser(savedPosition);
         var savedUser = userRepository.save(user);
         var stack = createStack();
         var savedStack = stackRepository.save(stack);
@@ -111,7 +111,7 @@ class SteadyServiceTest {
         // given
         var position = createPosition();
         var savedPosition = positionRepository.save(position);
-        var user = createUser(savedPosition);
+        var user = createFirstUser(savedPosition);
         var savedUser = userRepository.save(user);
         var stack = createStack();
         var savedStack = stackRepository.save(stack);
@@ -138,7 +138,7 @@ class SteadyServiceTest {
         // given
         var position = createPosition();
         var savedPosition = positionRepository.save(position);
-        var user = createUser(savedPosition);
+        var user = createFirstUser(savedPosition);
         var savedUser = userRepository.save(user);
         var stack = createStack();
         var savedStack = stackRepository.save(stack);
@@ -186,7 +186,7 @@ class SteadyServiceTest {
         // given
         var position = createPosition();
         var savedPosition = positionRepository.save(position);
-        var user = createUser(savedPosition);
+        var user = createFirstUser(savedPosition);
         var savedUser = userRepository.save(user);
         var stack = createStack();
         var savedStack = stackRepository.save(stack);
@@ -233,7 +233,7 @@ class SteadyServiceTest {
         // given
         var position = createPosition();
         var savedPosition = positionRepository.save(position);
-        var user = createUser(savedPosition);
+        var user = createFirstUser(savedPosition);
         var savedUser = userRepository.save(user);
         var stack = createStack();
         var savedStack = stackRepository.save(stack);
@@ -250,7 +250,7 @@ class SteadyServiceTest {
         entityManager.clear();
 
         // when & then
-        var anotherUser = createAnotherUser(savedAnotherPosition);
+        var anotherUser = createSecondUser(savedAnotherPosition);
         var anotherUserInfo = createUserInfo(anotherUser.getId());
         var steadyUpdateRequest = createSteadyUpdateRequest(savedAnotherStack.getId(), savedAnotherPosition.getId());
         assertThatThrownBy(() -> steadyService.updateSteady(steadyId, anotherUserInfo, steadyUpdateRequest))
@@ -263,7 +263,7 @@ class SteadyServiceTest {
         // given
         var position = createPosition();
         var savedPosition = positionRepository.save(position);
-        var user = createUser(savedPosition);
+        var user = createFirstUser(savedPosition);
         var savedUser = userRepository.save(user);
         var stack = createStack();
         var savedStack = stackRepository.save(stack);
@@ -293,7 +293,7 @@ class SteadyServiceTest {
         // given
         var position = createPosition();
         var savedPosition = positionRepository.save(position);
-        var user = createUser(savedPosition);
+        var user = createFirstUser(savedPosition);
         var savedUser = userRepository.save(user);
         var stack = createStack();
         var savedStack = stackRepository.save(stack);
@@ -304,8 +304,9 @@ class SteadyServiceTest {
         entityManager.flush();
         entityManager.clear();
 
+        var anotherUser = createSecondUser(savedPosition);
         // when & then
-        var anotherUser = createAnotherUser(savedPosition);
+        var anotherUser = createSecondUser(savedPosition);
         userRepository.save(anotherUser);
         var anotherUserInfo = createUserInfo(anotherUser.getId());
         assertThatThrownBy(() -> steadyService.promoteSteady(steadyId, anotherUserInfo))
@@ -318,7 +319,7 @@ class SteadyServiceTest {
         // given
         var position = createPosition();
         var savedPosition = positionRepository.save(position);
-        var user = createUser(savedPosition);
+        var user = createFirstUser(savedPosition);
         var savedUser = userRepository.save(user);
         var stack = createStack();
         var savedStack = stackRepository.save(stack);
@@ -346,7 +347,7 @@ class SteadyServiceTest {
         // given
         var position = createPosition();
         var savedPosition = positionRepository.save(position);
-        var user = createUser(savedPosition);
+        var user = createFirstUser(savedPosition);
         var savedUser = userRepository.save(user);
         var stack = createStack();
         var savedStack = stackRepository.save(stack);
@@ -355,7 +356,7 @@ class SteadyServiceTest {
         var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
         var steadyId = steadyService.create(steadyRequest, userInfo);
 
-        var anotherUser = createAnotherUser(savedPosition);
+        var anotherUser = createSecondUser(savedPosition);
         userRepository.save(anotherUser);
         var anotherUserInfo = createUserInfo(anotherUser.getId());
         entityManager.flush();
@@ -372,7 +373,7 @@ class SteadyServiceTest {
         // given
         var position = createPosition();
         var savedPosition = positionRepository.save(position);
-        var user = createUser(savedPosition);
+        var user = createFirstUser(savedPosition);
         var savedUser = userRepository.save(user);
         var stack = createStack();
         var savedStack = stackRepository.save(stack);
@@ -410,7 +411,7 @@ class SteadyServiceTest {
         // given
         var position = createPosition();
         var savedPosition = positionRepository.save(position);
-        var user = createUser(savedPosition);
+        var user = createFirstUser(savedPosition);
         var savedUser = userRepository.save(user);
         var stack = createStack();
         var savedStack = stackRepository.save(stack);
@@ -420,7 +421,7 @@ class SteadyServiceTest {
         var steadyId = steadyService.create(steadyRequest, userInfo);
 
         var steady = steadyRepository.findById(steadyId).get();
-        var anotherUser = createAnotherUser(savedPosition);
+        var anotherUser = createSecondUser(savedPosition);
         userRepository.save(anotherUser);
 
         // when
@@ -439,7 +440,7 @@ class SteadyServiceTest {
         // given
         var position = createPosition();
         var savedPosition = positionRepository.save(position);
-        var user = createUser(savedPosition);
+        var user = createFirstUser(savedPosition);
         var savedUser = userRepository.save(user);
         var stack = createStack();
         var savedStack = stackRepository.save(stack);
@@ -448,7 +449,7 @@ class SteadyServiceTest {
         var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
         var steadyId = steadyService.create(steadyRequest, userInfo);
 
-        var anotherUser = createAnotherUser(savedPosition);
+        var anotherUser = createSecondUser(savedPosition);
         userRepository.save(anotherUser);
         var anotherUserInfo = createUserInfo(anotherUser.getId());
         entityManager.flush();

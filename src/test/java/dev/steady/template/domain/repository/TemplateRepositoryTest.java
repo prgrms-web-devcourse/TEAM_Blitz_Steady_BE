@@ -33,10 +33,10 @@ class TemplateRepositoryTest {
     @Test
     void findTemplateUserIdTest() {
         var position = positionRepository.save(UserFixtures.createPosition());
-        var user1 = UserFixtures.createUser(position);
+        var user1 = UserFixtures.createFirstUser(position);
         var savedUser1 = userRepository.save(user1);
 
-        var user2 = UserFixtures.createAnotherUser(position);
+        var user2 = UserFixtures.createSecondUser(position);
         var savedUser2 = userRepository.save(user2);
 
         var template1 = createTemplate(savedUser1);
