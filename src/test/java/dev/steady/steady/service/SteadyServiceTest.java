@@ -3,6 +3,7 @@ package dev.steady.steady.service;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyStack;
+import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
@@ -308,6 +309,60 @@ class SteadyServiceTest {
         userRepository.save(anotherUser);
         var anotherUserInfo = createUserInfo(anotherUser.getId());
         assertThatThrownBy(() -> steadyService.promoteSteady(steadyId, anotherUserInfo))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("스테디 리더가 스테디를 종료 상태로 변경할 수 있다.")
+    void finishSteadyTest() {
+        // given
+        var position = createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = createUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var stack = createStack();
+        var savedStack = stackRepository.save(stack);
+        var userInfo = createUserInfo(savedUser.getId());
+
+        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyId = steadyService.create(steadyRequest, userInfo);
+        entityManager.flush();
+        entityManager.clear();
+
+        // when
+        steadyService.finishSteady(steadyId, userInfo);
+        entityManager.flush();
+        entityManager.clear();
+
+        // then
+        var steady = steadyRepository.findById(steadyId).get();
+        var status = steady.getStatus();
+        assertThat(status).isEqualTo(SteadyStatus.FINISHED);
+    }
+
+    @Test
+    @DisplayName("리더가 아닌 유저가 스테디 종료를 요청하면 에러를 반환한다.")
+    void finishSteadyByAnotherUserTest() {
+        // given
+        var position = createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = createUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var stack = createStack();
+        var savedStack = stackRepository.save(stack);
+        var userInfo = createUserInfo(savedUser.getId());
+
+        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyId = steadyService.create(steadyRequest, userInfo);
+
+        var anotherUser = createAnotherUser(savedPosition);
+        userRepository.save(anotherUser);
+        var anotherUserInfo = createUserInfo(anotherUser.getId());
+        entityManager.flush();
+        entityManager.clear();
+
+        // when & then
+        assertThatThrownBy(() -> steadyService.finishSteady(steadyId, anotherUserInfo))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

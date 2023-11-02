@@ -116,6 +116,16 @@ public class SteadyService {
     }
 
     @Transactional
+    public void finishSteady(Long steadyId, UserInfo userInfo) {
+        Steady steady = steadyRepository.getSteady(steadyId);
+        if (steady.isLeader(userInfo.userId())) {
+            steady.finish();
+            return;
+        }
+        throw new IllegalArgumentException();
+    }
+
+    @Transactional
     public void deleteSteady(Long steadyId, UserInfo userInfo) {
         Steady steady = steadyRepository.getSteady(steadyId);
         if (steady.isLeader(userInfo.userId()) && !steady.hasParticipants()) {
