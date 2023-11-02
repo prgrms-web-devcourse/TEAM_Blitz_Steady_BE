@@ -1,5 +1,6 @@
 package dev.steady.application.domain;
 
+import dev.steady.global.entity.BaseEntity;
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
 import jakarta.persistence.CascadeType;
@@ -27,21 +28,21 @@ import static dev.steady.application.domain.ApplicationStatus.WAITING;
 @Getter
 @Table(name = "applications")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Application {
+public class Application extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "steady_id")
     private Steady steady;
 
-    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private final List<SurveyResult> surveyResults = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

@@ -4,13 +4,17 @@ import dev.steady.application.domain.Application;
 import dev.steady.application.domain.SurveyResult;
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.application.dto.request.SurveyResultRequest;
+import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.repository.SteadyRepository;
+import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +39,17 @@ public class ApplicationService {
 
         Application savedApplication = applicationRepository.save(application);
         return CreateApplicationResponse.from(savedApplication);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<ApplicationSummaryResponse> getApplications(Long steadyId, UserInfo userInfo, Pageable pageable) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        Steady steady = steadyRepository.getSteady(steadyId);
+        steady.validateOwner(user);
+        Page<Application> applications = applicationRepository.findAllBySteadyId(steadyId, pageable);
+        Page<ApplicationSummaryResponse> responses = applications.map(ApplicationSummaryResponse::from);
+        return PageResponse.from(responses);
+
     }
 
     private List<SurveyResult> createSurveyResult(Application application, List<SurveyResultRequest> surveys) {
