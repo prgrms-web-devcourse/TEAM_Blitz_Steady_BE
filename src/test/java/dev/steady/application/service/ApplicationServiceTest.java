@@ -29,6 +29,7 @@ import static dev.steady.user.fixture.UserFixtures.createSecondUser;
 import static dev.steady.user.fixture.UserFixtures.createStack;
 import static dev.steady.user.fixture.UserFixtures.createThirdUser;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
@@ -105,6 +106,27 @@ class ApplicationServiceTest {
                 () -> assertThat(response.content()).hasSize(2)
                         .extracting(ApplicationSummaryResponse::nickname)
                         .containsExactly("Jun", "Young"));
+    }
+
+    @DisplayName("스터디 리더가 아니는 신청서 목록 조회를 할 수 없다.")
+    @Test
+    void getApplicationsFailTest() {
+        //given
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var savedStack = stackRepository.save(createStack());
+        var steady = steadyRepository.save(creatSteady(leader, savedStack));
+        var secondUser = userRepository.save(createSecondUser(position));
+        var thirdUser = userRepository.save(createThirdUser(position));
+        applicationRepository.saveAll(List.of(createApplication(secondUser, steady)));
+        UserInfo userInfo = createUserInfo(thirdUser.getId());
+        PageRequest page = PageRequest.of(0, 10);
+        //when
+        //then
+        assertThatThrownBy(() -> applicationService.getApplications(steady.getId(),
+                userInfo,
+                page)
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 
 }
