@@ -150,7 +150,6 @@ public class Steady extends BaseEntity {
 
     public boolean hasParticipants() {
         return participants.getNumberOfParticipants() > 1;
-    }
 
     private Participants createParticipants(User user) {
         Participants participants = new Participants();
