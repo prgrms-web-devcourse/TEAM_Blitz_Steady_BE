@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import static dev.steady.auth.service.Fixtures.AccountFixture.createAccount;
 import static dev.steady.user.fixture.UserFixtures.createUser;
@@ -29,6 +30,9 @@ class AccountServiceTest {
 
     @Autowired
     private PositionRepository positionRepository;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     @AfterEach
     void tearDown() {
@@ -52,11 +56,15 @@ class AccountServiceTest {
 
         // when
         accountService.registerUser(savedAccount.getId(), savedUser.getId());
+        var foundAccount = transactionTemplate.execute(status -> {
+                    return accountRepository.findById(savedAccount.getId()).get();
+                }
+        );
 
         // then
         assertAll(
-                () -> assertThat(savedAccount).isNotNull(),
-                () -> assertThat(savedAccount.getId()).isEqualTo(savedUser.getId())
+                () -> assertThat(foundAccount.getUser()).isNotNull(),
+                () -> assertThat(foundAccount.getUser().getId()).isEqualTo(savedUser.getId())
         );
     }
 
