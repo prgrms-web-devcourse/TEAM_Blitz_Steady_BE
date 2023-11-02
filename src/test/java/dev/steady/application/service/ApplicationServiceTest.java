@@ -108,7 +108,7 @@ class ApplicationServiceTest {
                         .containsExactly("Jun", "Young"));
     }
 
-    @DisplayName("스터디 리더가 아니면 신청서 목록 조회를 할 수 없다.")
+    @DisplayName("스터디 리더가 아니팅 신청서 목록 조회를 할 수 없다.")
     @Test
     void getApplicationsFailTest() {
         //given
