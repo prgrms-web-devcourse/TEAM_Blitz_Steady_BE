@@ -63,7 +63,10 @@ public class UserService {
     @Transactional
     public List<UserStack> createUserStacks(List<Long> stackIds, User user) {
         List<Stack> stacks = getStacks(stackIds);
-        return stacks.stream().map(stack -> new UserStack(user, stack)).toList();
+        List<UserStack> userStacks = stacks.stream()
+                .map(stack -> new UserStack(user, stack))
+                .toList();
+        return userStacks;
     }
 
 }
