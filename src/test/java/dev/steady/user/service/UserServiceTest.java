@@ -76,7 +76,7 @@ class UserServiceTest {
 
         assertAll(
                 () -> assertThat(user.getId()).isEqualTo(userId),
-                () -> assertThat(user.getPosition()).isEqualTo(savedPosition),
+                () -> assertThat(user.getPosition().getName()).isEqualTo(savedPosition.getName()),
                 () -> assertThat(userStacks).hasSameSizeAs(request.stackIds())
         );
     }
