@@ -232,27 +232,6 @@ class SteadyServiceTest {
     }
 
     @Test
-    @DisplayName("리더가 아닌 유저가 끌어올리기 요청을 보내면 에러를 반환한다.")
-    void promoteSteadyByAnotherUserTest() {
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var stack = createStack();
-        var savedStack = stackRepository.save(stack);
-        var userInfo = createUserInfo(savedUser.getId());
-
-        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
-        var steadyId = steadyService.create(steadyRequest, userInfo);
-
-        var anotherUser = createAnotherUser(savedPosition);
-        var anotherUserInfo = createUserInfo(anotherUser.getId());
-
-        assertThatThrownBy(() -> steadyService.promoteSteady(steadyId, anotherUserInfo))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
     @DisplayName("스테디 리더가 끌어올리기 요청을 통해 스테디를 끌어올릴 수 있다.")
     void promoteSteadyTest() {
         var position = createPosition();
@@ -275,6 +254,69 @@ class SteadyServiceTest {
         var promotedAt = updatedSteady.getPromotion().getPromotedAt();
 
         assertThat(createdAt.isBefore(promotedAt)).isTrue();
+    }
+
+    @Test
+    @DisplayName("리더가 아닌 유저가 끌어올리기 요청을 보내면 에러를 반환한다.")
+    void promoteSteadyByAnotherUserTest() {
+        var position = createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = createUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var stack = createStack();
+        var savedStack = stackRepository.save(stack);
+        var userInfo = createUserInfo(savedUser.getId());
+
+        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyId = steadyService.create(steadyRequest, userInfo);
+
+        var anotherUser = createAnotherUser(savedPosition);
+        var anotherUserInfo = createUserInfo(anotherUser.getId());
+
+        assertThatThrownBy(() -> steadyService.promoteSteady(steadyId, anotherUserInfo))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("스테디 리더가 스테디를 종료할 수 있다.")
+    void finishSteadyTest() {
+        var position = createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = createUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var stack = createStack();
+        var savedStack = stackRepository.save(stack);
+        var userInfo = createUserInfo(savedUser.getId());
+
+        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyId = steadyService.create(steadyRequest, userInfo);
+
+        steadyService.finishSteady(steadyId, userInfo);
+
+        var finishedSteady = steadyRepository.findById(steadyId).get();
+
+        assertThat(finishedSteady.getStatus()).isEqualTo(SteadyStatus.FINISHED);
+    }
+
+    @Test
+    @DisplayName("리더가 아닌 유저가 스테디 종료를 요청하면 에러를 반환한다.")
+    void finishSteadyByAnotherUserTest() {
+        var position = createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = createUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var stack = createStack();
+        var savedStack = stackRepository.save(stack);
+        var userInfo = createUserInfo(savedUser.getId());
+
+        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyId = steadyService.create(steadyRequest, userInfo);
+
+        var anotherUser = createAnotherUser(savedPosition);
+        var anotherUserInfo = createUserInfo(anotherUser.getId());
+
+        assertThatThrownBy(() -> steadyService.finishSteady(steadyId, anotherUserInfo))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 }
