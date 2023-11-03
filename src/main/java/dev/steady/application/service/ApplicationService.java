@@ -2,10 +2,13 @@ package dev.steady.application.service;
 
 import dev.steady.application.domain.Application;
 import dev.steady.application.domain.SurveyResult;
+import dev.steady.application.domain.SurveyResults;
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.application.dto.request.SurveyResultRequest;
+import dev.steady.application.dto.response.ApplicationDetailResponse;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
+import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.repository.SteadyRepository;
@@ -48,6 +51,17 @@ public class ApplicationService {
         Slice<Application> applications = applicationRepository.findAllBySteadyId(steadyId, pageable);
         Slice<ApplicationSummaryResponse> responses = applications.map(ApplicationSummaryResponse::from);
         return SliceResponse.from(responses);
+    }
+
+    @Transactional(readOnly = true)
+    public ApplicationDetailResponse getApplicationDetail(Long applicationId, UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        Application application = applicationRepository.getById(applicationId);
+        Steady steady = application.getSteady();
+        steady.validateLeader(user);
+
+        SurveyResults surveyResults = application.getSurveyResults();
+        return ApplicationDetailResponse.from(surveyResults);
     }
 
     private List<SurveyResult> createSurveyResult(Application application, List<SurveyResultRequest> surveys) {
