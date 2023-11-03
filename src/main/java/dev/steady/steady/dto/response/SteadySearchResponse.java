@@ -22,7 +22,7 @@ public record SteadySearchResponse(
         int numberOfParticipants,
         List<SteadyStackResponse> stacks
         // TODO: 2023-10-25  해쉬태그, 조회수, 댓글 수
-){
+) {
 
     public static SteadySearchResponse from(Steady steady) {
         User leader = steady.getParticipants().getLeader();

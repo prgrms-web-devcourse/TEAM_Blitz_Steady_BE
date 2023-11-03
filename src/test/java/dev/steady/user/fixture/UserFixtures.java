@@ -32,7 +32,7 @@ public class UserFixtures {
                 .build();
     }
 
-    public static User createUser(Position position) {
+    public static User createFirstUser(Position position) {
         return User.builder()
                 .profileImage("123")
                 .nickname("weonest")
@@ -41,10 +41,20 @@ public class UserFixtures {
                 .build();
     }
 
-    public static User createAnotherUser(Position position) {
+    public static User createSecondUser(Position position) {
         User user = User.builder()
                 .profileImage("1234")
                 .nickname("Jun")
+                .bio("저에요")
+                .position(position)
+                .build();
+        return user;
+    }
+
+    public static User createThirdUser(Position position) {
+        User user = User.builder()
+                .profileImage("1234")
+                .nickname("Young")
                 .bio("저에요")
                 .position(position)
                 .build();

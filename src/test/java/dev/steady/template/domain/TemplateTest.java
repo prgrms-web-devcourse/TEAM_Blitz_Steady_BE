@@ -14,10 +14,10 @@ class TemplateTest {
     @Test
     void validateOwnerTest() {
         var position = UserFixtures.createPosition();
-        User user = UserFixtures.createUser(position);
+        User user = UserFixtures.createFirstUser(position);
         Template template = TemplateFixture.createTemplate(user);
 
-        assertThatThrownBy(() -> template.validateOwner(UserFixtures.createAnotherUser(position)))
+        assertThatThrownBy(() -> template.validateOwner(UserFixtures.createSecondUser(position)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

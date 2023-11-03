@@ -1,7 +1,6 @@
 package dev.steady.template.presentation;
 
 import dev.steady.global.auth.Auth;
-import dev.steady.global.auth.AuthContext;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.template.dto.request.CreateTemplateRequest;
 import dev.steady.template.dto.request.UpdateTemplateRequest;

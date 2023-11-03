@@ -1,8 +1,9 @@
 package dev.steady.application.domain;
 
+import dev.steady.global.entity.BaseEntity;
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
-import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,11 +18,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static dev.steady.application.domain.ApplicationStatus.WAITING;
+
 @Entity
 @Getter
 @Table(name = "applications")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Application {
+public class Application extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,15 +38,20 @@ public class Application {
     @JoinColumn(name = "steady_id")
     private Steady steady;
 
-    @Column
+    @Embedded
+    private SurveyResults surveyResults = new SurveyResults();
+
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
     public Application(User user, Steady steady) {
         this.user = user;
         this.steady = steady;
-        this.status = ApplicationStatus.WAITING;
+        this.status = WAITING;
     }
 
+    public void addSurveyResult(SurveyResult surveyResult) {
+        this.surveyResults.addSurveyResult(surveyResult, this);
+    }
 
 }
