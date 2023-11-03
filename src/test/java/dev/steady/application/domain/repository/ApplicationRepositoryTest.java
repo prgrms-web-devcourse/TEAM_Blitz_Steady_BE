@@ -1,10 +1,8 @@
 package dev.steady.application.domain.repository;
 
 import dev.steady.application.domain.Application;
-import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.global.config.JpaConfig;
 import dev.steady.steady.domain.repository.SteadyRepository;
-import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
@@ -14,13 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
 import static dev.steady.application.fixture.ApplicationFixture.createApplication;
-import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.steady.fixture.SteadyFixtures.creatSteady;
 import static dev.steady.user.fixture.UserFixtures.createFirstUser;
 import static dev.steady.user.fixture.UserFixtures.createPosition;
@@ -71,12 +68,12 @@ class ApplicationRepositoryTest {
         applicationRepository.saveAll(List.of(createApplication(secondUser, steady),
                 createApplication(thirdUser, steady)));
         //when
-        Page<Application> applications = applicationRepository.findAllBySteadyId(steady.getId(),
+        Slice<Application> applications = applicationRepository.findAllBySteadyId(steady.getId(),
                 PageRequest.of(0, 10));
         //then
         assertAll(
-                () -> assertThat(applications.getTotalPages()).isEqualTo(1),
-                () -> assertThat(applications.getTotalElements()).isEqualTo(2));
+                () -> assertThat(applications.getNumberOfElements()).isEqualTo(2),
+                () -> assertThat(applications.hasNext()).isFalse());
     }
 
 }

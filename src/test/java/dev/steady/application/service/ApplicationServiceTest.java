@@ -6,7 +6,6 @@ import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.domain.repository.SteadyRepository;
-import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
@@ -95,14 +94,13 @@ class ApplicationServiceTest {
         applicationRepository.saveAll(List.of(createApplication(secondUser, steady),
                 createApplication(thirdUser, steady)));
         //when
-        PageResponse<ApplicationSummaryResponse> response = applicationService.getApplications(steady.getId(),
+        SliceResponse<ApplicationSummaryResponse> response = applicationService.getApplications(steady.getId(),
                 createUserInfo(leader.getId()),
                 PageRequest.of(0, 10));
         //then
         assertAll(
                 () -> assertThat(response.numberOfElements()).isEqualTo(2),
-                () -> assertThat(response.page()).isEqualTo(0),
-                () -> assertThat(response.totalElements()).isEqualTo(2),
+                () -> assertThat(response.hasNext()).isFalse(),
                 () -> assertThat(response.content()).hasSize(2)
                         .extracting(ApplicationSummaryResponse::nickname)
                         .containsExactly("Jun", "Young"));

@@ -5,9 +5,9 @@ import dev.steady.application.dto.request.SurveyResultRequest;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.application.service.ApplicationService;
+import dev.steady.application.service.SliceResponse;
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
-import dev.steady.steady.dto.response.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -36,9 +36,9 @@ public class ApplicationController {
     }
 
     @GetMapping("/steadies/{steadyId}/application")
-    public PageResponse<ApplicationSummaryResponse> getApplications(@PathVariable Long steadyId,
-                                                                    @Auth UserInfo userInfo,
-                                                                    ApplicationPageRequest request) {
+    public SliceResponse<ApplicationSummaryResponse> getApplications(@PathVariable Long steadyId,
+                                                                     @Auth UserInfo userInfo,
+                                                                     ApplicationPageRequest request) {
         Pageable pageable = request.toPageable();
         return applicationService.getApplications(steadyId, userInfo, pageable);
     }
