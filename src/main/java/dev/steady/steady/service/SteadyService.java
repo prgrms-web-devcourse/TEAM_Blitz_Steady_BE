@@ -11,7 +11,6 @@ import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
-import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
@@ -24,6 +23,7 @@ import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,8 +60,8 @@ public class SteadyService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<SteadySearchResponse> getSteadies(SteadyPageRequest request) {
-        Page<Steady> steadies = steadyRepository.findAll(request.toPageable());
+    public PageResponse<SteadySearchResponse> getSteadies(Pageable pageable) {
+        Page<Steady> steadies = steadyRepository.findAll(pageable);
         Page<SteadySearchResponse> searchResponses = steadies.map(SteadySearchResponse::from);
         return PageResponse.from(searchResponses);
     }
@@ -75,9 +75,9 @@ public class SteadyService {
             return SteadyDetailResponse.of(steady, positions, true, false);
         }
 
-        List<Application> list = applicationRepository.findBySteadyIdAndUserIdAndStatus(
+        List<Application> applications = applicationRepository.findBySteadyIdAndUserIdAndStatus(
                 steady.getId(), userinfo.userId(), ApplicationStatus.WAITING);
-        if (!list.isEmpty()) {
+        if (!applications.isEmpty()) {
             return SteadyDetailResponse.of(steady, positions, false, true);
         }
 
