@@ -51,6 +51,7 @@ public class ApplicationService {
         return SliceResponse.from(responses);
     }
 
+    @Transactional(readOnly = true)
     public ApplicationDetailResponse getApplicationDetail(Long applicationId, UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
         Application application = applicationRepository.getById(applicationId);
