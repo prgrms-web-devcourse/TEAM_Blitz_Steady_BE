@@ -2,8 +2,10 @@ package dev.steady.application.service;
 
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.application.dto.request.SurveyResultRequest;
+import dev.steady.application.dto.response.ApplicationDetailResponse;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
+import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.repository.PositionRepository;

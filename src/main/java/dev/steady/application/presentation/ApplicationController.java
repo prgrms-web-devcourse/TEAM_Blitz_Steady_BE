@@ -5,7 +5,7 @@ import dev.steady.application.dto.request.SurveyResultRequest;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.application.service.ApplicationService;
-import dev.steady.application.service.SliceResponse;
+import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
 import lombok.RequiredArgsConstructor;
