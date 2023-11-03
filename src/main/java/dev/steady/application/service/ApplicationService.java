@@ -4,6 +4,7 @@ import dev.steady.application.domain.Application;
 import dev.steady.application.domain.SurveyResult;
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.application.dto.request.SurveyResultRequest;
+import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.domain.Steady;
@@ -11,6 +12,8 @@ import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +38,16 @@ public class ApplicationService {
 
         Application savedApplication = applicationRepository.save(application);
         return CreateApplicationResponse.from(savedApplication);
+    }
+
+    @Transactional(readOnly = true)
+    public SliceResponse<ApplicationSummaryResponse> getApplications(Long steadyId, UserInfo userInfo, Pageable pageable) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        Steady steady = steadyRepository.getSteady(steadyId);
+        steady.validateLeader(user);
+        Slice<Application> applications = applicationRepository.findAllBySteadyId(steadyId, pageable);
+        Slice<ApplicationSummaryResponse> responses = applications.map(ApplicationSummaryResponse::from);
+        return SliceResponse.from(responses);
     }
 
     private List<SurveyResult> createSurveyResult(Application application, List<SurveyResultRequest> surveys) {

@@ -54,5 +54,5 @@ public class User {
         this.position = position;
         this.profileImage = DEFAULT_PROFILE_IMAGE_URL;
     }
-    
+
 }

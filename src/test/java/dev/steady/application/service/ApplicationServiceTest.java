@@ -2,8 +2,8 @@ package dev.steady.application.service;
 
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.application.dto.request.SurveyResultRequest;
+import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
-import dev.steady.global.auth.AuthFixture;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.repository.PositionRepository;
@@ -14,15 +14,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
+import static dev.steady.application.fixture.ApplicationFixture.createApplication;
 import static dev.steady.application.fixture.SurveyResultFixture.createSurveyResultRequests;
+import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.steady.fixture.SteadyFixtures.creatSteady;
+import static dev.steady.user.fixture.UserFixtures.createFirstUser;
 import static dev.steady.user.fixture.UserFixtures.createPosition;
+import static dev.steady.user.fixture.UserFixtures.createSecondUser;
 import static dev.steady.user.fixture.UserFixtures.createStack;
-import static dev.steady.user.fixture.UserFixtures.createUser;
+import static dev.steady.user.fixture.UserFixtures.createThirdUser;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
 class ApplicationServiceTest {
@@ -59,11 +66,11 @@ class ApplicationServiceTest {
     void createApplicationTest() {
         //given
         var position = positionRepository.save(createPosition());
-        var user = userRepository.save(createUser(position));
+        var user = userRepository.save(createFirstUser(position));
         var savedStack = stackRepository.save(createStack());
         var steady = steadyRepository.save(creatSteady(user, savedStack));
         List<SurveyResultRequest> surveyResultRequests = createSurveyResultRequests();
-        UserInfo userInfo = AuthFixture.createUserInfo(user.getId());
+        UserInfo userInfo = createUserInfo(user.getId());
 
         //when
         CreateApplicationResponse response = applicationService.createApplication(steady.getId(),
@@ -72,6 +79,52 @@ class ApplicationServiceTest {
 
         //then
         assertThat(response.applicationId()).isNotNull();
+    }
+
+    @DisplayName("스터디 리더는 신청서 목록 조회를 할 수 있다.")
+    @Test
+    void getApplicationsTest() {
+        //given
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var savedStack = stackRepository.save(createStack());
+        var steady = steadyRepository.save(creatSteady(leader, savedStack));
+        var secondUser = userRepository.save(createSecondUser(position));
+        var thirdUser = userRepository.save(createThirdUser(position));
+        applicationRepository.saveAll(List.of(createApplication(secondUser, steady),
+                createApplication(thirdUser, steady)));
+        //when
+        SliceResponse<ApplicationSummaryResponse> response = applicationService.getApplications(steady.getId(),
+                createUserInfo(leader.getId()),
+                PageRequest.of(0, 10));
+        //then
+        assertAll(
+                () -> assertThat(response.numberOfElements()).isEqualTo(2),
+                () -> assertThat(response.hasNext()).isFalse(),
+                () -> assertThat(response.content()).hasSize(2)
+                        .extracting(ApplicationSummaryResponse::nickname)
+                        .containsExactly("Jun", "Young"));
+    }
+
+    @DisplayName("스터디 리더가 아니팅 신청서 목록 조회를 할 수 없다.")
+    @Test
+    void getApplicationsFailTest() {
+        //given
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var savedStack = stackRepository.save(createStack());
+        var steady = steadyRepository.save(creatSteady(leader, savedStack));
+        var secondUser = userRepository.save(createSecondUser(position));
+        var thirdUser = userRepository.save(createThirdUser(position));
+        applicationRepository.saveAll(List.of(createApplication(secondUser, steady)));
+        UserInfo userInfo = createUserInfo(thirdUser.getId());
+        PageRequest page = PageRequest.of(0, 10);
+        //when
+        //then
+        assertThatThrownBy(() -> applicationService.getApplications(steady.getId(),
+                userInfo,
+                page)
+        ).isInstanceOf(IllegalArgumentException.class);
     }
 
 }

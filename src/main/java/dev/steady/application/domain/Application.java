@@ -1,5 +1,6 @@
 package dev.steady.application.domain;
 
+import dev.steady.global.entity.BaseEntity;
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
 import jakarta.persistence.CascadeType;
@@ -27,7 +28,7 @@ import static dev.steady.application.domain.ApplicationStatus.WAITING;
 @Getter
 @Table(name = "applications")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Application {
+public class Application extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

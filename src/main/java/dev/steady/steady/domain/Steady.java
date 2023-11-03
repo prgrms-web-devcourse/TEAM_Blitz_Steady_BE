@@ -132,12 +132,16 @@ public class Steady extends BaseEntity {
         this.steadyStacks.addAll(createSteadyStack(stacks));
     }
 
+    public void validateLeader(User user) {
+        if (isLeader(user.getId())) {
+            return;
+        }
+        throw new IllegalArgumentException();
+    }
+
     public boolean isLeader(Long userId) {
         Long leaderId = participants.getLeader().getId();
-        if (leaderId.equals(userId)) {
-            return true;
-        }
-        return false;
+        return leaderId.equals(userId);
     }
 
     public void addParticipant(Participant participant) {
