@@ -1,11 +1,13 @@
 package dev.steady.template.domain;
 
-import dev.steady.template.fixture.TemplateFixture;
 import dev.steady.user.domain.User;
 import dev.steady.user.fixture.UserFixtures;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import static dev.steady.template.fixture.TemplateFixture.createTemplate;
+import static dev.steady.user.fixture.UserFixtures.createSecondUser;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TemplateTest {
@@ -15,9 +17,10 @@ class TemplateTest {
     void validateOwnerTest() {
         var position = UserFixtures.createPosition();
         User user = UserFixtures.createFirstUser(position);
-        Template template = TemplateFixture.createTemplate(user);
+        ReflectionTestUtils.setField(user, "id", 1L);
+        Template template = createTemplate(user);
 
-        assertThatThrownBy(() -> template.validateOwner(UserFixtures.createSecondUser(position)))
+        assertThatThrownBy(() -> template.validateOwner(createSecondUser(position)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

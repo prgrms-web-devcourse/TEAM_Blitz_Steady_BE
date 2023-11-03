@@ -50,8 +50,26 @@ public class Application extends BaseEntity {
         this.status = WAITING;
     }
 
+    public void checkAccessOrThrow(User user) {
+        if (!hasAccess(user)) {
+            throw new IllegalArgumentException();
+        }
+    }
+
     public void addSurveyResult(SurveyResult surveyResult) {
         this.surveyResults.addSurveyResult(surveyResult, this);
+    }
+
+    private boolean hasAccess(User user) {
+        return isCurrentUser(user) || isLeader(user);
+    }
+
+    private boolean isCurrentUser(User user) {
+        return this.user.equals(user);
+    }
+
+    private boolean isLeader(User user) {
+        return steady.isLeader(user);
     }
 
 }

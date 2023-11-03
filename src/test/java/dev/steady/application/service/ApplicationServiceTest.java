@@ -162,8 +162,9 @@ class ApplicationServiceTest {
         var savedStack = stackRepository.save(createStack());
         var steady = steadyRepository.save(creatSteady(leader, savedStack));
         var secondUser = userRepository.save(createSecondUser(position));
+        var thirdUser = userRepository.save(createThirdUser(position));
         var application = applicationRepository.save(createApplication(secondUser, steady));
-        UserInfo userInfo = createUserInfo(secondUser.getId());
+        UserInfo userInfo = createUserInfo(thirdUser.getId());
         //when
         //then
         assertThatThrownBy(() -> applicationService.getApplicationDetail(application.getId(), userInfo))

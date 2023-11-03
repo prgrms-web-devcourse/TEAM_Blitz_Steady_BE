@@ -30,10 +30,10 @@ import static dev.steady.steady.fixture.SteadyFixtures.createSteadyRequest;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyUpdateRequest;
 import static dev.steady.user.fixture.UserFixtures.createAnotherPosition;
 import static dev.steady.user.fixture.UserFixtures.createAnotherStack;
-import static dev.steady.user.fixture.UserFixtures.createSecondUser;
-import static dev.steady.user.fixture.UserFixtures.createPosition;
-import static dev.steady.user.fixture.UserFixtures.createStack;
 import static dev.steady.user.fixture.UserFixtures.createFirstUser;
+import static dev.steady.user.fixture.UserFixtures.createPosition;
+import static dev.steady.user.fixture.UserFixtures.createSecondUser;
+import static dev.steady.user.fixture.UserFixtures.createStack;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -254,7 +254,7 @@ class SteadyServiceTest {
         var anotherUserInfo = createUserInfo(anotherUser.getId());
         var steadyUpdateRequest = createSteadyUpdateRequest(savedAnotherStack.getId(), savedAnotherPosition.getId());
         assertThatThrownBy(() -> steadyService.updateSteady(steadyId, anotherUserInfo, steadyUpdateRequest))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidDataAccessApiUsageException.class);
     }
 
     @Test
