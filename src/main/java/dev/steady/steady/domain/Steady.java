@@ -133,15 +133,14 @@ public class Steady extends BaseEntity {
     }
 
     public void validateLeader(User user) {
-        if (isLeader(user.getId())) {
-            return;
+        if (!isLeader(user)) {
+            throw new IllegalArgumentException();
         }
-        throw new IllegalArgumentException();
     }
 
-    public boolean isLeader(Long userId) {
-        Long leaderId = participants.getLeader().getId();
-        return leaderId.equals(userId);
+    public boolean isLeader(User user) {
+        User leader = participants.getLeader();
+        return leader.equals(user);
     }
 
     public void addParticipant(Participant participant) {

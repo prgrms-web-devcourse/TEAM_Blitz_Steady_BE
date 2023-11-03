@@ -17,8 +17,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@EqualsAndHashCode
 @Table(name = "users")
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
@@ -56,3 +56,4 @@ public class User {
     }
 
 }
+
