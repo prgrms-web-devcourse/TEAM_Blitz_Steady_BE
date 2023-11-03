@@ -12,7 +12,7 @@ public record SearchKeywordDto(
         boolean like
 ) {
 
-    public static SearchKeywordDto create(SteadySearchRequest request) {
+    public static SearchKeywordDto of(SteadySearchRequest request) {
         List<String> stackArr = Arrays.stream(request.stack().split(",")).toList();
         String mode = request.mode();
         List<String> positionArr = Arrays.stream(request.position().split(",")).toList();
@@ -22,6 +22,7 @@ public record SearchKeywordDto(
         }
         return new SearchKeywordDto(stackArr, mode, positionArr, like);
     }
+    // TODO: 2023/11/03 request의 각 필드들이 null인지 아닌지 체크
 
 }
 

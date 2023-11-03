@@ -22,7 +22,7 @@ import static dev.steady.steady.domain.QSteadyStack.steadyStack;
 @Repository
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SteadyQueryDslRepositoryImpl implements SteadyQueryDslRepository {
+public class SteadyRepositoryCustomImpl implements SteadyRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -30,9 +30,8 @@ public class SteadyQueryDslRepositoryImpl implements SteadyQueryDslRepository {
     public Page<Steady> findBySearchRequest(SearchKeywordDto keywordDto, Pageable pageable) {
         List<Steady> steadies = jpaQueryFactory
                 .selectFrom(steady)
-                .join(steady.steadyStacks, steadyStack)
-                .fetchJoin()
-                .join(steadyPosition)
+                .join(steady.steadyStacks, steadyStack).fetchJoin()
+                .join(steadyPosition).on(steady.id.eq(steadyPosition.steady.id))
                 .where(getStackCondition(keywordDto.stacks()),
                         getPositionCondition(keywordDto.positions()),
                         getModeCondition(keywordDto.mode()))
@@ -62,4 +61,5 @@ public class SteadyQueryDslRepositoryImpl implements SteadyQueryDslRepository {
         return steady.steadyMode.eq(SteadyMode.from(mode));
     }
 
+    // TODO: 2023/11/03 각 조건별 Null 체크 등 추가 예정
 }
