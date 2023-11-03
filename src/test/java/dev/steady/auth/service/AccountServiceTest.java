@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import static dev.steady.auth.service.Fixtures.AccountFixture.createAccount;
-import static dev.steady.user.fixture.UserFixtures.createUser;
+import static dev.steady.user.fixture.UserFixtures.createFirstUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -51,7 +51,7 @@ class AccountServiceTest {
         var position = UserFixtures.createPosition();
         var savedPosition = positionRepository.save(position);
 
-        var user = createUser(savedPosition);
+        var user = createFirstUser(savedPosition);
         var savedUser = userRepository.save(user);
 
         // when
