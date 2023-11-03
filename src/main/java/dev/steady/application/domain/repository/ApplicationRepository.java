@@ -12,7 +12,7 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
 
     List<Application> findBySteadyIdAndUserIdAndStatus(Long steadyId, Long userId, ApplicationStatus status);
 
-    Slice<Application> findAllBySteadyId(Long steadyId, Pageable pageable);
+    Slice<Application> findAllBySteadyIdAndStatus(Long steadyId, ApplicationStatus status, Pageable pageable);
 
     default Application getById(Long applicationId) {
         return findById(applicationId)

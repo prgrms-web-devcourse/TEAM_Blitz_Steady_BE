@@ -17,6 +17,7 @@ import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
+import static dev.steady.application.domain.ApplicationStatus.WAITING;
 import static dev.steady.application.fixture.ApplicationFixture.createApplication;
 import static dev.steady.steady.fixture.SteadyFixtures.creatSteady;
 import static dev.steady.user.fixture.UserFixtures.createFirstUser;
@@ -68,7 +69,9 @@ class ApplicationRepositoryTest {
         applicationRepository.saveAll(List.of(createApplication(secondUser, steady),
                 createApplication(thirdUser, steady)));
         //when
-        Slice<Application> applications = applicationRepository.findAllBySteadyId(steady.getId(),
+        Slice<Application> applications = applicationRepository.findAllBySteadyIdAndStatus(
+                steady.getId(),
+                WAITING,
                 PageRequest.of(0, 10));
         //then
         assertAll(
