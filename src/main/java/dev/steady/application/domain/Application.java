@@ -3,7 +3,7 @@ package dev.steady.application.domain;
 import dev.steady.global.entity.BaseEntity;
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -13,14 +13,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static dev.steady.application.domain.ApplicationStatus.WAITING;
 
@@ -42,8 +38,8 @@ public class Application extends BaseEntity {
     @JoinColumn(name = "steady_id")
     private Steady steady;
 
-    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<SurveyResult> surveyResults = new ArrayList<>();
+    @Embedded
+    private SurveyResults surveyResults;
 
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
@@ -55,8 +51,7 @@ public class Application extends BaseEntity {
     }
 
     public void addSurveyResult(SurveyResult surveyResult) {
-        surveyResult.setApplication(this);
-        surveyResults.add(surveyResult);
+        this.surveyResults.addSurveyResult(surveyResult, this);
     }
 
 }
