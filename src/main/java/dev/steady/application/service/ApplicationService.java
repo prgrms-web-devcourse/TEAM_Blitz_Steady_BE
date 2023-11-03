@@ -23,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static dev.steady.application.domain.ApplicationStatus.WAITING;
+
 @Service
 @RequiredArgsConstructor
 public class ApplicationService {
@@ -48,7 +50,7 @@ public class ApplicationService {
         User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
         steady.validateLeader(user);
-        Slice<Application> applications = applicationRepository.findAllBySteadyId(steadyId, pageable);
+        Slice<Application> applications = applicationRepository.findAllBySteadyIdAndStatus(steadyId, WAITING, pageable);
         Slice<ApplicationSummaryResponse> responses = applications.map(ApplicationSummaryResponse::from);
         return SliceResponse.from(responses);
     }
