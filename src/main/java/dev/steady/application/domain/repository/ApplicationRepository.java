@@ -14,4 +14,9 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
 
     Slice<Application> findAllBySteadyId(Long steadyId, Pageable pageable);
 
+    default Application getById(Long applicationId) {
+        return findById(applicationId)
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
 }

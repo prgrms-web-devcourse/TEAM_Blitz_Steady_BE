@@ -43,4 +43,10 @@ public class ApplicationController {
         return applicationService.getApplications(steadyId, userInfo, pageable);
     }
 
+    @GetMapping("/application/{applicationId}")
+    public void getApplicationDetail(@PathVariable Long applicationId,
+                                     @Auth UserInfo userInfo) {
+        applicationService.getApplicationDetail(applicationId, userInfo);
+    }
+
 }
