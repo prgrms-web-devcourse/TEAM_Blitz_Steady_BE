@@ -67,17 +67,18 @@ public class SteadyService {
     }
 
     @Transactional(readOnly = true)
-    public SteadyDetailResponse getDetailSteady(Long steadyId, UserInfo userinfo) {
+    public SteadyDetailResponse getDetailSteady(Long steadyId, UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
         List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steady.getId());
 
-        if (steady.isLeader(userinfo.userId())) {
+        if (steady.isLeader(user)) {
             return SteadyDetailResponse.of(steady, positions, true, false);
         }
 
-        List<Application> applications = applicationRepository.findBySteadyIdAndUserIdAndStatus(
-                steady.getId(), userinfo.userId(), ApplicationStatus.WAITING);
-        if (!applications.isEmpty()) {
+        List<Application> list = applicationRepository.findBySteadyIdAndUserIdAndStatus(
+                steady.getId(), userInfo.userId(), ApplicationStatus.WAITING);
+        if (!list.isEmpty()) {
             return SteadyDetailResponse.of(steady, positions, false, true);
         }
 
@@ -86,8 +87,9 @@ public class SteadyService {
 
     @Transactional
     public Long updateSteady(Long steadyId, UserInfo userInfo, SteadyUpdateRequest request) {
+        User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
-        if (steady.isLeader(userInfo.userId())) {
+        if (steady.isLeader(user)) {
             List<Stack> stacks = getStacks(request.stacks());
             steady.update(request.name(),
                     request.bio(),
@@ -107,8 +109,9 @@ public class SteadyService {
 
     @Transactional
     public void promoteSteady(Long steadyId, UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
-        if (steady.isLeader(userInfo.userId())) {
+        if (steady.isLeader(user)) {
             steady.usePromotion();
             return;
         }
@@ -117,8 +120,9 @@ public class SteadyService {
 
     @Transactional
     public void finishSteady(Long steadyId, UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
-        if (steady.isLeader(userInfo.userId())) {
+        if (steady.isLeader(user)) {
             steady.finish();
             return;
         }
@@ -127,8 +131,9 @@ public class SteadyService {
 
     @Transactional
     public void deleteSteady(Long steadyId, UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
-        if (steady.isLeader(userInfo.userId()) && !steady.hasParticipants()) {
+        if (steady.isLeader(user) && !steady.hasParticipants()) {
             steadyPositionRepository.deleteBySteadyId(steadyId);
             steadyQuestionRepository.deleteBySteadyId(steadyId);
             steadyRepository.delete(steady);

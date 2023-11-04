@@ -59,8 +59,7 @@ public class ApplicationService {
     public ApplicationDetailResponse getApplicationDetail(Long applicationId, UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
         Application application = applicationRepository.getById(applicationId);
-        Steady steady = application.getSteady();
-        steady.validateLeader(user);
+        application.checkAccessOrThrow(user);
 
         SurveyResults surveyResults = application.getSurveyResults();
         return ApplicationDetailResponse.from(surveyResults);
