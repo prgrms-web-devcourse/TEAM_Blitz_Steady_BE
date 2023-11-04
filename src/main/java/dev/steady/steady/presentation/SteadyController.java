@@ -2,13 +2,16 @@ package dev.steady.steady.presentation;
 
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
+import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyPageRequest;
+import dev.steady.steady.dto.request.SteadySearchRequest;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.steady.service.SteadyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,8 +38,17 @@ public class SteadyController {
     }
 
     @GetMapping
-    public ResponseEntity<PageResponse<SteadySearchResponse>> getSteadiesPage(@RequestBody SteadyPageRequest request) {
-        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(request);
+    public ResponseEntity<PageResponse<SteadySearchResponse>> getSteadiesPage(SteadyPageRequest request) {
+        Pageable pageable = request.toPageable();
+        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<PageResponse<SteadySearchResponse>> getSteadies(SteadySearchRequest request) {
+        SearchConditionDto condition = SearchConditionDto.from(request);
+        Pageable pageable = request.toPageable();
+        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(condition, pageable);
         return ResponseEntity.ok(response);
     }
 

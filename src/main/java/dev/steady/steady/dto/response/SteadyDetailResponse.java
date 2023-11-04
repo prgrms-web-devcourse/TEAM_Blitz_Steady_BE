@@ -25,6 +25,7 @@ public record SteadyDetailResponse(
         String title,
         String content,
         List<String> positions,
+        // TODO: 2023/11/02 position 도 아이디 같이 보내주기 (새로운 dto로 감싸기)
         List<SteadyStackResponse> stacks,
         boolean isLeader,
         boolean isSubmittedUser

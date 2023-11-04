@@ -3,15 +3,19 @@ package dev.steady.steady.fixture;
 import dev.steady.steady.domain.ScheduledPeriod;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyMode;
+import dev.steady.steady.domain.SteadyPosition;
+import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.SteadyType;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
+import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static dev.steady.steady.domain.SteadyMode.ONLINE;
 import static dev.steady.steady.domain.SteadyType.STUDY;
@@ -66,6 +70,20 @@ public class SteadyFixtures {
                 .stacks(List.of(stack))
                 .steadyMode(ONLINE)
                 .build();
+    }
+
+    public static SteadyPosition createSteadyPosition(Steady steady, Position position) {
+        return SteadyPosition.builder().steady(steady).position(position).build();
+    }
+
+    public static List<SteadyQuestion> createSteadyQuestion(Steady steady, List<String> questions) {
+        return IntStream.range(0, questions.size())
+                .mapToObj(index -> dev.steady.steady.domain.SteadyQuestion.builder()
+                        .content(questions.get(index))
+                        .sequence(index + 1)
+                        .steady(steady)
+                        .build())
+                .toList();
     }
 
 }

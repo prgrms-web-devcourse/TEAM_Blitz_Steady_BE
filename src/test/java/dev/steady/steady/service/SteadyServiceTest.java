@@ -124,7 +124,7 @@ class SteadyServiceTest {
 
         // when
         var steadyPageRequest = new SteadyPageRequest(0, "asc");
-        var steadiesResponse = steadyService.getSteadies(steadyPageRequest);
+        var steadiesResponse = steadyService.getSteadies(steadyPageRequest.toPageable());
 
         // then
         List<Steady> steadies = steadyRepository.findAll();

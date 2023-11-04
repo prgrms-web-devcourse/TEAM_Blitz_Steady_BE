@@ -2,6 +2,7 @@ package dev.steady.application.domain.repository;
 
 import dev.steady.application.domain.Application;
 import dev.steady.global.config.JpaConfig;
+import dev.steady.global.config.QueryDslConfig;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
@@ -29,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
-@Import(JpaConfig.class)
+@Import({JpaConfig.class, QueryDslConfig.class})
 class ApplicationRepositoryTest {
 
     @Autowired

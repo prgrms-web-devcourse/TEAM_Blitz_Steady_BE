@@ -4,6 +4,10 @@ public enum SteadyStatus {
 
     RECRUITING,
     CLOSED,
-    FINISHED
+    FINISHED;
+
+    public static SteadyStatus from(String status) {
+        return SteadyStatus.valueOf(status.toUpperCase());
+    }
 
 }

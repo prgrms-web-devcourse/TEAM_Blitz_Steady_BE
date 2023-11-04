@@ -1,6 +1,7 @@
 package dev.steady.template.domain.repository;
 
 import dev.steady.global.config.JpaConfig;
+import dev.steady.global.config.QueryDslConfig;
 import dev.steady.template.domain.Template;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.UserRepository;
@@ -17,7 +18,7 @@ import static dev.steady.template.fixture.TemplateFixture.createTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import(JpaConfig.class)
+@Import({JpaConfig.class, QueryDslConfig.class})
 class TemplateRepositoryTest {
 
     @Autowired
