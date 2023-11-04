@@ -54,7 +54,7 @@ public class SteadyController {
 
     @GetMapping("/{steadyId}")
     public ResponseEntity<SteadyDetailResponse> getDetailSteady(@PathVariable Long steadyId,
-                                                                @Auth UserInfo userInfo) {
+                                                                @Auth(required = false) UserInfo userInfo) {
         SteadyDetailResponse response = steadyService.getDetailSteady(steadyId, userInfo);
         return ResponseEntity.ok(response);
     }

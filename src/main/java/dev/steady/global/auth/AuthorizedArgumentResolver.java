@@ -26,7 +26,7 @@ public class AuthorizedArgumentResolver implements HandlerMethodArgumentResolver
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         UserInfo userInfo = UserInfo.from(authContext);
-        if (userRepository.existsById(userInfo.userId())) {
+        if (userInfo.isAnonymous() || userRepository.existsById(userInfo.userId())) {
             return userInfo;
         }
         throw new IllegalArgumentException();
