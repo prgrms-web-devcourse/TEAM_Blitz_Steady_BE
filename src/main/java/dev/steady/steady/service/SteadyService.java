@@ -1,7 +1,5 @@
 package dev.steady.steady.service;
 
-import dev.steady.application.domain.Application;
-import dev.steady.application.domain.ApplicationStatus;
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.domain.Steady;
@@ -30,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.IntStream;
+
+import static dev.steady.application.domain.ApplicationStatus.WAITING;
 
 @Service
 @RequiredArgsConstructor
@@ -76,21 +76,22 @@ public class SteadyService {
 
     @Transactional(readOnly = true)
     public SteadyDetailResponse getDetailSteady(Long steadyId, UserInfo userInfo) {
-        User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
         List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steady.getId());
 
-        if (steady.isLeader(user)) {
-            return SteadyDetailResponse.of(steady, positions, true, false);
+        boolean isLeader = false;
+        boolean isWaitingApplication = false;
+
+        if (userInfo.isAuthenticated()) {
+            User user = userRepository.getUserBy(userInfo.userId());
+            isLeader = steady.isLeader(user);
+
+            if (!isLeader) {
+                isWaitingApplication = isWaitingApplication(user, steady);
+            }
         }
 
-        List<Application> list = applicationRepository.findBySteadyIdAndUserIdAndStatus(
-                steady.getId(), userInfo.userId(), ApplicationStatus.WAITING);
-        if (!list.isEmpty()) {
-            return SteadyDetailResponse.of(steady, positions, false, true);
-        }
-
-        return SteadyDetailResponse.of(steady, positions, false, false);
+        return SteadyDetailResponse.of(steady, positions, isLeader, isWaitingApplication);
     }
 
     @Transactional
@@ -148,6 +149,13 @@ public class SteadyService {
             return;
         }
         throw new IllegalArgumentException();
+    }
+
+    private boolean isWaitingApplication(User user, Steady steady) {
+        return applicationRepository.findBySteadyIdAndUserIdAndStatus(steady.getId(), user.getId(), WAITING)
+                .stream()
+                .findFirst()
+                .isPresent();
     }
 
     private List<Stack> getStacks(List<Long> stacks) {
