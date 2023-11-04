@@ -60,6 +60,14 @@ public class Application extends BaseEntity {
         this.surveyResults.addSurveyResult(surveyResult, this);
     }
 
+    public void updateStatus(ApplicationStatus status, User user) {
+        if (steady.isLeader(user) && this.status == WAITING) {
+            this.status = status;
+            return;
+        }
+        throw new IllegalArgumentException();
+    }
+
     private boolean hasAccess(User user) {
         return isCurrentUser(user) || isLeader(user);
     }
