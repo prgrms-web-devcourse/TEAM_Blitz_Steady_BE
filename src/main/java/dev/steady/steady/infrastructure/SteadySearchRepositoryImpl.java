@@ -28,7 +28,7 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<Steady> findAllByCondition(SearchConditionDto condition, Pageable pageable) {
+    public Page<Steady> findAllBySearchCondition(SearchConditionDto condition, Pageable pageable) {
         List<Steady> steadies = jpaQueryFactory
                 .selectFrom(steady)
                 .join(steady.steadyStacks, steadyStack).fetchJoin()

@@ -69,7 +69,7 @@ public class SteadyService {
 
     @Transactional(readOnly = true)
     public PageResponse<SteadySearchResponse> getSteadies(SearchConditionDto conditionDto, Pageable pageable) {
-        Page<Steady> steadies = steadyRepository.findAllByCondition(conditionDto, pageable);
+        Page<Steady> steadies = steadyRepository.findAllBySearchCondition(conditionDto, pageable);
         Page<SteadySearchResponse> searchResponses = steadies.map(SteadySearchResponse::from);
         return PageResponse.from(searchResponses);
     }
