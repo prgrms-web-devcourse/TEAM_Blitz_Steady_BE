@@ -1,10 +1,12 @@
 package dev.steady.global.auth;
 
+import org.springframework.test.util.ReflectionTestUtils;
+
 public class AuthFixture {
 
     public static AuthContext createAuthContext(Long userId) {
         var authContext = new AuthContext();
-        authContext.setUserId(userId);
+        ReflectionTestUtils.setField(authContext, "userId", userId);
         return authContext;
     }
 
