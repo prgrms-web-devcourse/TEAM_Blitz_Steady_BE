@@ -39,7 +39,7 @@ public class Application extends BaseEntity {
     private Steady steady;
 
     @Embedded
-    private SurveyResults surveyResults = new SurveyResults();
+    private final SurveyResults surveyResults = new SurveyResults();
 
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
@@ -58,6 +58,14 @@ public class Application extends BaseEntity {
 
     public void addSurveyResult(SurveyResult surveyResult) {
         this.surveyResults.addSurveyResult(surveyResult, this);
+    }
+
+    public void updateStatus(ApplicationStatus status, User user) {
+        if (steady.isLeader(user) && this.status == WAITING) {
+            this.status = status;
+            return;
+        }
+        throw new IllegalArgumentException();
     }
 
     private boolean hasAccess(User user) {

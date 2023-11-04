@@ -4,6 +4,7 @@ import dev.steady.application.domain.Application;
 import dev.steady.application.domain.SurveyResult;
 import dev.steady.application.domain.SurveyResults;
 import dev.steady.application.domain.repository.ApplicationRepository;
+import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
 import dev.steady.application.dto.request.SurveyResultRequest;
 import dev.steady.application.dto.response.ApplicationDetailResponse;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
@@ -63,6 +64,15 @@ public class ApplicationService {
 
         SurveyResults surveyResults = application.getSurveyResults();
         return ApplicationDetailResponse.from(surveyResults);
+    }
+
+    @Transactional
+    public void updateApplicationStatus(Long applicationId,
+                                        ApplicationStatusUpdateRequest request,
+                                        UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        Application application = applicationRepository.getById(applicationId);
+        application.updateStatus(request.status(), user);
     }
 
     private List<SurveyResult> createSurveyResult(Application application, List<SurveyResultRequest> surveys) {
