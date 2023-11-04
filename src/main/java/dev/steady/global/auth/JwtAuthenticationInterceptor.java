@@ -11,6 +11,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -39,6 +40,10 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
 
         String accessToken = getTokenFromHeader(request, AUTHORIZATION);
 
+        if (accessToken == null && !isAuthRequired(handlerMethod)) {
+            return true;
+        }
+
         return true;
     }
 
@@ -47,6 +52,16 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
         return Arrays.stream(methodParameters)
                 .noneMatch(parameter -> parameter.getParameterType().isAssignableFrom(UserInfo.class)
                                         && parameter.hasParameterAnnotation(Auth.class));
+    }
+
+    private boolean isAuthRequired(HandlerMethod method) {
+        MethodParameter[] methodParameters = method.getMethodParameters();
+        return Arrays.stream(methodParameters)
+                .map(parameter -> parameter.getParameterAnnotation(Auth.class))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .filter(Auth::required)
+                .isPresent();
     }
 
     private String getTokenFromHeader(HttpServletRequest request, String headerName) {
