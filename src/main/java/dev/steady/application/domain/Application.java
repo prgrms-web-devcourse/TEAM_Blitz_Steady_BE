@@ -39,7 +39,7 @@ public class Application extends BaseEntity {
     private Steady steady;
 
     @Embedded
-    private SurveyResults surveyResults = new SurveyResults();
+    private final SurveyResults surveyResults = new SurveyResults();
 
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;

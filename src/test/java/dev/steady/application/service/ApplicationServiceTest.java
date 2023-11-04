@@ -179,7 +179,7 @@ class ApplicationServiceTest {
 
     @DisplayName("스테디 리더는 신청서의 상태가 WAITING 일 때 상태를 변경할 수 있다.")
     @Test
-    void createSurveyResultTest(){
+    void createSurveyResultTest() {
         //given
         var position = positionRepository.save(createPosition());
         var leader = userRepository.save(createFirstUser(position));
