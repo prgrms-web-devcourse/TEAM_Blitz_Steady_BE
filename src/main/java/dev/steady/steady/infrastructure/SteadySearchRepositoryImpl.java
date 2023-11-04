@@ -5,7 +5,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.dto.SearchConditionDto;
-import dev.steady.steady.infrastructure.util.DynamicQueryUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +18,7 @@ import java.util.List;
 import static dev.steady.steady.domain.QSteady.steady;
 import static dev.steady.steady.domain.QSteadyPosition.steadyPosition;
 import static dev.steady.steady.domain.QSteadyStack.steadyStack;
-import static dev.steady.steady.infrastructure.util.DynamicQueryUtils.*;
+import static dev.steady.steady.infrastructure.util.DynamicQueryUtils.filterCondition;
 
 @Repository
 @RequiredArgsConstructor

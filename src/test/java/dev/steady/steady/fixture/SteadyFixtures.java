@@ -1,6 +1,12 @@
 package dev.steady.steady.fixture;
 
-import dev.steady.steady.domain.*;
+import dev.steady.steady.domain.ScheduledPeriod;
+import dev.steady.steady.domain.Steady;
+import dev.steady.steady.domain.SteadyMode;
+import dev.steady.steady.domain.SteadyPosition;
+import dev.steady.steady.domain.SteadyQuestion;
+import dev.steady.steady.domain.SteadyStatus;
+import dev.steady.steady.domain.SteadyType;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.user.domain.Position;
