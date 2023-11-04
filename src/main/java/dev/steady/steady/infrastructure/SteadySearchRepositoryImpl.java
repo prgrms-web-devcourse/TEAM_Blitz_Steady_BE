@@ -1,5 +1,6 @@
 package dev.steady.steady.infrastructure;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import dev.steady.steady.domain.Steady;
@@ -11,12 +12,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
 import static dev.steady.steady.domain.QSteady.steady;
 import static dev.steady.steady.domain.QSteadyPosition.steadyPosition;
 import static dev.steady.steady.domain.QSteadyStack.steadyStack;
+import static dev.steady.steady.infrastructure.util.DynamicQueryUtils.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,14 +34,7 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
                 .selectFrom(steady)
                 .join(steady.steadyStacks, steadyStack).fetchJoin()
                 .join(steadyPosition).on(steady.id.eq(steadyPosition.steady.id))
-                .where(
-                        DynamicQueryUtils.equalCompare(condition.steadyMode(), steady.steadyMode::eq),
-                        DynamicQueryUtils.filterCondition(condition.stacks(), steadyStack.stack.name::in),
-                        DynamicQueryUtils.filterCondition(condition.positions(), steadyPosition.position.name::in),
-                        DynamicQueryUtils.equalCompare(condition.status(), steady.status::eq),
-                        DynamicQueryUtils.filterCondition(condition.keyword(), steady.title::contains)
-                                .or(DynamicQueryUtils.filterCondition(condition.keyword(), steady.content::contains))
-                )
+                .where(searchCondition(condition))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -46,17 +42,22 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
         JPAQuery<Long> count = jpaQueryFactory
                 .select(steady.count())
                 .from(steady)
-                .where(
-                        DynamicQueryUtils.equalCompare(condition.steadyMode(), steady.steadyMode::eq),
-                        DynamicQueryUtils.filterCondition(condition.stacks(), steadyStack.stack.name::in),
-                        DynamicQueryUtils.filterCondition(condition.positions(), steadyPosition.position.name::in),
-                        DynamicQueryUtils.equalCompare(condition.status(), steady.status::eq),
-                        DynamicQueryUtils.filterCondition(condition.keyword(), steady.title::contains)
-                                .or(DynamicQueryUtils.filterCondition(condition.keyword(), steady.content::contains))
-                );
-
+                .where(searchCondition(condition));
         // TODO: 2023-11-04 좋아요 (북마크) 구현된다면 where 조건 추가
         return PageableExecutionUtils.getPage(steadies, pageable, count::fetchOne);
+    }
+
+    private BooleanBuilder searchCondition(SearchConditionDto condition) {
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        booleanBuilder.and(filterCondition(condition.steadyMode(), steady.steadyMode::eq));
+        booleanBuilder.and(filterCondition(condition.stacks(), steadyStack.stack.name::in));
+        booleanBuilder.and(filterCondition(condition.positions(), steadyPosition.position.name::in));
+        booleanBuilder.and(filterCondition(condition.status(), steady.status::eq));
+        if (StringUtils.hasText(condition.keyword())) {
+            return booleanBuilder.and(filterCondition(condition.keyword(), steady.title::contains))
+                    .or(filterCondition(condition.keyword(), steady.content::contains));
+        }
+        return booleanBuilder;
     }
 
 }

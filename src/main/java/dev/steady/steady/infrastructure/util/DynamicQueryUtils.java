@@ -26,8 +26,4 @@ public class DynamicQueryUtils {
                 .orElse(null);
     }
 
-    public static <T> BooleanExpression equalCompare(T value, Function<T, BooleanExpression> function) {
-        return value == null ? null : function.apply(value);
-    }
-
 }
