@@ -1,5 +1,6 @@
 package dev.steady.steady.service;
 
+import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyStack;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
+import static dev.steady.steady.fixture.SteadyFixtures.creatSteady;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyRequest;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyUpdateRequest;
 import static dev.steady.user.fixture.UserFixtures.createAnotherPosition;
@@ -176,6 +178,101 @@ class SteadyServiceTest {
                         .map(SteadyStackResponse::from)
                         .toList()),
                 () -> assertThat(response.isLeader()).isTrue(),
+                () -> assertThat(response.isSubmittedUser()).isFalse()
+        );
+    }
+
+    @Test
+    @DisplayName("리더가 아닌 사용자도 스테디 식별자를 통해 스테디 상세 조회를 할 수 있다.")
+    void getDetailSteadyNotLeaderTest() {
+        // given
+        var position = createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = createFirstUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var otherUser = userRepository.save(createSecondUser(savedPosition));
+        var savedStack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(otherUser.getId());
+
+        var steady = steadyRepository.save(creatSteady(savedUser, savedStack));
+        var steadyId = steady.getId();
+        entityManager.flush();
+        entityManager.clear();
+
+        // when
+        var response = steadyService.getDetailSteady(steadyId, userInfo);
+
+        // then
+        var foundSteady = steadyRepository.findById(steadyId).get();
+        var positions = steadyPositionRepository.findBySteadyId(steadyId);
+        assertAll(
+                () -> assertThat(response.id()).isEqualTo(foundSteady.getId()),
+                () -> assertThat(response.leaderResponse()).isEqualTo(LeaderResponse.from(foundSteady.getParticipants().getLeader())),
+                () -> assertThat(response.name()).isEqualTo(foundSteady.getName()),
+                () -> assertThat(response.title()).isEqualTo(foundSteady.getTitle()),
+                () -> assertThat(response.type()).isEqualTo(foundSteady.getType()),
+                () -> assertThat(response.status()).isEqualTo(foundSteady.getStatus()),
+                () -> assertThat(response.participantLimit()).isEqualTo(String.valueOf(foundSteady.getParticipantLimit())),
+                () -> assertThat(response.numberOfParticipants()).isEqualTo(String.valueOf(foundSteady.getNumberOfParticipants())),
+                () -> assertThat(response.steadyMode()).isEqualTo(foundSteady.getSteadyMode()),
+                () -> assertThat(response.scheduledPeriod()).isEqualTo(foundSteady.getScheduledPeriod()),
+                () -> assertThat(response.deadline()).isEqualTo(foundSteady.getDeadline()),
+                () -> assertThat(response.title()).isEqualTo(foundSteady.getTitle()),
+                () -> assertThat(response.content()).isEqualTo(foundSteady.getContent()),
+                () -> assertThat(response.positions()).isEqualTo(positions.stream()
+                        .map(v -> v.getPosition().getName())
+                        .toList()),
+                () -> assertThat(response.stacks()).isEqualTo(foundSteady.getSteadyStacks().stream()
+                        .map(SteadyStackResponse::from)
+                        .toList()),
+                () -> assertThat(response.isLeader()).isFalse(),
+                () -> assertThat(response.isSubmittedUser()).isFalse()
+        );
+    }
+
+    @Test
+    @DisplayName("로그인 하지 않은 사용자도 스테디 식별자를 통해 스테디 상세 조회를 할 수 있다.")
+    void getDetailSteadyNotLoginUserTest() {
+        // given
+        var position = createPosition();
+        var savedPosition = positionRepository.save(position);
+        var user = createFirstUser(savedPosition);
+        var savedUser = userRepository.save(user);
+        var savedStack = stackRepository.save(createStack());
+        var userInfo = new UserInfo(null);
+
+        var steady = steadyRepository.save(creatSteady(savedUser, savedStack));
+        var steadyId = steady.getId();
+        entityManager.flush();
+        entityManager.clear();
+
+        // when
+        var response = steadyService.getDetailSteady(steadyId, userInfo);
+
+        // then
+        var foundSteady = steadyRepository.findById(steadyId).get();
+        var positions = steadyPositionRepository.findBySteadyId(steadyId);
+        assertAll(
+                () -> assertThat(response.id()).isEqualTo(foundSteady.getId()),
+                () -> assertThat(response.leaderResponse()).isEqualTo(LeaderResponse.from(foundSteady.getParticipants().getLeader())),
+                () -> assertThat(response.name()).isEqualTo(foundSteady.getName()),
+                () -> assertThat(response.title()).isEqualTo(foundSteady.getTitle()),
+                () -> assertThat(response.type()).isEqualTo(foundSteady.getType()),
+                () -> assertThat(response.status()).isEqualTo(foundSteady.getStatus()),
+                () -> assertThat(response.participantLimit()).isEqualTo(String.valueOf(foundSteady.getParticipantLimit())),
+                () -> assertThat(response.numberOfParticipants()).isEqualTo(String.valueOf(foundSteady.getNumberOfParticipants())),
+                () -> assertThat(response.steadyMode()).isEqualTo(foundSteady.getSteadyMode()),
+                () -> assertThat(response.scheduledPeriod()).isEqualTo(foundSteady.getScheduledPeriod()),
+                () -> assertThat(response.deadline()).isEqualTo(foundSteady.getDeadline()),
+                () -> assertThat(response.title()).isEqualTo(foundSteady.getTitle()),
+                () -> assertThat(response.content()).isEqualTo(foundSteady.getContent()),
+                () -> assertThat(response.positions()).isEqualTo(positions.stream()
+                        .map(v -> v.getPosition().getName())
+                        .toList()),
+                () -> assertThat(response.stacks()).isEqualTo(foundSteady.getSteadyStacks().stream()
+                        .map(SteadyStackResponse::from)
+                        .toList()),
+                () -> assertThat(response.isLeader()).isFalse(),
                 () -> assertThat(response.isSubmittedUser()).isFalse()
         );
     }
