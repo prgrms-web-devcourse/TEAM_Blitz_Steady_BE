@@ -1,6 +1,9 @@
 package dev.steady.application.service;
 
+import dev.steady.application.domain.Application;
+import dev.steady.application.domain.ApplicationStatus;
 import dev.steady.application.domain.repository.ApplicationRepository;
+import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
 import dev.steady.application.dto.request.SurveyResultRequest;
 import dev.steady.application.dto.response.ApplicationDetailResponse;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
@@ -20,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
+import static dev.steady.application.domain.ApplicationStatus.ACCEPTED;
 import static dev.steady.application.fixture.ApplicationFixture.createApplication;
 import static dev.steady.application.fixture.SurveyResultFixture.createSurveyResultRequests;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
@@ -109,7 +113,7 @@ class ApplicationServiceTest {
                         .containsExactly("Jun", "Young"));
     }
 
-    @DisplayName("스터디 리더가 아니팅 신청서 목록 조회를 할 수 없다.")
+    @DisplayName("스터디 리더가 아니면 신청서 목록 조회를 할 수 없다.")
     @Test
     void getApplicationsFailTest() {
         //given
@@ -130,7 +134,7 @@ class ApplicationServiceTest {
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("스테디 리더는 신청서를 상세조회 할 수 있다.")
+    @DisplayName("스테디 리더는 신청서를 상세조회할 수 있다.")
     @Test
     void getApplicationDetailTest() {
         //given
@@ -153,7 +157,7 @@ class ApplicationServiceTest {
                 );
     }
 
-    @DisplayName("스테디 리더가 아니면 신청서를 상세조회 할 수 없다.")
+    @DisplayName("스테디 리더가 아니면 신청서를 상세조회할 수 없다.")
     @Test
     void getApplicationDetailFailTest() {
         //given
@@ -169,6 +173,26 @@ class ApplicationServiceTest {
         //then
         assertThatThrownBy(() -> applicationService.getApplicationDetail(application.getId(), userInfo))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("스테디 리더는 신청서의 상태가 WAITING 일 때 상태를 변경할 수 있다.")
+    @Test
+    void createSurveyResultTest(){
+        //given
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var savedStack = stackRepository.save(createStack());
+        var steady = steadyRepository.save(creatSteady(leader, savedStack));
+        var secondUser = userRepository.save(createSecondUser(position));
+        var application = applicationRepository.save(createApplication(secondUser, steady));
+        var userInfo = createUserInfo(leader.getId());
+        var request = new ApplicationStatusUpdateRequest(ACCEPTED);
+        //when
+        applicationService.updateApplicationStatus(application.getId(), request, userInfo);
+        //then
+        Application foundApplication = applicationRepository.getById(application.getId());
+        ApplicationStatus status = foundApplication.getStatus();
+        assertThat(status).isEqualTo(ACCEPTED);
     }
 
 }
