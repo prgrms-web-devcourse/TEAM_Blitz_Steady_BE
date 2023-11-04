@@ -36,8 +36,8 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
                         DynamicQueryUtils.filterCondition(condition.stacks(), steadyStack.stack.name::in),
                         DynamicQueryUtils.filterCondition(condition.positions(), steadyPosition.position.name::in),
                         DynamicQueryUtils.equalCompare(condition.status(), steady.status::eq),
-                        DynamicQueryUtils.filterCondition(condition.keyword(), steady.title::in),
-                        DynamicQueryUtils.filterCondition(condition.keyword(), steady.content::in)
+                        DynamicQueryUtils.filterCondition(condition.keyword(), steady.title::contains)
+                                .or(DynamicQueryUtils.filterCondition(condition.keyword(), steady.content::contains))
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -51,8 +51,8 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
                         DynamicQueryUtils.filterCondition(condition.stacks(), steadyStack.stack.name::in),
                         DynamicQueryUtils.filterCondition(condition.positions(), steadyPosition.position.name::in),
                         DynamicQueryUtils.equalCompare(condition.status(), steady.status::eq),
-                        DynamicQueryUtils.filterCondition(condition.keyword(), steady.title::in),
-                        DynamicQueryUtils.filterCondition(condition.keyword(), steady.content::in)
+                        DynamicQueryUtils.filterCondition(condition.keyword(), steady.title::contains)
+                                .or(DynamicQueryUtils.filterCondition(condition.keyword(), steady.content::contains))
                 );
 
         // TODO: 2023-11-04 좋아요 (북마크) 구현된다면 where 조건 추가
