@@ -24,15 +24,13 @@ public class JwtResolver {
         return Authentication.from(claims);
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parser()
                     .verifyWith(key)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-
-            return true;
         } catch (IllegalArgumentException exception) {
             throw new JwtInvalidException("토큰이 존재하지 않습니다.");
         }
