@@ -219,5 +219,4 @@ class ApplicationServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-
 }
