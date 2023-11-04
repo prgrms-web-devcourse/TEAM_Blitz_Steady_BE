@@ -22,11 +22,21 @@ public class QApplication extends EntityPathBase<Application> {
 
     public static final QApplication application = new QApplication("application");
 
+    public final dev.steady.global.entity.QBaseEntity _super = new dev.steady.global.entity.QBaseEntity(this);
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
+
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final EnumPath<ApplicationStatus> status = createEnum("status", ApplicationStatus.class);
 
     public final dev.steady.steady.domain.QSteady steady;
+
+    public final QSurveyResults surveyResults;
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public final dev.steady.user.domain.QUser user;
 
@@ -49,6 +59,7 @@ public class QApplication extends EntityPathBase<Application> {
     public QApplication(Class<? extends Application> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.steady = inits.isInitialized("steady") ? new dev.steady.steady.domain.QSteady(forProperty("steady"), inits.get("steady")) : null;
+        this.surveyResults = inits.isInitialized("surveyResults") ? new QSurveyResults(forProperty("surveyResults")) : null;
         this.user = inits.isInitialized("user") ? new dev.steady.user.domain.QUser(forProperty("user"), inits.get("user")) : null;
     }
 
