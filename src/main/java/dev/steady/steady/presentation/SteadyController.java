@@ -44,7 +44,6 @@ public class SteadyController {
         return ResponseEntity.ok(response);
     }
 
-    // TODO: 2023-11-04 아래 메서드의 엔드포인트와 메서드명 고민
     @GetMapping("/search")
     public ResponseEntity<PageResponse<SteadySearchResponse>> getSteadies(SteadySearchRequest request) {
         SearchConditionDto condition = SearchConditionDto.from(request);
