@@ -5,7 +5,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyMode;
-import dev.steady.steady.dto.SearchKeywordDto;
+import dev.steady.steady.dto.SearchConditionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,19 +22,19 @@ import static dev.steady.steady.domain.QSteadyStack.steadyStack;
 @Repository
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SteadyRepositoryCustomImpl implements SteadyRepositoryCustom {
+public class SteadySearchRepositoryImpl implements SteadySearchRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<Steady> findBySearchRequest(SearchKeywordDto keywordDto, Pageable pageable) {
+    public Page<Steady> findBySearchRequest(SearchConditionDto condition, Pageable pageable) {
         List<Steady> steadies = jpaQueryFactory
                 .selectFrom(steady)
                 .join(steady.steadyStacks, steadyStack).fetchJoin()
                 .join(steadyPosition).on(steady.id.eq(steadyPosition.steady.id))
-                .where(getStackCondition(keywordDto.stacks()),
-                        getPositionCondition(keywordDto.positions()),
-                        getModeCondition(keywordDto.mode()))
+                .where(getStackCondition(condition.stacks()),
+                        getPositionCondition(condition.positions()),
+                        getModeCondition(condition.mode()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -42,9 +42,9 @@ public class SteadyRepositoryCustomImpl implements SteadyRepositoryCustom {
         JPAQuery<Long> count = jpaQueryFactory
                 .select(steady.count())
                 .from(steady)
-                .where(getStackCondition(keywordDto.stacks()),
-                        getPositionCondition(keywordDto.positions()),
-                        getModeCondition(keywordDto.mode()));
+                .where(getStackCondition(condition.stacks()),
+                        getPositionCondition(condition.positions()),
+                        getModeCondition(condition.mode()));
 
         return PageableExecutionUtils.getPage(steadies, pageable, count::fetchOne);
     }

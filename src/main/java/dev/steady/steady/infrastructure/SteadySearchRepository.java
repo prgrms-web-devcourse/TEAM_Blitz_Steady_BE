@@ -1,12 +1,12 @@
 package dev.steady.steady.infrastructure;
 
 import dev.steady.steady.domain.Steady;
-import dev.steady.steady.dto.SearchKeywordDto;
+import dev.steady.steady.dto.SearchConditionDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface SteadyRepositoryCustom {
+public interface SteadySearchRepository {
 
-    Page<Steady> findBySearchRequest(SearchKeywordDto keywordDto, Pageable pageable);
+    Page<Steady> findBySearchRequest(SearchConditionDto condition, Pageable pageable);
 
 }
