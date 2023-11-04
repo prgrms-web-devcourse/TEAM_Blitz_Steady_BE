@@ -20,10 +20,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
 import static dev.steady.application.domain.ApplicationStatus.ACCEPTED;
+import static dev.steady.application.domain.ApplicationStatus.REJECTED;
 import static dev.steady.application.fixture.ApplicationFixture.createApplication;
 import static dev.steady.application.fixture.SurveyResultFixture.createSurveyResultRequests;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
@@ -194,5 +196,28 @@ class ApplicationServiceTest {
         ApplicationStatus status = foundApplication.getStatus();
         assertThat(status).isEqualTo(ACCEPTED);
     }
+
+    @DisplayName("스테디 리더는 신청서의 상태가 WAITING가 아닐 때 상태를 변경할 수 없다.")
+    @Test
+    void createSurveyResultFailTest() {
+        //given
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var savedStack = stackRepository.save(createStack());
+        var steady = steadyRepository.save(creatSteady(leader, savedStack));
+        var secondUser = userRepository.save(createSecondUser(position));
+        Application entity = createApplication(secondUser, steady);
+        ReflectionTestUtils.setField(entity, "status", REJECTED);
+        var application = applicationRepository.save(entity);
+        var userInfo = createUserInfo(leader.getId());
+        var request = new ApplicationStatusUpdateRequest(ACCEPTED);
+        //when
+        //then
+        assertThatThrownBy(() -> {
+            applicationService.updateApplicationStatus(application.getId(), request, userInfo);
+        })
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
 
 }
