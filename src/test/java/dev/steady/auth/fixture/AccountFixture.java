@@ -1,4 +1,4 @@
-package dev.steady.auth.service.Fixtures;
+package dev.steady.auth.fixture;
 
 import dev.steady.auth.domain.Account;
 import dev.steady.auth.domain.Platform;

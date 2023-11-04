@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import static dev.steady.auth.service.Fixtures.AccountFixture.createAccount;
+import static dev.steady.auth.fixture.AccountFixture.createAccount;
 import static dev.steady.user.fixture.UserFixtures.createFirstUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
