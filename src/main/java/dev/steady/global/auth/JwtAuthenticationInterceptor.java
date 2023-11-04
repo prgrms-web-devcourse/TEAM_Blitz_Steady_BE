@@ -1,5 +1,6 @@
 package dev.steady.global.auth;
 
+import dev.steady.auth.domain.Authentication;
 import dev.steady.auth.domain.JwtResolver;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,6 +44,10 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
         if (accessToken == null && !isAuthRequired(handlerMethod)) {
             return true;
         }
+
+        jwtResolver.validateToken(accessToken);
+        Authentication authentication = jwtResolver.getAuthentication(accessToken);
+        authContext.registerAuth(authentication);
 
         return true;
     }
