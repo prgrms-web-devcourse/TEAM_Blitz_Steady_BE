@@ -6,10 +6,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Arrays;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
 public class JwtAuthenticationInterceptor implements HandlerInterceptor {
@@ -34,6 +37,8 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        String accessToken = getTokenFromHeader(request, AUTHORIZATION);
+
         return true;
     }
 
@@ -42,6 +47,14 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
         return Arrays.stream(methodParameters)
                 .noneMatch(parameter -> parameter.getParameterType().isAssignableFrom(UserInfo.class)
                                         && parameter.hasParameterAnnotation(Auth.class));
+    }
+
+    private String getTokenFromHeader(HttpServletRequest request, String headerName) {
+        String token = request.getHeader(headerName);
+        if (StringUtils.hasText(token) && token.startsWith(BEARER_TYPE)) {
+            return token.substring(BEARER_TYPE.length());
+        }
+        return null;
     }
 
 }
