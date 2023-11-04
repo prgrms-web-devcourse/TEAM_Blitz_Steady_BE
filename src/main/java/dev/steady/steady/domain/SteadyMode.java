@@ -1,10 +1,7 @@
 package dev.steady.steady.domain;
 
-import lombok.NoArgsConstructor;
-
 import java.util.Arrays;
 
-@NoArgsConstructor
 public enum SteadyMode {
 
     ONLINE,
