@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface SteadySearchRepository {
 
-    Page<Steady> findBySearchRequest(SearchConditionDto condition, Pageable pageable);
+    Page<Steady> findAllByCondition(SearchConditionDto condition, Pageable pageable);
 
 }
