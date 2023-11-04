@@ -2,7 +2,7 @@ package dev.steady.steady.presentation;
 
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
-import dev.steady.steady.dto.SearchKeywordDto;
+import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.dto.request.SteadySearchRequest;
@@ -44,18 +44,20 @@ public class SteadyController {
         return ResponseEntity.ok(response);
     }
 
+    // TODO: 2023-11-04 아래 메서드의 엔드포인트와 메서드명 고민
+    @GetMapping("/search")
+    public ResponseEntity<PageResponse<SteadySearchResponse>> getSteadies(SteadySearchRequest request) {
+        SearchConditionDto condition = SearchConditionDto.from(request);
+        Pageable pageable = request.toPageable();
+        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(condition, pageable);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{steadyId}")
     public ResponseEntity<SteadyDetailResponse> getDetailSteady(@PathVariable Long steadyId,
                                                                 @Auth UserInfo userInfo) {
         SteadyDetailResponse response = steadyService.getDetailSteady(steadyId, userInfo);
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/search")
-    public void searchSteadies(SteadySearchRequest request) {
-        SearchKeywordDto.of(request);
-        Pageable pageable = request.toPageable();
-
     }
 
     @PatchMapping("/{steadyId}/promote")
