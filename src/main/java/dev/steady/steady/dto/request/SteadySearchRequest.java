@@ -7,10 +7,12 @@ import org.springframework.data.domain.Sort;
 public record SteadySearchRequest(
         Integer page,
         String direction,
+        String steadyMode,
         String stack,
-        String mode,
         String position,
-        String like
+        String status,
+        String like,
+        String keyword
 ) {
 
     public static final int DEFAULT_PAGE = 0;
