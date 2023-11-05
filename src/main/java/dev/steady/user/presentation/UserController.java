@@ -18,13 +18,15 @@ public class UserController {
 
     private final UserService userService;
     private final AccountService accountService;
+    private final OAuthService oAuthService;
 
     @PostMapping("/profile")
-    public Long createUser(@RequestBody UserCreateRequest request) {
+    public ResponseEntity<Void> createUser(@RequestBody UserCreateRequest request) {
         Long userId = userService.createUser(request);
-        accountService.registerUser(request.accountId(), userId);
+        Platform platform = accountService.registerUser(request.accountId(), userId);
+        URI authCodeRequestUrl = oAuthService.getAuthCodeRequestUrlProvider(platform);
 
-        return userId;
+        return ResponseEntity.created(authCodeRequestUrl).build();
     }
 
     @GetMapping("/profile/exist")
