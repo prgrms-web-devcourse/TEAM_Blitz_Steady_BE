@@ -80,7 +80,6 @@ class TemplateControllerTest extends ControllerTestConfig {
         given(templateService.getTemplates(userInfo)).willReturn(response);
 
         mockMvc.perform(get("/api/v1/template")
-                        .contentType(APPLICATION_JSON)
                         .header(AUTHORIZATION, TOKEN)
                 )
                 .andDo(document("template-summary",
@@ -112,7 +111,6 @@ class TemplateControllerTest extends ControllerTestConfig {
         given(templateService.getDetailTemplate(userInfo, 1L)).willReturn(response);
 
         mockMvc.perform(get("/api/v1/template/{templateId}", 1L)
-                        .contentType(APPLICATION_JSON)
                         .header(AUTHORIZATION, TOKEN)
                 )
                 .andDo(document("template-detail",
@@ -144,7 +142,6 @@ class TemplateControllerTest extends ControllerTestConfig {
         given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
 
         mockMvc.perform(delete("/api/v1/template/{templateId}", 1L)
-                        .contentType(APPLICATION_JSON)
                         .header(AUTHORIZATION, TOKEN)
                 )
                 .andDo(document("template-delete",
@@ -169,7 +166,6 @@ class TemplateControllerTest extends ControllerTestConfig {
         var request = createUpdateTemplateRequest();
 
         mockMvc.perform(patch("/api/v1/template/{templateId}", 1L)
-                        .contentType(APPLICATION_JSON)
                         .header(AUTHORIZATION, TOKEN)
                         .content(objectMapper.writeValueAsString(request))
                 )
