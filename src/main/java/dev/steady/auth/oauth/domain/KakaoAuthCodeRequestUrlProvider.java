@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+
 @Component
 @RequiredArgsConstructor
 public class KakaoAuthCodeRequestUrlProvider implements AuthCodeRequestUrlProvider {
@@ -19,13 +21,13 @@ public class KakaoAuthCodeRequestUrlProvider implements AuthCodeRequestUrlProvid
     }
 
     @Override
-    public String provideUrl() {
+    public URI provideUrl() {
         return UriComponentsBuilder
                 .fromUriString(AUTHORIZATION_URL)
                 .queryParam("client_id", kakaoOAuthProperties.getClientId())
                 .queryParam("redirect_uri", kakaoOAuthProperties.getRedirectUri())
                 .queryParam("response_type", kakaoOAuthProperties.getResponseType())
-                .toUriString();
+                .build().toUri();
     }
 
 }

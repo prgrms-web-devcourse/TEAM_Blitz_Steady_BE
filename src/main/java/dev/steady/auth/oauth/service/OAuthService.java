@@ -10,6 +10,8 @@ import dev.steady.auth.oauth.dto.response.OAuthUserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
+
 @Service
 @RequiredArgsConstructor
 public class OAuthService {
@@ -19,7 +21,7 @@ public class OAuthService {
     private final AccountRepository accountRepository;
     private final JwtProvider jwtProvider;
 
-    public String getAuthCodeRequestUrlProvider(Platform platform) {
+    public URI getAuthCodeRequestUrlProvider(Platform platform) {
         return authCodeRequestService.provideRequestUrl(platform);
     }
 

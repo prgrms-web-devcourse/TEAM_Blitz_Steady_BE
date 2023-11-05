@@ -4,6 +4,7 @@ import dev.steady.auth.domain.Platform;
 import dev.steady.auth.oauth.domain.AuthCodeRequestUrlProvider;
 import org.springframework.stereotype.Component;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -23,7 +24,7 @@ public class AuthCodeRequestService {
         );
     }
 
-    public String provideRequestUrl(Platform platform) {
+    public URI provideRequestUrl(Platform platform) {
         return urlProviderMap.get(platform).provideUrl();
     }
 
