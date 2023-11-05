@@ -19,6 +19,8 @@ else
   echo "> No WAS is connected to nginx"
 fi
 
-nohup java -jar -Dserver.port=${TARGET_PORT} $JAR_PATH > /home/ubuntu/nohup.out 2>&1 &
-echo "> Now new WAS runs at ${TARGET_PORT}."
+# 스프링 부트 애플리케이션에 프로파일을 dev로 설정
+nohup java -jar -Dserver.port=${TARGET_PORT} -Dspring.profiles.active=dev $JAR_PATH > /home/ubuntu/nohup.out 2>&1 &
+
+echo "> Now new WAS runs at ${TARGET_PORT} with 'dev' profile."
 exit 0
