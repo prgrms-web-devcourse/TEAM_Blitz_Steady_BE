@@ -302,6 +302,7 @@ class SteadyServiceTest {
 
         // when
         var steadyUpdateRequest = createSteadyUpdateRequest(savedAnotherStack.getId(), savedAnotherPosition.getId());
+        steadyService.updateSteady(steadyId, steadyUpdateRequest, userInfo);
         entityManager.flush();
         entityManager.clear();
 
