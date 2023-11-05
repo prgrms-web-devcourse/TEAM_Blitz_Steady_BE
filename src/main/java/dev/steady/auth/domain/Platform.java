@@ -4,9 +4,7 @@ import java.util.Arrays;
 
 public enum Platform {
 
-    KAKAO,
-    NAVER,
-    GOOGLE;
+    KAKAO;
 
     public static Platform from(String platformName) {
         return Arrays.stream(Platform.values())
