@@ -16,12 +16,16 @@ import static dev.steady.user.fixture.UserFixtures.createUserCreateRequest;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseBody;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,6 +62,29 @@ class UserControllerTest extends ControllerTestConfig {
                         )
                 ))
                 .andExpect(header().string("Location", authCodeRequestUrl.toString()));
+    }
+
+    @Test
+    @DisplayName("닉네임에 대해서 중복 여부를 반환할 수 있다.")
+    void existsByNickname() throws Exception {
+        // given
+        String nickname = "닉네임";
+        given(userService.existsByNickname(nickname)).willReturn(true);
+
+        // when, then
+        mockMvc.perform(get("/api/v1/user/profile/exist")
+                        .queryParam("nickname", nickname))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("user-v1-check-nickname", resourceDetails().tag("사용자")
+                                .description("유저 닉네임 중복 검사")
+                                .responseSchema(Schema.schema("UserCheckNicknameResponse")),
+                        queryParameters(
+                                parameterWithName("nickname").description("닉네임")
+                        ),
+                        responseBody()
+                ))
+                .andExpect(status().isOk());
     }
 
 }
