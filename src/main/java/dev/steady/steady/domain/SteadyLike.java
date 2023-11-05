@@ -1,5 +1,6 @@
 package dev.steady.steady.domain;
 
+import dev.steady.global.entity.BaseEntity;
 import dev.steady.user.domain.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "steady_likes")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SteadyLike {
+public class SteadyLike extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

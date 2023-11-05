@@ -1,5 +1,6 @@
 package dev.steady.auth.domain;
 
+import dev.steady.global.entity.BaseEntity;
 import dev.steady.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "accounts")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Account {
+public class Account extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
