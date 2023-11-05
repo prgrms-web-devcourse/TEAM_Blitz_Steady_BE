@@ -36,7 +36,7 @@ public class SteadyController {
     public ResponseEntity<Void> createSteady(@RequestBody SteadyCreateRequest request,
                                              @Auth UserInfo userInfo) {
         Long steadyId = steadyService.create(request, userInfo);
-        return ResponseEntity.created(URI.create(String.format("/api/v1/steadies/%d/detail", steadyId))).build();
+        return ResponseEntity.created(URI.create(String.format("/api/v1/steadies/%d", steadyId))).build();
     }
 
     @GetMapping
@@ -81,7 +81,7 @@ public class SteadyController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{steadyId}/delete")
+    @DeleteMapping("/{steadyId}")
     public ResponseEntity<Void> deleteSteady(@PathVariable Long steadyId, @Auth UserInfo userInfo) {
         steadyService.deleteSteady(steadyId, userInfo);
         return ResponseEntity.noContent().build();
