@@ -35,6 +35,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -96,10 +97,8 @@ class TemplateControllerTest extends ControllerTestConfig {
                                 )
                         )
                 ).andExpect(status().isOk())
-                .andExpect(jsonPath("templates").isArray())
-                .andExpect(jsonPath("templates[0].id").value(response.templates().get(0).id()))
-                .andExpect(jsonPath("templates[0].title").value(response.templates().get(0).title()))
-                .andExpect(jsonPath("templates[0].createdAt").isNotEmpty());
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
+
     }
 
     @DisplayName("인증된 사용자의 템플릿 상세조회 요청을 받아 200 상태코드를 반환한다.")
@@ -134,11 +133,7 @@ class TemplateControllerTest extends ControllerTestConfig {
                                 )
                         )
                 ).andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(response.id()))
-                .andExpect(jsonPath("title").value(response.title()))
-                .andExpect(jsonPath("questions").isArray())
-                .andExpect(jsonPath("createdAt").isNotEmpty())
-                .andExpect(jsonPath("updatedAt").isNotEmpty());
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
     }
 
     @DisplayName("인증된 사용자의 템플릿 삭제요청을 받아 204 상태코드를 반환한다.")
