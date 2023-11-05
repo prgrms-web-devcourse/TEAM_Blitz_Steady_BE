@@ -1,73 +1,400 @@
-//package dev.steady.steady.presentation;
-//
-//import com.epages.restdocs.apispec.Schema;
-//import dev.steady.common.config.ControllerTestConfig;
-//import dev.steady.steady.domain.Promotion;
-//import dev.steady.steady.domain.Steady;
-//import dev.steady.steady.domain.SteadyQuestion;
-//import dev.steady.steady.dto.request.SteadyCreateRequest;
-//import dev.steady.steady.fixture.SteadyFixtures;
-//import dev.steady.user.domain.User;
-//import dev.steady.user.fixture.UserFixtures;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.http.HttpHeaders;
-//import org.springframework.http.MediaType;
-//import org.springframework.restdocs.payload.JsonFieldType;
-//
-//import java.util.List;
-//
-//import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
-//import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
-//import static org.mockito.BDDMockito.given;
-//import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-//import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-//import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-//import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-//import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-//
-//class SteadyControllerTest extends ControllerTestConfig {
-//
-//    @Test
-//    @DisplayName("새로운 스테디를 생성하고 조회 URI를 반환한다.")
-//    void createSteadyTest() throws Exception {
-//        // TODO: 2023/10/27 컨트롤러 테스트 추후 작성
-//        // given
-//        SteadyCreateRequest steadyRequest = SteadyFixtures.createSteadyRequest();
-//        Promotion promotion = SteadyFixtures.createPromotion();
-//        Steady steady = SteadyFixtures.createSteady(steadyRequest, promotion);
-//
-//        given(steadyService.create(steadyRequest, authContext)).willReturn(steady.getId());
-//
-//        mockMvc.perform(post("/api/v1/steadies")
-//                        .header(HttpHeaders.AUTHORIZATION, TOKEN)
-//                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                        .content(objectMapper.writeValueAsString(steadyRequest)))
-//                .andExpect(status().isCreated())
-//                .andExpect(header().string(HttpHeaders.LOCATION, String.format("/api/v1/steadies/%d/detail", steady.getId())))
-//                .andDo(document("steady-create",
-//                        resourceDetails().tag("스테디").description("스테디 생성 요청")
-//                                .requestSchema(Schema.schema("SteadyCreateRequest")),
-//                        requestHeaders(
-//                                headerWithName(HttpHeaders.AUTHORIZATION).description("토큰")
-//                        ),
-//                        requestFields(
-//                                fieldWithPath("name").type(JsonFieldType.STRING).description("스테디 이름"),
-//                                fieldWithPath("bio").type(JsonFieldType.STRING).description("스테디 소개"),
-//                                fieldWithPath("type").type(JsonFieldType.STRING).description("스테디 종류"),
-//                                fieldWithPath("recruitCount").type(JsonFieldType.NUMBER).description("모집 인원"),
-//                                fieldWithPath("steadyMode").type(JsonFieldType.STRING).description("스테디 진행 방식"),
-//                                fieldWithPath("openingDate").type(JsonFieldType.STRING).description("스테디 시작 예정일"),
-//                                fieldWithPath("deadline").type(JsonFieldType.STRING).description("모집 마감일"),
-//                                fieldWithPath("title").type(JsonFieldType.STRING).description("모집글 제목"),
-//                                fieldWithPath("content").type(JsonFieldType.STRING).description("모집글 내용"),
-//                                fieldWithPath("positions").type(JsonFieldType.ARRAY).description("스테디 모집 분야"),
-//                                fieldWithPath("stacks").type(JsonFieldType.ARRAY).description("스테디 기술 스택"),
-//                                fieldWithPath("questions").type(JsonFieldType.ARRAY).description("스테디 질문 리스트")
-//                        )
-//                ));
-//    }
-//
-//}
+package dev.steady.steady.presentation;
+
+import com.epages.restdocs.apispec.Schema;
+import dev.steady.auth.domain.Authentication;
+import dev.steady.global.config.ControllerTestConfig;
+import dev.steady.steady.dto.SearchConditionDto;
+import dev.steady.steady.dto.request.SteadyPageRequest;
+import dev.steady.steady.dto.request.SteadySearchRequest;
+import dev.steady.steady.dto.response.SteadyDetailResponse;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import java.util.List;
+
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
+import static dev.steady.global.auth.AuthFixture.createUserInfo;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyPageResponse;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyPosition;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyRequest;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyUpdateRequest;
+import static dev.steady.user.fixture.UserFixtures.createPosition;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
+import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
+import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
+import static org.springframework.restdocs.payload.JsonFieldType.STRING;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+class SteadyControllerTest extends ControllerTestConfig {
+
+    @Test
+    @DisplayName("새로운 스테디를 생성하고 생성된 스테디 조회 URL 을 반환한다.")
+    void createSteadyTest() throws Exception {
+        // given
+        var steadyId = 1L;
+        var stackId = 1L;
+        var positionId = 1L;
+        var userId = 1L;
+        var authentication = new Authentication(userId);
+        var userInfo = createUserInfo(userId);
+        var steadyRequest = createSteadyRequest(stackId, positionId);
+
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
+        given(steadyService.create(steadyRequest, userInfo)).willReturn(steadyId);
+
+        // when & then
+        mockMvc.perform(post("/api/v1/steadies")
+                        .header(AUTHORIZATION, TOKEN)
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(steadyRequest)))
+                .andDo(document("steady-create",
+                        resourceDetails().tag("스테디").description("스테디 생성 요청")
+                                .requestSchema(Schema.schema("SteadyCreateRequest")),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("name").type(STRING).description("스테디 이름"),
+                                fieldWithPath("bio").type(STRING).description("스테디 소개"),
+                                fieldWithPath("type").type(STRING).description("스테디 종류"),
+                                fieldWithPath("participantLimit").type(NUMBER).description("모집 정원"),
+                                fieldWithPath("steadyMode").type(STRING).description("스테디 진행 방식"),
+                                fieldWithPath("scheduledPeriod").type(STRING).description("스테디 시작 예정일"),
+                                fieldWithPath("deadline").type(STRING).description("모집 마감일"),
+                                fieldWithPath("title").type(STRING).description("모집글 제목"),
+                                fieldWithPath("content").type(STRING).description("모집글 내용"),
+                                fieldWithPath("positions").type(ARRAY).description("스테디 모집 분야"),
+                                fieldWithPath("stacks").type(ARRAY).description("스테디 기술 스택"),
+                                fieldWithPath("questions").type(ARRAY).description("스테디 질문 리스트")
+                        )
+                ))
+                .andExpect(status().isCreated())
+                .andExpect(header().string(LOCATION, String.format("/api/v1/steadies/%d", steadyId)));
+
+    }
+
+    @Test
+    @DisplayName("전체 스테디를 반환한다.")
+    void getSteadiesTest() throws Exception {
+        // given
+        var request = new SteadyPageRequest(0, "desc");
+        MultiValueMap params = new LinkedMultiValueMap<>() {{
+            add("page", "0");
+            add("direction", "desc");
+        }};
+
+        var pageable = request.toPageable();
+        var steady = createSteady();
+        var response = createSteadyPageResponse(steady, pageable);
+
+        given(steadyService.getSteadies(pageable)).willReturn(response);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/steadies")
+                        .params(params))
+                .andDo(document("steady-get-steadies",
+                        resourceDetails().tag("스테디").description("스테디 전체 조회")
+                                .responseSchema(Schema.schema("PageResponse")),
+                        queryParameters(
+                                parameterWithName("page").description("요청 페이지 번호"),
+                                parameterWithName("direction").description("내림/오름차순")
+                        ),
+                        responseFields(
+                                fieldWithPath("content[].id").type(NUMBER).description("스테디 id"),
+                                fieldWithPath("content[].nickname").type(STRING).description("스테디 리더 닉네임"),
+                                fieldWithPath("content[].profileImage").type(STRING).description("스테디 리더 프로필 이미지"),
+                                fieldWithPath("content[].title").type(STRING).description("모집글 제목"),
+                                fieldWithPath("content[].type").type(STRING).description("스테디 분류"),
+                                fieldWithPath("content[].status").type(STRING).description("스테디 상태"),
+                                fieldWithPath("content[].deadline").type(STRING).description("모집 마감일"),
+                                fieldWithPath("content[].createdAt").type(STRING).description("스테디 생성일"),
+                                fieldWithPath("content[].participantLimit").type(NUMBER).description("모집 정원"),
+                                fieldWithPath("content[].numberOfParticipants").type(NUMBER).description("스테디 참여 인원"),
+                                fieldWithPath("content[].stacks[].id").type(NUMBER).description("기술 스택 id"),
+                                fieldWithPath("content[].stacks[].name").type(STRING).description("기술 스택명"),
+                                fieldWithPath("content[].stacks[].imageUrl").type(STRING).description("기술 스택 이미지"),
+                                fieldWithPath("numberOfElements").type(NUMBER).description("현재 페이지 조회된 개수"),
+                                fieldWithPath("page").type(NUMBER).description("현재 페이지"),
+                                fieldWithPath("size").type(NUMBER).description("페이지 크기"),
+                                fieldWithPath("sort.empty").type(BOOLEAN).description("결과 유무"),
+                                fieldWithPath("sort.sorted").type(BOOLEAN).description("정렬 유무"),
+                                fieldWithPath("sort.unsorted").type(BOOLEAN).description("비정렬 유무"),
+                                fieldWithPath("totalPages").type(NUMBER).description("전체 페이지 개수"),
+                                fieldWithPath("totalElements").type(NUMBER).description("전체 개수")
+                        )
+                ))
+                .andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
+    }
+
+    @Test
+    @DisplayName("검색 조건에 따른 전체 조회 결과를 반환한다.")
+    void getSteadiesByConditionTest() throws Exception {
+        // given
+        var searchRequest = new SteadySearchRequest(0,
+                "desc",
+                "online",
+                "Java",
+                "Backend",
+                "recruiting",
+                "false",
+                "");
+        MultiValueMap params = new LinkedMultiValueMap<>() {{
+            add("page", "0");
+            add("direction", "desc");
+            add("steadyMode", "online");
+            add("stack", "Java");
+            add("position", "Backend");
+            add("status", "recruiting");
+            add("like", "false");
+            add("keyword", "");
+        }};
+
+        var pageable = searchRequest.toPageable();
+        var condition = SearchConditionDto.from(searchRequest);
+        var steady = createSteady();
+        var response = createSteadyPageResponse(steady, pageable);
+
+        given(steadyService.getSteadies(condition, pageable)).willReturn(response);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/steadies/search")
+                        .params(params))
+                .andDo(document("steady-get-steadies-by-condition",
+                        resourceDetails().tag("스테디").description("스테디 검색 및 필터링 조회")
+                                .responseSchema(Schema.schema("PageResponse")),
+                        queryParameters(
+                                parameterWithName("page").description("요청 페이지 번호"),
+                                parameterWithName("direction").description("내림/오름차순"),
+                                parameterWithName("steadyMode").description("스테디 진행 방식"),
+                                parameterWithName("stack").description("스테디 기술 스택"),
+                                parameterWithName("position").description("스테디 포지션"),
+                                parameterWithName("status").description("스테디 상태"),
+                                parameterWithName("like").description("내 좋아요"),
+                                parameterWithName("keyword").description("검색 키워드")
+                        ),
+                        responseFields(
+                                fieldWithPath("content[].id").type(NUMBER).description("스테디 id"),
+                                fieldWithPath("content[].nickname").type(STRING).description("스테디 리더 닉네임"),
+                                fieldWithPath("content[].profileImage").type(STRING).description("스테디 리더 프로필 이미지"),
+                                fieldWithPath("content[].title").type(STRING).description("모집글 제목"),
+                                fieldWithPath("content[].type").type(STRING).description("스테디 분류"),
+                                fieldWithPath("content[].status").type(STRING).description("스테디 상태"),
+                                fieldWithPath("content[].deadline").type(STRING).description("모집 마감일"),
+                                fieldWithPath("content[].createdAt").type(STRING).description("스테디 생성일"),
+                                fieldWithPath("content[].participantLimit").type(NUMBER).description("모집 정원"),
+                                fieldWithPath("content[].numberOfParticipants").type(NUMBER).description("스테디 참여 인원"),
+                                fieldWithPath("content[].stacks[].id").type(NUMBER).description("기술 스택 id"),
+                                fieldWithPath("content[].stacks[].name").type(STRING).description("기술 스택명"),
+                                fieldWithPath("content[].stacks[].imageUrl").type(STRING).description("기술 스택 이미지"),
+                                fieldWithPath("numberOfElements").type(NUMBER).description("현재 페이지 조회된 개수"),
+                                fieldWithPath("page").type(NUMBER).description("현재 페이지"),
+                                fieldWithPath("size").type(NUMBER).description("페이지 크기"),
+                                fieldWithPath("sort.empty").type(BOOLEAN).description("결과 유무"),
+                                fieldWithPath("sort.sorted").type(BOOLEAN).description("정렬 유무"),
+                                fieldWithPath("sort.unsorted").type(BOOLEAN).description("비정렬 유무"),
+                                fieldWithPath("totalPages").type(NUMBER).description("전체 페이지 개수"),
+                                fieldWithPath("totalElements").type(NUMBER).description("전체 개수")
+                        )
+                ))
+                .andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
+    }
+
+    @Test
+    @DisplayName("스테디 Id를 통해 스테디를 상세 조회할 수 있다.")
+    void getDetailSteadyTest() throws Exception {
+        // given
+        var steadyId = 1L;
+        var userId = 1L;
+        var authentication = new Authentication(userId);
+        var userInfo = createUserInfo(userId);
+
+        var steady = createSteady();
+        var position = createPosition();
+        var steadyPosition = createSteadyPosition(steady, position);
+        ReflectionTestUtils.setField(steadyPosition, "id", 1L);
+        var response = SteadyDetailResponse.of(steady,
+                List.of(steadyPosition),
+                true,
+                false);
+
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
+        given(steadyService.getDetailSteady(steadyId, userInfo)).willReturn(response);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/steadies/{steadyId}", steadyId)
+                        .header(AUTHORIZATION, TOKEN))
+                .andDo(document("steady-get-detail-steady",
+                        resourceDetails().tag("스테디").description("스테디 상세조회")
+                                .responseSchema(Schema.schema("SteadyDetailResponse")),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").type(NUMBER).description("스테디 id"),
+                                fieldWithPath("leaderResponse.id").type(NUMBER).description("스테디 리더 id"),
+                                fieldWithPath("leaderResponse.nickname").type(STRING).description("스테디 리더 닉네임"),
+                                fieldWithPath("leaderResponse.profileImage").type(STRING).description("스테디 리더 프로필 이미지"),
+                                fieldWithPath("name").type(STRING).description("스테디 이름"),
+                                fieldWithPath("bio").type(STRING).description("스테디 소개"),
+                                fieldWithPath("type").type(STRING).description("스테디 유형"),
+                                fieldWithPath("status").type(STRING).description("스테디 상태"),
+                                fieldWithPath("participantLimit").type(NUMBER).description("모집 정원"),
+                                fieldWithPath("numberOfParticipants").type(NUMBER).description("스테디 참여 인원"),
+                                fieldWithPath("steadyMode").type(STRING).description("스테디 진행 방식"),
+                                fieldWithPath("scheduledPeriod").type(STRING).description("예상 기간"),
+                                fieldWithPath("deadline").type(STRING).description("마감일"),
+                                fieldWithPath("title").type(STRING).description("모집글 제목"),
+                                fieldWithPath("content").type(STRING).description("모집글 내용"),
+                                fieldWithPath("positions[].id").type(NUMBER).description("포지션 id"),
+                                fieldWithPath("positions[].name").type(STRING).description("포지션 이름"),
+                                fieldWithPath("stacks[].id").type(NUMBER).description("기술 스택 id"),
+                                fieldWithPath("stacks[].name").type(STRING).description("기술 스택명"),
+                                fieldWithPath("stacks[].imageUrl").type(STRING).description("기술 스택 이미지"),
+                                fieldWithPath("isLeader").type(BOOLEAN).description("리더 여부"),
+                                fieldWithPath("isSubmittedUser").type(BOOLEAN).description("신청 여부"),
+                                fieldWithPath("promotionCount").type(NUMBER).description("끌어올리가 남은 횟수")
+                        )
+                ))
+                .andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
+    }
+
+    @Test
+    @DisplayName("스테디 id를 통해 스테디 정보를 수정할 수 있다.")
+    void updateSteadyTest() throws Exception {
+        // given
+        var steadyId = 1L;
+        var userId = 1L;
+        var stackId = 1L;
+        var positionId = 1L;
+        var authentication = new Authentication(userId);
+        var userInfo = createUserInfo(userId);
+        var request = createSteadyUpdateRequest(stackId, positionId);
+
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
+        willDoNothing().given(steadyService).updateSteady(steadyId, request, userInfo);
+
+        // when & then
+        mockMvc.perform(patch("/api/v1/steadies/{steadyId}", steadyId)
+                        .header(AUTHORIZATION, TOKEN)
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(document("steady-update",
+                        resourceDetails().tag("스테디").description("스테디 수정")
+                                .requestSchema(Schema.schema("SteadyDetailResponse")),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("name").type(STRING).description("스테디 이름"),
+                                fieldWithPath("bio").type(STRING).description("스테디 소개"),
+                                fieldWithPath("type").type(STRING).description("스테디 종류"),
+                                fieldWithPath("status").type(STRING).description("스테디 상태"),
+                                fieldWithPath("participantLimit").type(NUMBER).description("모집 정원"),
+                                fieldWithPath("steadyMode").type(STRING).description("스테디 진행 방식"),
+                                fieldWithPath("scheduledPeriod").type(STRING).description("스테디 시작 예정일"),
+                                fieldWithPath("deadline").type(STRING).description("모집 마감일"),
+                                fieldWithPath("title").type(STRING).description("모집글 제목"),
+                                fieldWithPath("content").type(STRING).description("모집글 내용"),
+                                fieldWithPath("positions").type(ARRAY).description("스테디 모집 분야"),
+                                fieldWithPath("stacks").type(ARRAY).description("스테디 기술 스택")
+                        )
+                ))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("스테디 리더의 끌어올리기 요청을 통해 스테디를 끌어올릴 수 있다.")
+    void promoteSteadyTest() throws Exception {
+        // given
+        var steadyId = 1L;
+        var userId = 1L;
+        var authentication = new Authentication(userId);
+        var userInfo = createUserInfo(userId);
+
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
+        willDoNothing().given(steadyService).promoteSteady(steadyId, userInfo);
+
+        // when & then
+        mockMvc.perform(patch("/api/v1/steadies/{steadyId}/promote", steadyId)
+                        .header(AUTHORIZATION, TOKEN))
+                .andDo(document("steady-promote",
+                        resourceDetails().tag("스테디").description("스테디 끌어올리기"),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        )))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("스테디 리더의 종료 요청을 통해 스테디를 끌어올릴 수 있다.")
+    void finishSteadyTest() throws Exception {
+        // given
+        var steadyId = 1L;
+        var userId = 1L;
+        var authentication = new Authentication(userId);
+        var userInfo = createUserInfo(userId);
+
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
+        willDoNothing().given(steadyService).promoteSteady(steadyId, userInfo);
+
+        // when & then
+        mockMvc.perform(patch("/api/v1/steadies/{steadyId}/finish", steadyId)
+                        .header(AUTHORIZATION, TOKEN))
+                .andDo(document("steady-finish",
+                        resourceDetails().tag("스테디").description("스테디 종료"),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        )))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("스테디 삭제 요청을 통해 스테디를 삭제할 수 있다.")
+    void deleteSteadyTest() throws Exception {
+        // given
+        var steadyId = 1L;
+        var userId = 1L;
+        var authentication = new Authentication(userId);
+        var userInfo = createUserInfo(userId);
+
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
+        willDoNothing().given(steadyService).promoteSteady(steadyId, userInfo);
+
+        // when & then
+        mockMvc.perform(delete("/api/v1/steadies/{steadyId}", steadyId)
+                        .header(AUTHORIZATION, TOKEN))
+                .andDo(document("steady-delete",
+                        resourceDetails().tag("스테디").description("스테디 삭제"),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        )))
+                .andExpect(status().isNoContent());
+    }
+
+}

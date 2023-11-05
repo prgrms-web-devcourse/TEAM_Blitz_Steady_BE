@@ -9,11 +9,19 @@ import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.SteadyType;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
+import dev.steady.steady.dto.response.PageResponse;
+import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
+import dev.steady.user.fixture.UserFixtures;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -84,6 +92,22 @@ public class SteadyFixtures {
                         .steady(steady)
                         .build())
                 .toList();
+    }
+
+    public static Steady createSteady() {
+        var user = UserFixtures.createFirstUser(UserFixtures.createPosition());
+        var stack = UserFixtures.createStack();
+        var steady = createSteadyRequest(1L, 1L).toEntity(user, List.of(stack));
+        ReflectionTestUtils.setField(user, "id", 1L);
+        ReflectionTestUtils.setField(stack, "id", 1L);
+        ReflectionTestUtils.setField(steady, "id", 1L);
+        ReflectionTestUtils.setField(steady, "createdAt", LocalDateTime.of(2023, 12, 7, 11, 11));
+        return steady;
+    }
+
+    public static PageResponse<SteadySearchResponse> createSteadyPageResponse(Steady steady, Pageable pageable) {
+        Page<Steady> steadies = new PageImpl<>(List.of(steady), pageable, 1);
+        return PageResponse.from(steadies.map(SteadySearchResponse::from));
     }
 
 }

@@ -1,5 +1,6 @@
 package dev.steady.user.domain;
 
+import dev.steady.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseEntity {
 
     private static final String DEFAULT_PROFILE_IMAGE_URL = "default_profile_image_url.jpg";
 

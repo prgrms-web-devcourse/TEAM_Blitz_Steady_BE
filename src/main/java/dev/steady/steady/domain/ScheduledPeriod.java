@@ -8,7 +8,6 @@ public enum ScheduledPeriod {
     THREE_WEEK,
     FOUR_WEEK,
     FIVE_WEEK,
-    ONE_MONTH,
     TWO_MONTH,
     THREE_MONTH,
     FOUR_MONTH,

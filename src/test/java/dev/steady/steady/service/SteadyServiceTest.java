@@ -302,12 +302,12 @@ class SteadyServiceTest {
 
         // when
         var steadyUpdateRequest = createSteadyUpdateRequest(savedAnotherStack.getId(), savedAnotherPosition.getId());
-        var updatedSteadyId = steadyService.updateSteady(steadyId, steadyUpdateRequest, userInfo);
+        steadyService.updateSteady(steadyId, steadyUpdateRequest, userInfo);
         entityManager.flush();
         entityManager.clear();
 
         // then
-        var updatedSteady = steadyRepository.findById(updatedSteadyId).get();
+        var updatedSteady = steadyRepository.findById(steadyId).get();
         List<SteadyStack> steadyStacks = steadyStackRepository.findBySteadyId(steadyId);
         assertAll(
                 () -> assertThat(updatedSteady.getName()).isEqualTo(steadyUpdateRequest.name()),

@@ -159,6 +159,10 @@ public class Steady extends BaseEntity {
         this.status = SteadyStatus.FINISHED;
     }
 
+    public int getPromotionCount() {
+        return promotion.getPromotionCount();
+    }
+
     private Participants createParticipants(User user) {
         Participants participants = new Participants();
         participants.add(Participant.createLeader(user, this));

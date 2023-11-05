@@ -25,10 +25,10 @@ public record SteadyDetailResponse(
         String title,
         String content,
         List<SteadyPositionResponse> positions,
-        // TODO: 2023/11/02 position 도 아이디 같이 보내주기 (새로운 dto로 감싸기)
         List<SteadyStackResponse> stacks,
         boolean isLeader,
-        boolean isSubmittedUser
+        boolean isSubmittedUser,
+        int promotionCount
 ) {
 
     public static SteadyDetailResponse of(Steady steady, List<SteadyPosition> positions, boolean isLeader, boolean isSubmittedUser) {
@@ -53,7 +53,8 @@ public record SteadyDetailResponse(
                         .map(SteadyStackResponse::from)
                         .toList(),
                 isLeader,
-                isSubmittedUser
+                isSubmittedUser,
+                steady.getPromotionCount()
         );
     }
 
