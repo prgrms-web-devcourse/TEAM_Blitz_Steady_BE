@@ -1,5 +1,6 @@
 package dev.steady.auth.presentation;
 
+import com.epages.restdocs.apispec.Schema;
 import dev.steady.auth.domain.Platform;
 import dev.steady.auth.oauth.dto.response.LogInResponse;
 import dev.steady.global.config.ControllerTestConfig;
@@ -13,6 +14,7 @@ import java.net.URI;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static dev.steady.auth.fixture.OAuthFixture.createAuthCode;
+import static dev.steady.auth.fixture.OAuthFixture.createAuthCodeRequestUrl;
 import static dev.steady.auth.fixture.OAuthFixture.createLogInResponseForUserExist;
 import static dev.steady.auth.fixture.OAuthFixture.createLogInResponseForUserNotExist;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,9 +23,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NULL;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
@@ -55,10 +54,9 @@ class OAuthControllerTest extends ControllerTestConfig {
         mockMvc.perform(get("/api/v1/auth/{platform}", platformString))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andDo(document("auth-v1-getAuthCodeRequestUrl", resourceDetails().tag("인증")
-                                .description("플랫폼별 인가코드 요청 URL 불러오기"),
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
+                .andDo(document("auth-v1-getAuthCodeRequestUrl",
+                        resourceDetails().tag("인증").description("플랫폼별 인가코드 요청 URL 불러오기")
+                                .responseSchema(Schema.schema("OAuthCodeRequestUrlResponse")),
                         pathParameters(
                                 parameterWithName("platform").description("소셜로그인 플랫폼")
                         ),
@@ -84,9 +82,8 @@ class OAuthControllerTest extends ControllerTestConfig {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("auth-v1-login-new", resourceDetails().tag("인증")
-                                .description("카카오 로그인-최초"),
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
+                                .description("카카오 로그인-최초")
+                                .responseSchema(Schema.schema("LogInResponse")),
                         pathParameters(
                                 parameterWithName("platform").description("소셜로그인 플랫폼")
                         ),
@@ -119,9 +116,8 @@ class OAuthControllerTest extends ControllerTestConfig {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("auth-v1-login-kakao", resourceDetails().tag("인증")
-                                .description("카카오 로그인"),
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
+                                .description("카카오 로그인")
+                                .responseSchema(Schema.schema("LogInResponse")),
                         pathParameters(
                                 parameterWithName("platform").description("소셜로그인 플랫폼")
                         ),
