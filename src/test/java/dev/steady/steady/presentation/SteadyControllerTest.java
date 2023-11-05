@@ -242,7 +242,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                 true,
                 false);
 
-        given(jwtResolver.getAuthentication(TOKEN.substring(7))).willReturn(authentication);
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
         given(steadyService.getDetailSteady(steadyId, userInfo)).willReturn(response);
 
         // when & then
@@ -276,7 +276,8 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("stacks[].name").type(STRING).description("기술 스택명"),
                                 fieldWithPath("stacks[].imageUrl").type(STRING).description("기술 스택 이미지"),
                                 fieldWithPath("isLeader").type(BOOLEAN).description("리더 여부"),
-                                fieldWithPath("isSubmittedUser").type(BOOLEAN).description("신청 여부")
+                                fieldWithPath("isSubmittedUser").type(BOOLEAN).description("신청 여부"),
+                                fieldWithPath("promotionCount").type(NUMBER).description("끌어올리가 남은 횟수")
                         )
                 ))
                 .andExpect(status().isOk())
@@ -359,7 +360,7 @@ class SteadyControllerTest extends ControllerTestConfig {
         var authentication = new Authentication(userId);
         var userInfo = createUserInfo(userId);
 
-        given(jwtResolver.getAuthentication(TOKEN.substring(7))).willReturn(authentication);
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
         willDoNothing().given(steadyService).promoteSteady(steadyId, userInfo);
 
         // when & then
@@ -382,7 +383,7 @@ class SteadyControllerTest extends ControllerTestConfig {
         var authentication = new Authentication(userId);
         var userInfo = createUserInfo(userId);
 
-        given(jwtResolver.getAuthentication(TOKEN.substring(7))).willReturn(authentication);
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
         willDoNothing().given(steadyService).promoteSteady(steadyId, userInfo);
 
         // when & then
