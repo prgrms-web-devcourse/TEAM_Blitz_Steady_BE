@@ -8,8 +8,8 @@ public record UserInfo(
         return new UserInfo(authContext.getUserId());
     }
 
-    public boolean isAnonymous() {
-        return this.userId == null;
+    public boolean isAuthenticated() {
+        return this.userId != null;
     }
     
 }
