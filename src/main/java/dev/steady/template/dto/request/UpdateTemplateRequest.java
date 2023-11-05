@@ -6,5 +6,4 @@ public record UpdateTemplateRequest(
         String title,
         List<String> questions
 ) {
-
 }

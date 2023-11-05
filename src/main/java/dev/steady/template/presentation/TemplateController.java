@@ -57,7 +57,7 @@ public class TemplateController {
                                                @RequestBody UpdateTemplateRequest request,
                                                @Auth UserInfo userInfo) {
         templateService.updateTemplate(templateId, request, userInfo);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
 }
