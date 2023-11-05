@@ -166,6 +166,7 @@ class TemplateControllerTest extends ControllerTestConfig {
         var request = createUpdateTemplateRequest();
 
         mockMvc.perform(patch("/api/v1/template/{templateId}", 1L)
+                        .contentType(APPLICATION_JSON)
                         .header(AUTHORIZATION, TOKEN)
                         .content(objectMapper.writeValueAsString(request))
                 )
