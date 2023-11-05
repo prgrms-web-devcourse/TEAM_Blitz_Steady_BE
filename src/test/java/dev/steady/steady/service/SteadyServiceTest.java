@@ -12,6 +12,7 @@ import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.domain.repository.SteadyStackRepository;
 import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.dto.response.LeaderResponse;
+import dev.steady.steady.dto.response.SteadyPositionResponse;
 import dev.steady.steady.dto.response.SteadyStackResponse;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
@@ -164,15 +165,15 @@ class SteadyServiceTest {
                 () -> assertThat(response.title()).isEqualTo(steady.getTitle()),
                 () -> assertThat(response.type()).isEqualTo(steady.getType()),
                 () -> assertThat(response.status()).isEqualTo(steady.getStatus()),
-                () -> assertThat(response.participantLimit()).isEqualTo(String.valueOf(steady.getParticipantLimit())),
-                () -> assertThat(response.numberOfParticipants()).isEqualTo(String.valueOf(steady.getNumberOfParticipants())),
+                () -> assertThat(response.participantLimit()).isEqualTo(steady.getParticipantLimit()),
+                () -> assertThat(response.numberOfParticipants()).isEqualTo(steady.getNumberOfParticipants()),
                 () -> assertThat(response.steadyMode()).isEqualTo(steady.getSteadyMode()),
                 () -> assertThat(response.scheduledPeriod()).isEqualTo(steady.getScheduledPeriod()),
                 () -> assertThat(response.deadline()).isEqualTo(steady.getDeadline()),
                 () -> assertThat(response.title()).isEqualTo(steady.getTitle()),
                 () -> assertThat(response.content()).isEqualTo(steady.getContent()),
                 () -> assertThat(response.positions()).isEqualTo(positions.stream()
-                        .map(v -> v.getPosition().getName())
+                        .map(SteadyPositionResponse::from)
                         .toList()),
                 () -> assertThat(response.stacks()).isEqualTo(steady.getSteadyStacks().stream()
                         .map(SteadyStackResponse::from)
@@ -212,8 +213,8 @@ class SteadyServiceTest {
                 () -> assertThat(response.title()).isEqualTo(foundSteady.getTitle()),
                 () -> assertThat(response.type()).isEqualTo(foundSteady.getType()),
                 () -> assertThat(response.status()).isEqualTo(foundSteady.getStatus()),
-                () -> assertThat(response.participantLimit()).isEqualTo(String.valueOf(foundSteady.getParticipantLimit())),
-                () -> assertThat(response.numberOfParticipants()).isEqualTo(String.valueOf(foundSteady.getNumberOfParticipants())),
+                () -> assertThat(response.participantLimit()).isEqualTo(foundSteady.getParticipantLimit()),
+                () -> assertThat(response.numberOfParticipants()).isEqualTo(foundSteady.getNumberOfParticipants()),
                 () -> assertThat(response.steadyMode()).isEqualTo(foundSteady.getSteadyMode()),
                 () -> assertThat(response.scheduledPeriod()).isEqualTo(foundSteady.getScheduledPeriod()),
                 () -> assertThat(response.deadline()).isEqualTo(foundSteady.getDeadline()),
@@ -259,8 +260,8 @@ class SteadyServiceTest {
                 () -> assertThat(response.title()).isEqualTo(foundSteady.getTitle()),
                 () -> assertThat(response.type()).isEqualTo(foundSteady.getType()),
                 () -> assertThat(response.status()).isEqualTo(foundSteady.getStatus()),
-                () -> assertThat(response.participantLimit()).isEqualTo(String.valueOf(foundSteady.getParticipantLimit())),
-                () -> assertThat(response.numberOfParticipants()).isEqualTo(String.valueOf(foundSteady.getNumberOfParticipants())),
+                () -> assertThat(response.participantLimit()).isEqualTo(foundSteady.getParticipantLimit()),
+                () -> assertThat(response.numberOfParticipants()).isEqualTo(foundSteady.getNumberOfParticipants()),
                 () -> assertThat(response.steadyMode()).isEqualTo(foundSteady.getSteadyMode()),
                 () -> assertThat(response.scheduledPeriod()).isEqualTo(foundSteady.getScheduledPeriod()),
                 () -> assertThat(response.deadline()).isEqualTo(foundSteady.getDeadline()),
@@ -301,7 +302,7 @@ class SteadyServiceTest {
 
         // when
         var steadyUpdateRequest = createSteadyUpdateRequest(savedAnotherStack.getId(), savedAnotherPosition.getId());
-        var updatedSteadyId = steadyService.updateSteady(steadyId, userInfo, steadyUpdateRequest);
+        var updatedSteadyId = steadyService.updateSteady(steadyId, steadyUpdateRequest, userInfo);
         entityManager.flush();
         entityManager.clear();
 
@@ -350,7 +351,7 @@ class SteadyServiceTest {
         var anotherUser = createSecondUser(savedAnotherPosition);
         var anotherUserInfo = createUserInfo(anotherUser.getId());
         var steadyUpdateRequest = createSteadyUpdateRequest(savedAnotherStack.getId(), savedAnotherPosition.getId());
-        assertThatThrownBy(() -> steadyService.updateSteady(steadyId, anotherUserInfo, steadyUpdateRequest))
+        assertThatThrownBy(() -> steadyService.updateSteady(steadyId, steadyUpdateRequest, anotherUserInfo))
                 .isInstanceOf(InvalidDataAccessApiUsageException.class);
     }
 

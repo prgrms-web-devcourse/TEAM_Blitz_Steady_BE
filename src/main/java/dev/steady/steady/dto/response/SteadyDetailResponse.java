@@ -17,14 +17,14 @@ public record SteadyDetailResponse(
         String bio,
         SteadyType type,
         SteadyStatus status,
-        String participantLimit,
-        String numberOfParticipants,
+        int participantLimit,
+        int numberOfParticipants,
         SteadyMode steadyMode,
         ScheduledPeriod scheduledPeriod,
         LocalDate deadline,
         String title,
         String content,
-        List<String> positions,
+        List<SteadyPositionResponse> positions,
         // TODO: 2023/11/02 position 도 아이디 같이 보내주기 (새로운 dto로 감싸기)
         List<SteadyStackResponse> stacks,
         boolean isLeader,
@@ -39,15 +39,15 @@ public record SteadyDetailResponse(
                 steady.getTitle(),
                 steady.getType(),
                 steady.getStatus(),
-                String.valueOf(steady.getParticipantLimit()),
-                String.valueOf(steady.getNumberOfParticipants()),
+                steady.getParticipantLimit(),
+                steady.getNumberOfParticipants(),
                 steady.getSteadyMode(),
                 steady.getScheduledPeriod(),
                 steady.getDeadline(),
                 steady.getTitle(),
                 steady.getContent(),
                 positions.stream()
-                        .map(position -> position.getPosition().getName())
+                        .map(SteadyPositionResponse::from)
                         .toList(),
                 steady.getSteadyStacks().stream()
                         .map(SteadyStackResponse::from)

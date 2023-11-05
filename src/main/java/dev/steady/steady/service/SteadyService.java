@@ -95,47 +95,39 @@ public class SteadyService {
     }
 
     @Transactional
-    public Long updateSteady(Long steadyId, UserInfo userInfo, SteadyUpdateRequest request) {
+    public Long updateSteady(Long steadyId, SteadyUpdateRequest request, UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
-        if (steady.isLeader(user)) {
-            List<Stack> stacks = getStacks(request.stacks());
-            steady.update(request.name(),
-                    request.bio(),
-                    request.type(),
-                    request.status(),
-                    request.participantLimit(),
-                    request.steadyMode(),
-                    request.scheduledPeriod(),
-                    request.deadline(),
-                    request.title(),
-                    request.content(),
-                    stacks);
-            return steadyId;
-        }
-        throw new IllegalArgumentException();
+        steady.validateLeader(user);
+        List<Stack> stacks = getStacks(request.stacks());
+        steady.update(request.name(),
+                request.bio(),
+                request.type(),
+                request.status(),
+                request.participantLimit(),
+                request.steadyMode(),
+                request.scheduledPeriod(),
+                request.deadline(),
+                request.title(),
+                request.content(),
+                stacks);
+        return steadyId;
     }
 
     @Transactional
     public void promoteSteady(Long steadyId, UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
-        if (steady.isLeader(user)) {
-            steady.usePromotion();
-            return;
-        }
-        throw new IllegalArgumentException();
+        steady.validateLeader(user);
+        steady.usePromotion();
     }
 
     @Transactional
     public void finishSteady(Long steadyId, UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
-        if (steady.isLeader(user)) {
-            steady.finish();
-            return;
-        }
-        throw new IllegalArgumentException();
+        steady.validateLeader(user);
+        steady.finish();
     }
 
     @Transactional
