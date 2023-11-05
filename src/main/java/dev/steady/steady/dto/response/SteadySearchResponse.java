@@ -18,7 +18,7 @@ public record SteadySearchResponse(
         SteadyStatus status,
         LocalDate deadline,
         LocalDateTime createdAt,
-        int recruitCount,
+        int participantLimit,
         int numberOfParticipants,
         List<SteadyStackResponse> stacks
         // TODO: 2023-10-25  해쉬태그, 조회수, 댓글 수
