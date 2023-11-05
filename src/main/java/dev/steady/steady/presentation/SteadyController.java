@@ -6,6 +6,7 @@ import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.dto.request.SteadySearchRequest;
+import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
@@ -13,6 +14,7 @@ import dev.steady.steady.service.SteadyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,6 +61,14 @@ public class SteadyController {
         return ResponseEntity.ok(response);
     }
 
+    @PatchMapping("/{steadyId}")
+    public ResponseEntity<Void> updateSteady(@PathVariable Long steadyId,
+                                             @RequestBody SteadyUpdateRequest request,
+                                             @Auth UserInfo userInfo) {
+        steadyService.updateSteady(steadyId, request, userInfo);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/{steadyId}/promote")
     public ResponseEntity<Void> promoteSteady(@PathVariable Long steadyId, @Auth UserInfo userInfo) {
         steadyService.promoteSteady(steadyId, userInfo);
@@ -71,7 +81,7 @@ public class SteadyController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{steadyId}/delete")
+    @DeleteMapping("/{steadyId}/delete")
     public ResponseEntity<Void> deleteSteady(@PathVariable Long steadyId, @Auth UserInfo userInfo) {
         steadyService.deleteSteady(steadyId, userInfo);
         return ResponseEntity.noContent().build();

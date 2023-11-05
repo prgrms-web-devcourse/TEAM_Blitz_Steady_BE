@@ -95,7 +95,7 @@ public class SteadyService {
     }
 
     @Transactional
-    public Long updateSteady(Long steadyId, UserInfo userInfo, SteadyUpdateRequest request) {
+    public Long updateSteady(Long steadyId, SteadyUpdateRequest request, UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
         steady.validateLeader(user);

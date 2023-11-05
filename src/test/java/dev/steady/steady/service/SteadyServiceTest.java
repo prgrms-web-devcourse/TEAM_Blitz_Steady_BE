@@ -302,7 +302,7 @@ class SteadyServiceTest {
 
         // when
         var steadyUpdateRequest = createSteadyUpdateRequest(savedAnotherStack.getId(), savedAnotherPosition.getId());
-        var updatedSteadyId = steadyService.updateSteady(steadyId, userInfo, steadyUpdateRequest);
+        var updatedSteadyId = steadyService.updateSteady(steadyId, steadyUpdateRequest, userInfo);
         entityManager.flush();
         entityManager.clear();
 
@@ -351,7 +351,7 @@ class SteadyServiceTest {
         var anotherUser = createSecondUser(savedAnotherPosition);
         var anotherUserInfo = createUserInfo(anotherUser.getId());
         var steadyUpdateRequest = createSteadyUpdateRequest(savedAnotherStack.getId(), savedAnotherPosition.getId());
-        assertThatThrownBy(() -> steadyService.updateSteady(steadyId, anotherUserInfo, steadyUpdateRequest))
+        assertThatThrownBy(() -> steadyService.updateSteady(steadyId, steadyUpdateRequest, anotherUserInfo))
                 .isInstanceOf(InvalidDataAccessApiUsageException.class);
     }
 
