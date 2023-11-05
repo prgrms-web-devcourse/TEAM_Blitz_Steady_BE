@@ -3,6 +3,9 @@ package dev.steady.user.fixture;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
+import dev.steady.user.dto.request.UserCreateRequest;
+
+import java.util.List;
 
 public class UserFixtures {
 
@@ -59,6 +62,15 @@ public class UserFixtures {
                 .position(position)
                 .build();
         return user;
+    }
+
+    public static UserCreateRequest createUserCreateRequest() {
+        return new UserCreateRequest(
+                1L,
+                "닉네임",
+                1L,
+                List.of(1L, 2L)
+        );
     }
 
 }
