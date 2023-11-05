@@ -5,9 +5,9 @@ import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
+@Getter
 @Component
 @RequestScope
-@Getter
 public class AuthContext {
 
     private Long userId;
@@ -17,3 +17,4 @@ public class AuthContext {
     }
 
 }
+

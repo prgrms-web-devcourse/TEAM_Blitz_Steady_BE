@@ -1,6 +1,5 @@
 package dev.steady.global.auth;
 
-import dev.steady.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class AuthorizedArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final AuthContext authContext;
-    private final UserRepository userRepository;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -26,10 +24,7 @@ public class AuthorizedArgumentResolver implements HandlerMethodArgumentResolver
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         UserInfo userInfo = UserInfo.from(authContext);
-        if (!userInfo.isAuthenticated() || userRepository.existsById(userInfo.userId())) {
             return userInfo;
-        }
-        throw new IllegalArgumentException();
     }
 
 }
