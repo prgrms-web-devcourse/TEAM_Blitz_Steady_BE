@@ -13,6 +13,7 @@ import java.net.URI;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static dev.steady.auth.fixture.OAuthFixture.createAuthCode;
+import static dev.steady.auth.fixture.OAuthFixture.createLogInResponseForUserExist;
 import static dev.steady.auth.fixture.OAuthFixture.createLogInResponseForUserNotExist;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -26,6 +27,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NULL;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
+import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -100,6 +102,43 @@ class OAuthControllerTest extends ControllerTestConfig {
                 .andExpect(jsonPath("id").value(logInResponse.id()))
                 .andExpect(jsonPath("isNew").isBoolean())
                 .andExpect(jsonPath("token").isEmpty());
+    }
+
+    @Test
+    @DisplayName("카카오 로그인을 하여 액세스 토큰을 반환할 수 있다.")
+    void kakaoLogInforUserExist() throws Exception {
+        // given
+        String platform = Platform.KAKAO.name().toLowerCase();
+        String authCode = createAuthCode();
+        LogInResponse logInResponse = createLogInResponseForUserExist();
+        given(oAuthService.logIn(any(), any())).willReturn(logInResponse);
+
+        // when, then
+        mockMvc.perform(get("/api/v1/auth/{platform}/callback", platform)
+                        .queryParam("code", authCode))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("auth-v1-login-kakao", resourceDetails().tag("인증")
+                                .description("카카오 로그인"),
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("platform").description("소셜로그인 플랫폼")
+                        ),
+                        queryParameters(
+                                parameterWithName("code").description("카카오 인가 코드")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").type(NUMBER).description("계정 id"),
+                                fieldWithPath("isNew").type(BOOLEAN).description("최초 로그인 여부"),
+                                fieldWithPath("token.accessToken").type(STRING).description("서비스 이용 액세스 토큰"),
+                                fieldWithPath("token.refreshToken").type(STRING).description("서비스 이용 리프레시 토큰")
+                        )))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(logInResponse.id()))
+                .andExpect(jsonPath("isNew").isBoolean())
+                .andExpect(jsonPath("token.accessToken").isString())
+                .andExpect(jsonPath("token.refreshToken").isString());
     }
 
 }
