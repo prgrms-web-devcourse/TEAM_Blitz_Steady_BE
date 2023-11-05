@@ -11,5 +11,5 @@ public record UserInfo(
     public boolean isAuthenticated() {
         return this.userId != null;
     }
-    
+
 }
