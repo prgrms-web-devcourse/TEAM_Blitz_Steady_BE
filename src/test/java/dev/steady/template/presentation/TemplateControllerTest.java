@@ -44,10 +44,10 @@ class TemplateControllerTest extends ControllerTestConfig {
     @Test
     void createTemplateTest() throws Exception {
         Long userId = 1L;
-        Authentication auth = new Authentication(userId);
+        var auth = new Authentication(userId);
         given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
 
-        CreateTemplateRequest request = createTemplateRequest();
+        var request = createTemplateRequest();
 
         mockMvc.perform(post("/api/v1/template")
                         .contentType(APPLICATION_JSON)
@@ -72,10 +72,10 @@ class TemplateControllerTest extends ControllerTestConfig {
     @Test
     void getTemplatesTest() throws Exception {
         Long userId = 1L;
-        UserInfo userInfo = createUserInfo(userId);
-        Authentication auth = new Authentication(userId);
+        var userInfo = createUserInfo(userId);
+        var auth = new Authentication(userId);
         given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
-        TemplateResponses response = createTemplateResponse();
+        var response = createTemplateResponse();
         given(templateService.getTemplates(userInfo)).willReturn(response);
 
         mockMvc.perform(get("/api/v1/template")
@@ -106,10 +106,10 @@ class TemplateControllerTest extends ControllerTestConfig {
     @Test
     void getDetailTemplateTest() throws Exception {
         Long userId = 1L;
-        UserInfo userInfo = createUserInfo(userId);
-        Authentication auth = new Authentication(userId);
+        var userInfo = createUserInfo(userId);
+        var auth = new Authentication(userId);
         given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
-        TemplateDetailResponse response = createDetailTemplateResponse();
+        var response = createDetailTemplateResponse();
         given(templateService.getDetailTemplate(userInfo, 1L)).willReturn(response);
 
         mockMvc.perform(get("/api/v1/template/{templateId}", 1L)
@@ -145,7 +145,7 @@ class TemplateControllerTest extends ControllerTestConfig {
     @Test
     void deleteTemplateTest() throws Exception {
         Long userId = 1L;
-        Authentication auth = new Authentication(userId);
+        var auth = new Authentication(userId);
         given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
 
         mockMvc.perform(delete("/api/v1/template/{templateId}", 1L)
@@ -168,10 +168,10 @@ class TemplateControllerTest extends ControllerTestConfig {
     @Test
     void updateTemplateTest() throws Exception {
         Long userId = 1L;
-        Authentication auth = new Authentication(userId);
+        var auth = new Authentication(userId);
         given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
 
-        UpdateTemplateRequest request = createUpdateTemplateRequest();
+        var request = createUpdateTemplateRequest();
 
         mockMvc.perform(patch("/api/v1/template/{templateId}", 1L)
                         .contentType(APPLICATION_JSON)
