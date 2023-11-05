@@ -27,7 +27,8 @@ public record SteadyDetailResponse(
         List<SteadyPositionResponse> positions,
         List<SteadyStackResponse> stacks,
         boolean isLeader,
-        boolean isSubmittedUser
+        boolean isSubmittedUser,
+        int promotionCount
 ) {
 
     public static SteadyDetailResponse of(Steady steady, List<SteadyPosition> positions, boolean isLeader, boolean isSubmittedUser) {
@@ -52,7 +53,8 @@ public record SteadyDetailResponse(
                         .map(SteadyStackResponse::from)
                         .toList(),
                 isLeader,
-                isSubmittedUser
+                isSubmittedUser,
+                steady.getPromotionCount()
         );
     }
 
