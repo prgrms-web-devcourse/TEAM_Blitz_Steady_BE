@@ -2,12 +2,7 @@ package dev.steady.template.presentation;
 
 import com.epages.restdocs.apispec.Schema;
 import dev.steady.auth.domain.Authentication;
-import dev.steady.global.auth.UserInfo;
 import dev.steady.global.config.ControllerTestConfig;
-import dev.steady.template.dto.request.CreateTemplateRequest;
-import dev.steady.template.dto.request.UpdateTemplateRequest;
-import dev.steady.template.dto.resonse.TemplateDetailResponse;
-import dev.steady.template.dto.resonse.TemplateResponses;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +31,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class TemplateControllerTest extends ControllerTestConfig {

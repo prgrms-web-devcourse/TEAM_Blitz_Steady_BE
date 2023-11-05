@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
@@ -19,9 +21,9 @@ public class OAuthController {
     private final OAuthService oAuthService;
 
     @GetMapping("/{oAuthProvider}")
-    public ResponseEntity<String> getAuthorizationCodeRequestUrl(@PathVariable String oAuthProvider) {
-        String url = oAuthService.getAuthCodeRequestUrlProvider(Platform.from(oAuthProvider));
-        return ResponseEntity.ok(url);
+    public ResponseEntity<Void> getAuthorizationCodeRequestUrl(@PathVariable String oAuthProvider) {
+        URI url = oAuthService.getAuthCodeRequestUrlProvider(Platform.from(oAuthProvider));
+        return ResponseEntity.created(url).build();
     }
 
     @GetMapping("/{oAuthProvider}/callback")
