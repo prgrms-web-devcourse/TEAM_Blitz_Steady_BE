@@ -46,7 +46,7 @@ class OAuthControllerTest extends ControllerTestConfig {
     void getAuthorizationCodeRequestUrl(Platform platform) throws Exception {
         // given
         String platformString = platform.name().toLowerCase();
-        URI authCodeRequestUrl = new URI("https://example.com/oauth");
+        URI authCodeRequestUrl = createAuthCodeRequestUrl();
 
         // when
         when(oAuthService.getAuthCodeRequestUrlProvider(platform)).thenReturn(authCodeRequestUrl);
