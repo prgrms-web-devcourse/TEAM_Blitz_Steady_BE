@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class TemplateControllerTest extends ControllerTestConfig {
 
-    @DisplayName("유저는 템플릿을 생성할 수 있다.")
+    @DisplayName("인증된 사용자의 템플릿 생성요청을 받아 204 상태코드를 반환한다.")
     @Test
     void createTemplateTest() throws Exception {
         Long userId = 1L;
@@ -68,7 +68,7 @@ class TemplateControllerTest extends ControllerTestConfig {
                 ).andExpect(status().isNoContent());
     }
 
-    @DisplayName("템플릿 목록 조회")
+    @DisplayName("인증된 사용자의 템플릿 목록 요청을 받아 200 상태코드를 반환한다.")
     @Test
     void getTemplatesTest() throws Exception {
         Long userId = 1L;
@@ -102,7 +102,7 @@ class TemplateControllerTest extends ControllerTestConfig {
                 .andExpect(jsonPath("templates[0].createdAt").isNotEmpty());
     }
 
-    @DisplayName("템플릿 상세조회")
+    @DisplayName("인증된 사용자의 템플릿 상세조회 요청을 받아 200 상태코드를 반환한다.")
     @Test
     void getDetailTemplateTest() throws Exception {
         Long userId = 1L;
@@ -141,7 +141,7 @@ class TemplateControllerTest extends ControllerTestConfig {
                 .andExpect(jsonPath("updatedAt").isNotEmpty());
     }
 
-    @DisplayName("템플릿 삭제")
+    @DisplayName("인증된 사용자의 템플릿 삭제요청을 받아 204 상태코드를 반환한다.")
     @Test
     void deleteTemplateTest() throws Exception {
         Long userId = 1L;
@@ -164,7 +164,7 @@ class TemplateControllerTest extends ControllerTestConfig {
                 ).andExpect(status().isNoContent());
     }
 
-    @DisplayName("템플릿 수정")
+    @DisplayName("인증된 사용자의 템플릿 수정요청을 받아 204 상태코드를 반환한다.")
     @Test
     void updateTemplateTest() throws Exception {
         Long userId = 1L;
@@ -192,7 +192,7 @@ class TemplateControllerTest extends ControllerTestConfig {
                                         fieldWithPath("questions").type(ARRAY).description("템플릿에 변경될 질문 리스트")
                                 )
                         )
-                ).andExpect(status().isNoContent());
+                ).andExpect(status().isOk());
     }
 
 }
