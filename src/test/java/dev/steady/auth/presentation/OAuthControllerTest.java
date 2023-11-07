@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import java.net.URI;
-
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static dev.steady.auth.fixture.OAuthFixture.createAuthCode;
@@ -43,8 +41,8 @@ class OAuthControllerTest extends ControllerTestConfig {
     @DisplayName("각 플랫폼별 인가코드 요청 URL을 반환할 수 있다.")
     void getAuthorizationCodeRequestUrl(Platform platform) throws Exception {
         // given
-        String platformString = platform.name().toLowerCase();
-        URI authCodeRequestUrl = createAuthCodeRequestUrl();
+        var platformString = platform.name().toLowerCase();
+        var authCodeRequestUrl = createAuthCodeRequestUrl();
 
         // when
         when(oAuthService.getAuthCodeRequestUrlProvider(platform)).thenReturn(authCodeRequestUrl);
@@ -72,8 +70,8 @@ class OAuthControllerTest extends ControllerTestConfig {
     @DisplayName("카카오 로그인을 하여 계정 ID와 최초 로그인 여부를 반환할 수 있다.")
     void kakaoLogInforUserNotExist() throws Exception {
         // given
-        String platform = Platform.KAKAO.name().toLowerCase();
-        String authCode = createAuthCode();
+        var platform = Platform.KAKAO.name().toLowerCase();
+        var authCode = createAuthCode();
         var response = createLogInResponseForUserNotExist();
         given(oAuthService.logIn(any(), any())).willReturn(response);
 
@@ -107,8 +105,8 @@ class OAuthControllerTest extends ControllerTestConfig {
     @DisplayName("카카오 로그인을 하여 액세스 토큰을 반환할 수 있다.")
     void kakaoLogInforUserExist() throws Exception {
         // given
-        String platform = Platform.KAKAO.name().toLowerCase();
-        String authCode = createAuthCode();
+        var platform = Platform.KAKAO.name().toLowerCase();
+        var authCode = createAuthCode();
         var response = createLogInResponseForUserExist();
         given(oAuthService.logIn(any(), any())).willReturn(response);
 
