@@ -39,11 +39,12 @@ public class ApplicationController {
     }
 
     @GetMapping("/steadies/{steadyId}/applications")
-    public SliceResponse<ApplicationSummaryResponse> getApplications(@PathVariable Long steadyId,
+    public ResponseEntity<SliceResponse<ApplicationSummaryResponse>> getApplications(@PathVariable Long steadyId,
                                                                      @Auth UserInfo userInfo,
                                                                      ApplicationPageRequest request) {
         Pageable pageable = request.toPageable();
-        return applicationService.getApplications(steadyId, userInfo, pageable);
+        SliceResponse<ApplicationSummaryResponse> response = applicationService.getApplications(steadyId, userInfo, pageable);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/applications/{applicationId}")

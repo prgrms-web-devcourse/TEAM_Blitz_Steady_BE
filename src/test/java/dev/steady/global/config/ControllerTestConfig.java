@@ -1,6 +1,8 @@
 package dev.steady.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.steady.application.presentation.ApplicationController;
+import dev.steady.application.service.ApplicationService;
 import dev.steady.auth.config.JwtProperties;
 import dev.steady.auth.domain.JwtResolver;
 import dev.steady.auth.oauth.service.OAuthService;
@@ -29,12 +31,13 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WebMvcTest({
-        AuthContext.class,
-        JwtResolver.class,
         OAuthController.class,
         UserController.class,
         SteadyController.class,
         TemplateController.class,
+        ApplicationController.class,
+        AuthContext.class,
+        JwtResolver.class,
         JwtProperties.class,
         PropertiesConfig.class
 })
@@ -57,6 +60,8 @@ public abstract class ControllerTestConfig {
     protected SteadyService steadyService;
     @MockBean
     protected TemplateService templateService;
+    @MockBean
+    protected ApplicationService applicationService;
     @MockBean
     protected JwtResolver jwtResolver;
 
