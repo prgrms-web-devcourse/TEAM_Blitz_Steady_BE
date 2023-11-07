@@ -1,6 +1,5 @@
 package dev.steady.global.auth;
 
-import dev.steady.auth.domain.Authentication;
 import dev.steady.auth.domain.JwtResolver;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,4 +1,4 @@
-package dev.steady.auth.domain;
+package dev.steady.global.auth;
 
 import io.jsonwebtoken.Claims;
 

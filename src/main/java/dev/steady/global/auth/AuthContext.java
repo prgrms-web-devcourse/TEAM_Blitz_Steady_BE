@@ -1,6 +1,5 @@
 package dev.steady.global.auth;
 
-import dev.steady.auth.domain.Authentication;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
