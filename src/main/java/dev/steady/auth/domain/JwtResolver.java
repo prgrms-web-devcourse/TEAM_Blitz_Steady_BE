@@ -2,6 +2,7 @@ package dev.steady.auth.domain;
 
 import dev.steady.auth.config.JwtProperties;
 import dev.steady.auth.exception.JwtInvalidException;
+import dev.steady.global.auth.Authentication;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

@@ -1,6 +1,7 @@
 package dev.steady.auth.service;
 
 import dev.steady.auth.domain.Account;
+import dev.steady.auth.domain.Platform;
 import dev.steady.auth.domain.repository.AccountRepository;
 import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.UserRepository;
@@ -16,12 +17,14 @@ public class AccountService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void registerUser(Long accountId, Long userId) {
+    public Platform registerUser(Long accountId, Long userId) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(IllegalArgumentException::new);
         User user = userRepository.findById(userId)
                 .orElseThrow(IllegalArgumentException::new);
         account.registerUser(user);
+
+        return account.getPlatform();
     }
 
 }

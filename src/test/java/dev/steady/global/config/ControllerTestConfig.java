@@ -5,11 +5,14 @@ import dev.steady.auth.config.JwtProperties;
 import dev.steady.auth.domain.JwtResolver;
 import dev.steady.auth.oauth.service.OAuthService;
 import dev.steady.auth.presentation.OAuthController;
+import dev.steady.auth.service.AccountService;
 import dev.steady.global.auth.AuthContext;
 import dev.steady.steady.presentation.SteadyController;
 import dev.steady.steady.service.SteadyService;
 import dev.steady.template.presentation.TemplateController;
 import dev.steady.template.service.TemplateService;
+import dev.steady.user.presentation.UserController;
+import dev.steady.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         AuthContext.class,
         JwtResolver.class,
         OAuthController.class,
+        UserController.class,
         SteadyController.class,
         TemplateController.class,
         JwtProperties.class,
@@ -45,6 +49,10 @@ public abstract class ControllerTestConfig {
     protected MockMvc mockMvc;
     @MockBean
     protected OAuthService oAuthService;
+    @MockBean
+    protected AccountService accountService;
+    @MockBean
+    protected UserService userService;
     @MockBean
     protected SteadyService steadyService;
     @MockBean

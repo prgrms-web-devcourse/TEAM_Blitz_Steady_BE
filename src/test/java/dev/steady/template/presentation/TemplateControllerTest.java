@@ -1,7 +1,7 @@
 package dev.steady.template.presentation;
 
 import com.epages.restdocs.apispec.Schema;
-import dev.steady.auth.domain.Authentication;
+import dev.steady.global.auth.Authentication;
 import dev.steady.global.config.ControllerTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

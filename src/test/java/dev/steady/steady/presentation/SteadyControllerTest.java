@@ -1,7 +1,7 @@
 package dev.steady.steady.presentation;
 
 import com.epages.restdocs.apispec.Schema;
-import dev.steady.auth.domain.Authentication;
+import dev.steady.global.auth.Authentication;
 import dev.steady.global.config.ControllerTestConfig;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyPageRequest;

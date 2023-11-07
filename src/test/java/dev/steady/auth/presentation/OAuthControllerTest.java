@@ -1,7 +1,7 @@
 package dev.steady.auth.presentation;
 
+import com.epages.restdocs.apispec.Schema;
 import dev.steady.auth.domain.Platform;
-import dev.steady.auth.oauth.dto.response.LogInResponse;
 import dev.steady.global.config.ControllerTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ import java.net.URI;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static dev.steady.auth.fixture.OAuthFixture.createAuthCode;
+import static dev.steady.auth.fixture.OAuthFixture.createAuthCodeRequestUrl;
 import static dev.steady.auth.fixture.OAuthFixture.createLogInResponseForUserExist;
 import static dev.steady.auth.fixture.OAuthFixture.createLogInResponseForUserNotExist;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,9 +22,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NULL;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
@@ -34,8 +32,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -46,7 +44,7 @@ class OAuthControllerTest extends ControllerTestConfig {
     void getAuthorizationCodeRequestUrl(Platform platform) throws Exception {
         // given
         String platformString = platform.name().toLowerCase();
-        URI authCodeRequestUrl = new URI("https://example.com/oauth");
+        URI authCodeRequestUrl = createAuthCodeRequestUrl();
 
         // when
         when(oAuthService.getAuthCodeRequestUrlProvider(platform)).thenReturn(authCodeRequestUrl);
@@ -55,16 +53,17 @@ class OAuthControllerTest extends ControllerTestConfig {
         mockMvc.perform(get("/api/v1/auth/{platform}", platformString))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andDo(document("auth-v1-getAuthCodeRequestUrl", resourceDetails().tag("인증")
-                                .description("플랫폼별 인가코드 요청 URL 불러오기"),
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("platform").description("소셜로그인 플랫폼")
-                        ),
-                        responseHeaders(
-                                headerWithName("Location").description("인가 코드 요청 URL")
-                        )))
+                .andDo(document("auth-v1-getAuthCodeRequestUrl",
+                                resourceDetails().tag("인증").description("플랫폼별 인가코드 요청 URL 불러오기")
+                                        .responseSchema(Schema.schema("OAuthCodeRequestUrlResponse")),
+                                pathParameters(
+                                        parameterWithName("platform").description("소셜로그인 플랫폼")
+                                ),
+                                responseHeaders(
+                                        headerWithName("Location").description("인가 코드 요청 URL")
+                                )
+                        )
+                )
                 .andExpect(header().string("Location", authCodeRequestUrl.toString()));
 
     }
@@ -75,8 +74,8 @@ class OAuthControllerTest extends ControllerTestConfig {
         // given
         String platform = Platform.KAKAO.name().toLowerCase();
         String authCode = createAuthCode();
-        LogInResponse logInResponse = createLogInResponseForUserNotExist();
-        given(oAuthService.logIn(any(), any())).willReturn(logInResponse);
+        var response = createLogInResponseForUserNotExist();
+        given(oAuthService.logIn(any(), any())).willReturn(response);
 
         // when, then
         mockMvc.perform(get("/api/v1/auth/{platform}/callback", platform)
@@ -84,24 +83,24 @@ class OAuthControllerTest extends ControllerTestConfig {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("auth-v1-login-new", resourceDetails().tag("인증")
-                                .description("카카오 로그인-최초"),
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("platform").description("소셜로그인 플랫폼")
-                        ),
-                        queryParameters(
-                                parameterWithName("code").description("카카오 인가 코드")
-                        ),
-                        responseFields(
-                                fieldWithPath("id").type(NUMBER).description("계정 id"),
-                                fieldWithPath("isNew").type(BOOLEAN).description("최초 로그인 여부"),
-                                fieldWithPath("token").type(NULL).description("서비스 이용 토큰")
-                        )))
+                                        .description("카카오 로그인-최초")
+                                        .responseSchema(Schema.schema("LogInResponse")),
+                                pathParameters(
+                                        parameterWithName("platform").description("소셜로그인 플랫폼")
+                                ),
+                                queryParameters(
+                                        parameterWithName("code").description("카카오 인가 코드")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").type(NUMBER).description("계정 id"),
+                                        fieldWithPath("isNew").type(BOOLEAN).description("최초 로그인 여부"),
+                                        fieldWithPath("token").type(NULL).description("서비스 이용 토큰")
+                                )
+                        )
+                )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(logInResponse.id()))
-                .andExpect(jsonPath("isNew").isBoolean())
-                .andExpect(jsonPath("token").isEmpty());
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
+
     }
 
     @Test
@@ -110,35 +109,31 @@ class OAuthControllerTest extends ControllerTestConfig {
         // given
         String platform = Platform.KAKAO.name().toLowerCase();
         String authCode = createAuthCode();
-        LogInResponse logInResponse = createLogInResponseForUserExist();
-        given(oAuthService.logIn(any(), any())).willReturn(logInResponse);
+        var response = createLogInResponseForUserExist();
+        given(oAuthService.logIn(any(), any())).willReturn(response);
 
         // when, then
         mockMvc.perform(get("/api/v1/auth/{platform}/callback", platform)
                         .queryParam("code", authCode))
                 .andDo(print())
-                .andExpect(status().isOk())
                 .andDo(document("auth-v1-login-kakao", resourceDetails().tag("인증")
-                                .description("카카오 로그인"),
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("platform").description("소셜로그인 플랫폼")
-                        ),
-                        queryParameters(
-                                parameterWithName("code").description("카카오 인가 코드")
-                        ),
-                        responseFields(
-                                fieldWithPath("id").type(NUMBER).description("계정 id"),
-                                fieldWithPath("isNew").type(BOOLEAN).description("최초 로그인 여부"),
-                                fieldWithPath("token.accessToken").type(STRING).description("서비스 이용 액세스 토큰"),
-                                fieldWithPath("token.refreshToken").type(STRING).description("서비스 이용 리프레시 토큰")
-                        )))
+                                        .description("카카오 로그인"),
+                                pathParameters(
+                                        parameterWithName("platform").description("소셜로그인 플랫폼")
+                                ),
+                                queryParameters(
+                                        parameterWithName("code").description("카카오 인가 코드")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").type(NUMBER).description("계정 id"),
+                                        fieldWithPath("isNew").type(BOOLEAN).description("최초 로그인 여부"),
+                                        fieldWithPath("token.accessToken").type(STRING).description("서비스 이용 액세스 토큰"),
+                                        fieldWithPath("token.refreshToken").type(STRING).description("서비스 이용 리프레시 토큰")
+                                )
+                        )
+                )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(logInResponse.id()))
-                .andExpect(jsonPath("isNew").isBoolean())
-                .andExpect(jsonPath("token.accessToken").isString())
-                .andExpect(jsonPath("token.refreshToken").isString());
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
     }
 
 }

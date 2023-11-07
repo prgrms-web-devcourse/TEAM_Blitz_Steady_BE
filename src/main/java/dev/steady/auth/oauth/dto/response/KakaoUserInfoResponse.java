@@ -4,8 +4,8 @@ import dev.steady.auth.domain.Platform;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor
 public class KakaoUserInfoResponse implements OAuthUserInfoResponse {
 
     private Long id;
