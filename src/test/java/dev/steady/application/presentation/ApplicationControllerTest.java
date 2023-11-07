@@ -1,12 +1,11 @@
 package dev.steady.application.presentation;
 
 import com.epages.restdocs.apispec.Schema;
-import dev.steady.application.domain.ApplicationStatus;
 import dev.steady.application.dto.request.ApplicationPageRequest;
 import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
 import dev.steady.application.dto.request.SurveyResultRequest;
 import dev.steady.application.dto.response.CreateApplicationResponse;
-import dev.steady.auth.domain.Authentication;
+import dev.steady.global.auth.Authentication;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.global.config.ControllerTestConfig;
 import org.junit.jupiter.api.DisplayName;
