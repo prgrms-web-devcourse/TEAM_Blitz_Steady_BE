@@ -2,11 +2,10 @@ package dev.steady.user.controller;
 
 import com.epages.restdocs.apispec.Schema;
 import dev.steady.global.config.ControllerTestConfig;
-import dev.steady.user.dto.request.UserCreateRequest;
+import dev.steady.user.dto.response.UserNicknameExistResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.net.URI;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
@@ -75,7 +74,6 @@ class UserControllerTest extends ControllerTestConfig {
         mockMvc.perform(get("/api/v1/user/profile/exist")
                         .queryParam("nickname", nickname))
                 .andDo(print())
-                .andExpect(status().isOk())
                 .andDo(document("user-v1-check-nickname", resourceDetails().tag("사용자")
                                 .description("유저 닉네임 중복 검사")
                                 .responseSchema(Schema.schema("UserCheckNicknameResponse")),

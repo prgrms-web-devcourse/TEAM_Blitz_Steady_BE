@@ -4,6 +4,7 @@ import dev.steady.auth.domain.Platform;
 import dev.steady.auth.oauth.service.OAuthService;
 import dev.steady.auth.service.AccountService;
 import dev.steady.user.dto.request.UserCreateRequest;
+import dev.steady.user.dto.response.UserNicknameExistResponse;
 import dev.steady.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,8 +36,9 @@ public class UserController {
     }
 
     @GetMapping("/profile/exist")
-    public ResponseEntity<Boolean> existsByNickname(@RequestParam String nickname) {
-        return ResponseEntity.ok(userService.existsByNickname(nickname));
+    public ResponseEntity<UserNicknameExistResponse> existsByNickname(@RequestParam String nickname) {
+        UserNicknameExistResponse response = userService.existsByNickname(nickname);
+        return ResponseEntity.ok(response);
     }
 
 }
