@@ -1,4 +1,4 @@
-package dev.steady.application.presentation;
+package dev.steady.application.controller;
 
 import com.epages.restdocs.apispec.Schema;
 import dev.steady.application.dto.request.ApplicationPageRequest;

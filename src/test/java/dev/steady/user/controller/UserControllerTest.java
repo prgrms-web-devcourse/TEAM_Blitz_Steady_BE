@@ -1,4 +1,4 @@
-package dev.steady.user.presentation;
+package dev.steady.user.controller;
 
 import com.epages.restdocs.apispec.Schema;
 import dev.steady.global.config.ControllerTestConfig;

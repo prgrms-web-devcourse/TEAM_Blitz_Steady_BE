@@ -1,4 +1,4 @@
-package dev.steady.template.presentation;
+package dev.steady.template.controller;
 
 import com.epages.restdocs.apispec.Schema;
 import dev.steady.global.auth.Authentication;
