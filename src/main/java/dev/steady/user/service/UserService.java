@@ -9,6 +9,7 @@ import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
 import dev.steady.user.domain.repository.UserStackRepository;
 import dev.steady.user.dto.request.UserCreateRequest;
+import dev.steady.user.dto.response.UserNicknameExistResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +39,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public boolean existsByNickname(String nickname) {
-        return userRepository.existsByNickname(nickname);
+    public UserNicknameExistResponse existsByNickname(String nickname) {
+        return new UserNicknameExistResponse(userRepository.existsByNickname(nickname));
     }
 
     @Transactional(readOnly = true)
