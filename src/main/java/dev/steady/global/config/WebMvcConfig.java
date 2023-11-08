@@ -2,6 +2,7 @@ package dev.steady.global.config;
 
 import dev.steady.global.auth.AuthorizedArgumentResolver;
 import dev.steady.global.auth.JwtAuthenticationInterceptor;
+import dev.steady.global.logging.MdcLoggingInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -19,6 +20,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new MdcLoggingInterceptor()).order(0);
         registry.addInterceptor(jwtAuthenticationInterceptor);
     }
 
