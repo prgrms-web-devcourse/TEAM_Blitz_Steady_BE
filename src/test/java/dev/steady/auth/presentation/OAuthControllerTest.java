@@ -29,7 +29,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,7 +48,6 @@ class OAuthControllerTest extends ControllerTestConfig {
 
         // then
         mockMvc.perform(get("/api/v1/auth/{platform}", platformString))
-                .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("auth-v1-getAuthCodeRequestUrl",
                                 resourceDetails().tag("인증").description("플랫폼별 인가코드 요청 URL 불러오기")
@@ -78,7 +76,6 @@ class OAuthControllerTest extends ControllerTestConfig {
         // when, then
         mockMvc.perform(get("/api/v1/auth/{platform}/callback", platform)
                         .queryParam("code", authCode))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("auth-v1-login-new", resourceDetails().tag("인증")
                                         .description("카카오 로그인-최초")
@@ -113,7 +110,6 @@ class OAuthControllerTest extends ControllerTestConfig {
         // when, then
         mockMvc.perform(get("/api/v1/auth/{platform}/callback", platform)
                         .queryParam("code", authCode))
-                .andDo(print())
                 .andDo(document("auth-v1-login-kakao", resourceDetails().tag("인증")
                                         .description("카카오 로그인"),
                                 pathParameters(

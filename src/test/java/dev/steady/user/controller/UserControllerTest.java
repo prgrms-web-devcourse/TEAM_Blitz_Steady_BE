@@ -25,7 +25,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseBody;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,7 +47,6 @@ class UserControllerTest extends ControllerTestConfig {
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                 )
-                .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("user-v1-create",
                         resourceDetails().tag("사용자").description("유저 프로필 생성")
@@ -73,7 +71,6 @@ class UserControllerTest extends ControllerTestConfig {
         // when, then
         mockMvc.perform(get("/api/v1/user/profile/exist")
                         .queryParam("nickname", nickname))
-                .andDo(print())
                 .andDo(document("user-v1-check-nickname", resourceDetails().tag("사용자")
                                 .description("유저 닉네임 중복 검사")
                                 .responseSchema(Schema.schema("UserCheckNicknameResponse")),
