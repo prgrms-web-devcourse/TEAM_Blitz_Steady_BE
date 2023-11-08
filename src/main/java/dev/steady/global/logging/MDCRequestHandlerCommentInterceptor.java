@@ -13,7 +13,8 @@ public class MDCRequestHandlerCommentInterceptor implements StatementInspector {
 
     @Override
     public String inspect(String sql) {
-        MDC.put("query", sql);
+        String count = MDC.get("query");
+        MDC.put("query", String.valueOf(Integer.valueOf(count) + 1));
         return sql;
     }
 
