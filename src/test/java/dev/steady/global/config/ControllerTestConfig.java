@@ -1,19 +1,19 @@
 package dev.steady.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.steady.application.presentation.ApplicationController;
+import dev.steady.application.controller.ApplicationController;
 import dev.steady.application.service.ApplicationService;
 import dev.steady.auth.config.JwtProperties;
+import dev.steady.auth.controller.OAuthController;
 import dev.steady.auth.domain.JwtResolver;
 import dev.steady.auth.oauth.service.OAuthService;
-import dev.steady.auth.presentation.OAuthController;
 import dev.steady.auth.service.AccountService;
 import dev.steady.global.auth.AuthContext;
-import dev.steady.steady.presentation.SteadyController;
+import dev.steady.steady.controller.SteadyController;
 import dev.steady.steady.service.SteadyService;
-import dev.steady.template.presentation.TemplateController;
+import dev.steady.template.controller.TemplateController;
 import dev.steady.template.service.TemplateService;
-import dev.steady.user.presentation.UserController;
+import dev.steady.user.controller.UserController;
 import dev.steady.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;

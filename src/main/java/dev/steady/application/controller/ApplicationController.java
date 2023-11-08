@@ -1,4 +1,4 @@
-package dev.steady.application.presentation;
+package dev.steady.application.controller;
 
 import dev.steady.application.dto.request.ApplicationPageRequest;
 import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;

@@ -1,4 +1,4 @@
-package dev.steady.heath;
+package dev.steady.health;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

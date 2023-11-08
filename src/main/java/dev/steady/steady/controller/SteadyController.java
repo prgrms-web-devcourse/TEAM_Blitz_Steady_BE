@@ -1,4 +1,4 @@
-package dev.steady.steady.presentation;
+package dev.steady.steady.controller;
 
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;

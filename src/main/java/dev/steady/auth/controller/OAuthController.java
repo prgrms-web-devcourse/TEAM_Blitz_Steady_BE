@@ -1,4 +1,4 @@
-package dev.steady.auth.presentation;
+package dev.steady.auth.controller;
 
 import dev.steady.auth.domain.Platform;
 import dev.steady.auth.oauth.dto.response.LogInResponse;

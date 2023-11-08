@@ -1,4 +1,4 @@
-package dev.steady.user.presentation;
+package dev.steady.user.controller;
 
 import dev.steady.auth.domain.Platform;
 import dev.steady.auth.oauth.service.OAuthService;
