@@ -2,7 +2,6 @@ package dev.steady.steady.domain;
 
 import dev.steady.global.entity.BaseEntity;
 import dev.steady.steady.exception.LeaderPermissionNeededException;
-import dev.steady.steady.exception.SteadyErrorCode;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
 import jakarta.persistence.CascadeType;
@@ -26,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static dev.steady.steady.exception.SteadyErrorCode.*;
+import static dev.steady.steady.exception.SteadyErrorCode.LEADER_PERMISSION_NEEDED;
 
 @Entity
 @Getter

@@ -14,7 +14,6 @@ import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
-import dev.steady.steady.exception.SteadyErrorCode;
 import dev.steady.steady.exception.SteadyIsNotEmptyException;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;

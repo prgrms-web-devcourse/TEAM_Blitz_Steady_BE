@@ -1,7 +1,6 @@
 package dev.steady.steady.domain;
 
 import dev.steady.steady.exception.PromotionCountException;
-import dev.steady.steady.exception.SteadyErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;

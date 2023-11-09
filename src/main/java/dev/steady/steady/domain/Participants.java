@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dev.steady.steady.exception.SteadyErrorCode.*;
+import static dev.steady.steady.exception.SteadyErrorCode.PARTICIPANT_LIMIT_EXCEEDED;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

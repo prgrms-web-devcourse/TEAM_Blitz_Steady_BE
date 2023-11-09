@@ -2,10 +2,9 @@ package dev.steady.user.domain.repository;
 
 import dev.steady.global.exception.NotFoundException;
 import dev.steady.user.domain.Stack;
-import dev.steady.user.exception.StackErrorCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import static dev.steady.user.exception.StackErrorCode.*;
+import static dev.steady.user.exception.StackErrorCode.STACK_NOT_FOUND;
 
 public interface StackRepository extends JpaRepository<Stack, Long> {
 

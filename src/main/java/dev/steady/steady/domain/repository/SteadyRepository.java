@@ -2,11 +2,10 @@ package dev.steady.steady.domain.repository;
 
 import dev.steady.global.exception.NotFoundException;
 import dev.steady.steady.domain.Steady;
-import dev.steady.steady.exception.SteadyErrorCode;
 import dev.steady.steady.infrastructure.SteadySearchRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import static dev.steady.steady.exception.SteadyErrorCode.*;
+import static dev.steady.steady.exception.SteadyErrorCode.STEADY_NOT_FOUND;
 
 public interface SteadyRepository extends JpaRepository<Steady, Long>, SteadySearchRepository {
 
