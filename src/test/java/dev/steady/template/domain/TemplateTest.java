@@ -1,5 +1,6 @@
 package dev.steady.template.domain;
 
+import dev.steady.global.exception.ForbiddenException;
 import dev.steady.user.domain.User;
 import dev.steady.user.fixture.UserFixtures;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +22,7 @@ class TemplateTest {
         Template template = createTemplate(user);
 
         assertThatThrownBy(() -> template.validateOwner(createSecondUser(position)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ForbiddenException.class);
     }
 
 }

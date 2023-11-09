@@ -8,6 +8,7 @@ import dev.steady.application.dto.response.ApplicationDetailResponse;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.application.dto.response.SliceResponse;
+import dev.steady.global.exception.ForbiddenException;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
@@ -173,7 +174,7 @@ class ApplicationServiceTest {
         //when
         //then
         assertThatThrownBy(() -> applicationService.getApplicationDetail(application.getId(), userInfo))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ForbiddenException.class);
     }
 
     @DisplayName("스테디 리더는 신청서의 상태가 WAITING 일 때 상태를 변경할 수 있다.")
@@ -206,9 +207,9 @@ class ApplicationServiceTest {
         var request = new ApplicationStatusUpdateRequest(ACCEPTED);
         //when
         //then
-        assertThatThrownBy(() ->
-                applicationService.updateApplicationStatus(application.getId(), request, userInfo))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> {
+            applicationService.updateApplicationStatus(application.getId(), request, userInfo);
+        }).isInstanceOf(ForbiddenException.class);
     }
 
 }
