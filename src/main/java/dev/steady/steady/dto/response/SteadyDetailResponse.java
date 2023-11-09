@@ -34,7 +34,7 @@ public record SteadyDetailResponse(
     public static SteadyDetailResponse of(Steady steady, List<SteadyPosition> positions, boolean isLeader, boolean isSubmittedUser) {
         return new SteadyDetailResponse(
                 steady.getId(),
-                LeaderResponse.from(steady.getParticipants().getLeader()),
+                LeaderResponse.from(steady.getLeader()),
                 steady.getName(),
                 steady.getTitle(),
                 steady.getType(),

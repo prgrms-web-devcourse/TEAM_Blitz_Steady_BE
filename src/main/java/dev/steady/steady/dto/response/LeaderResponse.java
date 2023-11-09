@@ -9,6 +9,7 @@ public record LeaderResponse(
 ) {
 
     public static LeaderResponse from(User leader) {
+        // TODO: 2023-11-09  리더가 탈퇴하면 스테디를 어떻게 할 것인지
         return new LeaderResponse(leader.getId(), leader.getNickname(), leader.getProfileImage());
     }
 
