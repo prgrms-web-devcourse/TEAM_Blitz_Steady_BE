@@ -43,11 +43,12 @@ class ApplicationControllerTest extends ControllerTestConfig {
     void createApplicationTest() throws Exception {
         long userId = 1L;
         long steadyId = 1L;
-        List<SurveyResultRequest> request = createSurveyResultRequests();
+        var request = createSurveyResultRequests();
         var auth = new Authentication(userId);
-        when(jwtResolver.getAuthentication(TOKEN)).thenReturn(auth);
         var userInfo = new UserInfo(userId);
         var response = new CreateApplicationResponse(steadyId);
+
+        when(jwtResolver.getAuthentication(TOKEN)).thenReturn(auth);
         when(applicationService.createApplication(steadyId, request, userInfo))
                 .thenReturn(response);
 
@@ -154,6 +155,7 @@ class ApplicationControllerTest extends ControllerTestConfig {
         long applicationId = 1L;
         var request = new ApplicationStatusUpdateRequest(ACCEPTED);
         var auth = new Authentication(userId);
+
         when(jwtResolver.getAuthentication(TOKEN)).thenReturn(auth);
 
         mockMvc.perform(patch("/applications/{applicationId}/status", applicationId)
