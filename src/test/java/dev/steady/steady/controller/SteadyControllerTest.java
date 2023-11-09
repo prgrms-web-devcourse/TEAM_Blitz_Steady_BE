@@ -114,7 +114,7 @@ class SteadyControllerTest extends ControllerTestConfig {
 
         // when & then
         mockMvc.perform(get("/api/v1/steadies")
-                        .params(params))
+                        .queryParams(params))
                 .andDo(document("steady-get-steadies",
                         resourceDetails().tag("스테디").description("스테디 전체 조회")
                                 .responseSchema(Schema.schema("PageResponse")),
@@ -182,7 +182,7 @@ class SteadyControllerTest extends ControllerTestConfig {
 
         // when & then
         mockMvc.perform(get("/api/v1/steadies/search")
-                        .params(params))
+                        .queryParams(params))
                 .andDo(document("steady-get-steadies-by-condition",
                         resourceDetails().tag("스테디").description("스테디 검색 및 필터링 조회")
                                 .responseSchema(Schema.schema("PageResponse")),
@@ -306,7 +306,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(document("steady-update",
                         resourceDetails().tag("스테디").description("스테디 수정")
-                                .requestSchema(Schema.schema("SteadyDetailResponse")),
+                                .requestSchema(Schema.schema("SteadyUpdateRequest")),
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("토큰")
                         ),
