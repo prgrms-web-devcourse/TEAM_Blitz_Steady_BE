@@ -96,13 +96,13 @@ public class Steady extends BaseEntity {
                    User user,
                    List<Stack> stacks) {
         this.promotion = new Promotion();
+        this.participantLimit = participantLimit;
         this.participants = createParticipants(user);
         this.numberOfParticipants = participants.getNumberOfParticipants();
         this.name = name;
         this.bio = bio;
         this.type = type;
         this.status = SteadyStatus.RECRUITING;
-        this.participantLimit = participantLimit;
         this.steadyMode = steadyMode;
         this.scheduledPeriod = scheduledPeriod;
         this.deadline = deadline;
@@ -138,6 +138,12 @@ public class Steady extends BaseEntity {
         this.steadyStacks.addAll(createSteadyStack(stacks));
     }
 
+    public void validateLeader(User user) {
+        if (!isLeader(user)) {
+            throw new LeaderPermissionNeededException(LEADER_PERMISSION_NEEDED);
+        }
+    }
+
     public boolean isLeader(User user) {
         User leader = participants.getLeader();
         return leader.equals(user);
@@ -146,6 +152,7 @@ public class Steady extends BaseEntity {
     public void addParticipant(User user, Participant participant) {
         validateLeader(user);
         participants.add(participant);
+        numberOfParticipants = participants.getNumberOfParticipants();
     }
 
     public void usePromotion(User user) {
@@ -164,7 +171,7 @@ public class Steady extends BaseEntity {
 
     public boolean isDeletable(User user) {
         validateLeader(user);
-        return numberOfParticipants > 1;
+        return numberOfParticipants == 1;
     }
 
     public User getLeader() {
@@ -181,12 +188,6 @@ public class Steady extends BaseEntity {
         return stacks.stream()
                 .map(stack -> new SteadyStack(stack, this))
                 .collect(Collectors.toList());
-    }
-
-    private void validateLeader(User user) {
-        if (!isLeader(user)) {
-            throw new LeaderPermissionNeededException(LEADER_PERMISSION_NEEDED);
-        }
     }
 
 }
