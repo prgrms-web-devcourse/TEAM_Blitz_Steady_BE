@@ -14,6 +14,7 @@ import static dev.steady.template.fixture.TemplateFixture.createTemplateRequest;
 import static dev.steady.template.fixture.TemplateFixture.createTemplateResponse;
 import static dev.steady.template.fixture.TemplateFixture.createUpdateTemplateRequest;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -38,12 +39,12 @@ class TemplateControllerTest extends ControllerTestConfig {
     @DisplayName("인증된 사용자의 템플릿 생성요청을 받아 204 상태코드를 반환한다.")
     @Test
     void createTemplateTest() throws Exception {
-        Long userId = 1L;
+        var userId = 1L;
         var auth = new Authentication(userId);
+
         given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
 
         var request = createTemplateRequest();
-
         mockMvc.perform(post("/api/v1/template")
                         .contentType(APPLICATION_JSON)
                         .header(AUTHORIZATION, TOKEN)
@@ -66,12 +67,13 @@ class TemplateControllerTest extends ControllerTestConfig {
     @DisplayName("인증된 사용자의 템플릿 목록 요청을 받아 200 상태코드를 반환한다.")
     @Test
     void getTemplatesTest() throws Exception {
-        Long userId = 1L;
+        var userId = 1L;
         var userInfo = createUserInfo(userId);
         var auth = new Authentication(userId);
-        given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
         var response = createTemplateResponse();
-        given(templateService.getTemplates(userInfo)).willReturn(response);
+
+        when(jwtResolver.getAuthentication(TOKEN)).thenReturn(auth);
+        when(templateService.getTemplates(userInfo)).thenReturn(response);
 
         mockMvc.perform(get("/api/v1/template")
                         .header(AUTHORIZATION, TOKEN)
@@ -97,12 +99,13 @@ class TemplateControllerTest extends ControllerTestConfig {
     @DisplayName("인증된 사용자의 템플릿 상세조회 요청을 받아 200 상태코드를 반환한다.")
     @Test
     void getDetailTemplateTest() throws Exception {
-        Long userId = 1L;
+        var userId = 1L;
         var userInfo = createUserInfo(userId);
         var auth = new Authentication(userId);
-        given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
         var response = createDetailTemplateResponse();
-        given(templateService.getDetailTemplate(userInfo, 1L)).willReturn(response);
+
+        when(jwtResolver.getAuthentication(TOKEN)).thenReturn(auth);
+        when(templateService.getDetailTemplate(userInfo, 1L)).thenReturn(response);
 
         mockMvc.perform(get("/api/v1/template/{templateId}", 1L)
                         .header(AUTHORIZATION, TOKEN)
@@ -131,9 +134,10 @@ class TemplateControllerTest extends ControllerTestConfig {
     @DisplayName("인증된 사용자의 템플릿 삭제요청을 받아 204 상태코드를 반환한다.")
     @Test
     void deleteTemplateTest() throws Exception {
-        Long userId = 1L;
+        var userId = 1L;
         var auth = new Authentication(userId);
-        given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
+
+        when(jwtResolver.getAuthentication(TOKEN)).thenReturn(auth);
 
         mockMvc.perform(delete("/api/v1/template/{templateId}", 1L)
                         .header(AUTHORIZATION, TOKEN)
@@ -153,12 +157,12 @@ class TemplateControllerTest extends ControllerTestConfig {
     @DisplayName("인증된 사용자의 템플릿 수정요청을 받아 204 상태코드를 반환한다.")
     @Test
     void updateTemplateTest() throws Exception {
-        Long userId = 1L;
+        var userId = 1L;
         var auth = new Authentication(userId);
-        given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
+
+        when(jwtResolver.getAuthentication(TOKEN)).thenReturn(auth);
 
         var request = createUpdateTemplateRequest();
-
         mockMvc.perform(patch("/api/v1/template/{templateId}", 1L)
                         .contentType(APPLICATION_JSON)
                         .header(AUTHORIZATION, TOKEN)

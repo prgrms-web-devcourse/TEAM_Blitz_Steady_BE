@@ -4,17 +4,19 @@ import dev.steady.application.domain.Application;
 import dev.steady.application.domain.ApplicationStatus;
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
-import dev.steady.application.dto.request.SurveyResultRequest;
 import dev.steady.application.dto.response.ApplicationDetailResponse;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.application.dto.response.SliceResponse;
-import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.domain.repository.SteadyRepository;
+import dev.steady.user.domain.Position;
+import dev.steady.user.domain.Stack;
+import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +63,17 @@ class ApplicationServiceTest {
     @Autowired
     private ApplicationRepository applicationRepository;
 
+    private Position position;
+    private User leader;
+    private Stack stack;
+
+    @BeforeEach
+    void setUp() {
+        this.position = positionRepository.save(createPosition());
+        this.leader = userRepository.save(createFirstUser(position));
+        this.stack = stackRepository.save(createStack());
+    }
+
     @AfterEach
     void tearDown() {
         applicationRepository.deleteAll();
@@ -74,12 +87,10 @@ class ApplicationServiceTest {
     @Test
     void createApplicationTest() {
         //given
-        var position = positionRepository.save(createPosition());
-        var user = userRepository.save(createFirstUser(position));
-        var savedStack = stackRepository.save(createStack());
-        var steady = steadyRepository.save(creatSteady(user, savedStack));
-        List<SurveyResultRequest> surveyResultRequests = createSurveyResultRequests();
-        UserInfo userInfo = createUserInfo(user.getId());
+        var user = userRepository.save(createSecondUser(position));
+        var steady = steadyRepository.save(creatSteady(user, stack));
+        var surveyResultRequests = createSurveyResultRequests();
+        var userInfo = createUserInfo(user.getId());
 
         //when
         CreateApplicationResponse response = applicationService.createApplication(steady.getId(),
@@ -94,10 +105,7 @@ class ApplicationServiceTest {
     @Test
     void getApplicationsTest() {
         //given
-        var position = positionRepository.save(createPosition());
-        var leader = userRepository.save(createFirstUser(position));
-        var savedStack = stackRepository.save(createStack());
-        var steady = steadyRepository.save(creatSteady(leader, savedStack));
+        var steady = steadyRepository.save(creatSteady(leader, stack));
         var secondUser = userRepository.save(createSecondUser(position));
         var thirdUser = userRepository.save(createThirdUser(position));
         applicationRepository.saveAll(List.of(createApplication(secondUser, steady),
@@ -119,20 +127,17 @@ class ApplicationServiceTest {
     @Test
     void getApplicationsFailTest() {
         //given
-        var position = positionRepository.save(createPosition());
-        var leader = userRepository.save(createFirstUser(position));
-        var savedStack = stackRepository.save(createStack());
-        var steady = steadyRepository.save(creatSteady(leader, savedStack));
+        var steady = steadyRepository.save(creatSteady(leader, stack));
         var secondUser = userRepository.save(createSecondUser(position));
         var thirdUser = userRepository.save(createThirdUser(position));
         applicationRepository.save(createApplication(secondUser, steady));
-        UserInfo userInfo = createUserInfo(thirdUser.getId());
-        PageRequest page = PageRequest.of(0, 10);
+        var userInfo = createUserInfo(thirdUser.getId());
+        var pageRequest = PageRequest.of(0, 10);
         //when
         //then
         assertThatThrownBy(() -> applicationService.getApplications(steady.getId(),
                 userInfo,
-                page)
+                pageRequest)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -140,13 +145,10 @@ class ApplicationServiceTest {
     @Test
     void getApplicationDetailTest() {
         //given
-        var position = positionRepository.save(createPosition());
-        var leader = userRepository.save(createFirstUser(position));
-        var savedStack = stackRepository.save(createStack());
-        var steady = steadyRepository.save(creatSteady(leader, savedStack));
+        var steady = steadyRepository.save(creatSteady(leader, stack));
         var secondUser = userRepository.save(createSecondUser(position));
         var application = applicationRepository.save(createApplication(secondUser, steady));
-        UserInfo userInfo = createUserInfo(leader.getId());
+        var userInfo = createUserInfo(leader.getId());
         //when
         ApplicationDetailResponse response = applicationService.getApplicationDetail(application.getId(), userInfo);
         //then
@@ -163,14 +165,11 @@ class ApplicationServiceTest {
     @Test
     void getApplicationDetailFailTest() {
         //given
-        var position = positionRepository.save(createPosition());
-        var leader = userRepository.save(createFirstUser(position));
-        var savedStack = stackRepository.save(createStack());
-        var steady = steadyRepository.save(creatSteady(leader, savedStack));
+        var steady = steadyRepository.save(creatSteady(leader, stack));
         var secondUser = userRepository.save(createSecondUser(position));
         var thirdUser = userRepository.save(createThirdUser(position));
         var application = applicationRepository.save(createApplication(secondUser, steady));
-        UserInfo userInfo = createUserInfo(thirdUser.getId());
+        var userInfo = createUserInfo(thirdUser.getId());
         //when
         //then
         assertThatThrownBy(() -> applicationService.getApplicationDetail(application.getId(), userInfo))
@@ -181,10 +180,7 @@ class ApplicationServiceTest {
     @Test
     void createSurveyResultTest() {
         //given
-        var position = positionRepository.save(createPosition());
-        var leader = userRepository.save(createFirstUser(position));
-        var savedStack = stackRepository.save(createStack());
-        var steady = steadyRepository.save(creatSteady(leader, savedStack));
+        var steady = steadyRepository.save(creatSteady(leader, stack));
         var secondUser = userRepository.save(createSecondUser(position));
         var application = applicationRepository.save(createApplication(secondUser, steady));
         var userInfo = createUserInfo(leader.getId());
@@ -201,21 +197,17 @@ class ApplicationServiceTest {
     @Test
     void createSurveyResultFailTest() {
         //given
-        var position = positionRepository.save(createPosition());
-        var leader = userRepository.save(createFirstUser(position));
-        var savedStack = stackRepository.save(createStack());
-        var steady = steadyRepository.save(creatSteady(leader, savedStack));
+        var steady = steadyRepository.save(creatSteady(leader, stack));
         var secondUser = userRepository.save(createSecondUser(position));
-        Application entity = createApplication(secondUser, steady);
+        var entity = createApplication(secondUser, steady);
         ReflectionTestUtils.setField(entity, "status", REJECTED);
         var application = applicationRepository.save(entity);
         var userInfo = createUserInfo(leader.getId());
         var request = new ApplicationStatusUpdateRequest(ACCEPTED);
         //when
         //then
-        assertThatThrownBy(() -> {
-            applicationService.updateApplicationStatus(application.getId(), request, userInfo);
-        })
+        assertThatThrownBy(() ->
+                applicationService.updateApplicationStatus(application.getId(), request, userInfo))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
