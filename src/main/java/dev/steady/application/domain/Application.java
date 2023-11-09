@@ -1,6 +1,7 @@
 package dev.steady.application.domain;
 
 import dev.steady.global.entity.BaseEntity;
+import dev.steady.global.exception.ForbiddenException;
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
 import jakarta.persistence.Embedded;
@@ -19,6 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static dev.steady.application.domain.ApplicationStatus.WAITING;
+import static dev.steady.application.exception.ApplicationErrorCode.APPLICATION_AUTH_FAILURE;
 
 @Entity
 @Getter
@@ -52,7 +54,7 @@ public class Application extends BaseEntity {
 
     public void checkAccessOrThrow(User user) {
         if (!hasAccess(user)) {
-            throw new IllegalArgumentException();
+            throw new ForbiddenException(APPLICATION_AUTH_FAILURE);
         }
     }
 
@@ -65,7 +67,7 @@ public class Application extends BaseEntity {
             this.status = status;
             return;
         }
-        throw new IllegalArgumentException();
+        throw new ForbiddenException(APPLICATION_AUTH_FAILURE);
     }
 
     private boolean hasAccess(User user) {

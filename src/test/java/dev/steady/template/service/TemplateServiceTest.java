@@ -1,5 +1,7 @@
 package dev.steady.template.service;
 
+import dev.steady.global.exception.ForbiddenException;
+import dev.steady.global.exception.NotFoundException;
 import dev.steady.template.domain.Question;
 import dev.steady.template.domain.Template;
 import dev.steady.template.domain.repository.QuestionRepository;
@@ -16,7 +18,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
@@ -128,7 +129,7 @@ class TemplateServiceTest {
         var userInfo = createUserInfo(anotherUser.getId());
 
         assertThatThrownBy(() -> templateService.getDetailTemplate(userInfo, savedTemplate.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ForbiddenException.class);
     }
 
     @DisplayName("템플릿 수정 요청을 받아서 기존 템플릿을 업데이트한다.")
@@ -164,7 +165,7 @@ class TemplateServiceTest {
 
         //then
         assertThatThrownBy(() -> templateRepository.getById(savedTemplate.getId()))
-                .isInstanceOf(InvalidDataAccessApiUsageException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("템플릿 작성자가 아니면 템플릿을 삭제할 수 없다.")
@@ -180,7 +181,7 @@ class TemplateServiceTest {
         //when
         //then
         assertThatThrownBy(() -> templateService.deleteTemplate(userInfo, savedTemplate.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ForbiddenException.class);
     }
 
 }

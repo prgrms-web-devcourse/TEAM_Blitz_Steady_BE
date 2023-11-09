@@ -4,8 +4,7 @@ public class ForbiddenException extends BusinessException{
 
     private final ErrorCode errorCode;
 
-    public ForbiddenException(String message, ErrorCode errorCode) {
-        super(message);
+    public ForbiddenException(ErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 
