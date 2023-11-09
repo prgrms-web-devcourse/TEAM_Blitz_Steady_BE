@@ -1,6 +1,7 @@
 package dev.steady.template.domain;
 
 import dev.steady.global.entity.BaseEntity;
+import dev.steady.global.exception.ForbiddenException;
 import dev.steady.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -17,6 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+
+import static dev.steady.template.exception.TemplateErrorCode.TEMPLATE_AUTH_FAILURE;
 
 @Getter
 @Entity
@@ -50,7 +53,7 @@ public class Template extends BaseEntity {
 
     public void validateOwner(User user) {
         if (!this.user.equals(user)) {
-            throw new IllegalArgumentException();
+            throw new ForbiddenException(TEMPLATE_AUTH_FAILURE);
         }
     }
 
