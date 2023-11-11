@@ -33,7 +33,7 @@ public class Promotion {
     }
 
     private void validatePromotionCount() {
-        if (promotionCount < 0) {
+        if (promotionCount <= 0) {
             throw new PromotionCountException(PROMOTION_COUNT_EXCEPTION);
         }
     }
