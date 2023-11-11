@@ -4,6 +4,8 @@ import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
 import dev.steady.user.dto.request.UserCreateRequest;
+import dev.steady.user.dto.response.StackResponse;
+import dev.steady.user.dto.response.StackResponses;
 
 import java.util.List;
 
@@ -71,6 +73,13 @@ public class UserFixtures {
                 1L,
                 List.of(1L, 2L)
         );
+    }
+
+    public static StackResponses createStackResponses() {
+        return new StackResponses(List.of(
+                new StackResponse(1L, "Java", "www.java.com"),
+                new StackResponse(2L, "JavaScript", "www.javascript.com")
+        ));
     }
 
 }
