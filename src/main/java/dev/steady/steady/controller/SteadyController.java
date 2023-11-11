@@ -5,6 +5,7 @@ import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyPageRequest;
+import dev.steady.steady.dto.request.SteadyQuestionUpdateRequest;
 import dev.steady.steady.dto.request.SteadySearchRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.PageResponse;
@@ -73,6 +74,14 @@ public class SteadyController {
                                              @RequestBody SteadyUpdateRequest request,
                                              @Auth UserInfo userInfo) {
         steadyService.updateSteady(steadyId, request, userInfo);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{steadyId}/steadyQuestions")
+    public ResponseEntity<Void> updateSteadyQuestions(@PathVariable Long steadyId,
+                                                      @RequestBody SteadyQuestionUpdateRequest request,
+                                                      @Auth UserInfo userInfo) {
+        steadyService.updateSteadyQuestions(steadyId, request, userInfo);
         return ResponseEntity.noContent().build();
     }
 
