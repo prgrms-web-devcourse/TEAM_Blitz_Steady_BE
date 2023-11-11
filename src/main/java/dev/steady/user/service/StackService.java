@@ -2,7 +2,7 @@ package dev.steady.user.service;
 
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.repository.StackRepository;
-import dev.steady.user.dto.response.StackResponses;
+import dev.steady.user.dto.response.StacksResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +16,9 @@ public class StackService {
     private final StackRepository stackRepository;
 
     @Transactional(readOnly = true)
-    public StackResponses getStacks() {
+    public StacksResponse getStacks() {
         List<Stack> stacks = stackRepository.findAll();
-        return StackResponses.from(stacks);
+        return StacksResponse.from(stacks);
     }
 
 }

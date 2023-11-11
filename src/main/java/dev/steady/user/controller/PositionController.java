@@ -1,7 +1,7 @@
 package dev.steady.user.controller;
 
-import dev.steady.user.dto.response.StacksResponse;
-import dev.steady.user.service.StackService;
+import dev.steady.user.dto.response.PositionsResponse;
+import dev.steady.user.service.PositionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/stacks")
-public class StackController {
+@RequestMapping("/api/v1/positions")
+public class PositionController {
 
-    private final StackService stackService;
+    private final PositionService positionService;
 
     @GetMapping
-    public ResponseEntity<StacksResponse> getStacks() {
-        StacksResponse response = stackService.getStacks();
+    public ResponseEntity<PositionsResponse> getPositions() {
+        PositionsResponse response = positionService.getPositions();
         return ResponseEntity.ok(response);
     }
 

@@ -13,8 +13,10 @@ import dev.steady.steady.controller.SteadyController;
 import dev.steady.steady.service.SteadyService;
 import dev.steady.template.controller.TemplateController;
 import dev.steady.template.service.TemplateService;
+import dev.steady.user.controller.PositionController;
 import dev.steady.user.controller.StackController;
 import dev.steady.user.controller.UserController;
+import dev.steady.user.service.PositionService;
 import dev.steady.user.service.StackService;
 import dev.steady.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         TemplateController.class,
         ApplicationController.class,
         StackController.class,
+        PositionController.class,
         AuthContext.class,
         JwtResolver.class,
         JwtProperties.class,
@@ -61,6 +64,8 @@ public abstract class ControllerTestConfig {
     protected UserService userService;
     @MockBean
     protected StackService stackService;
+    @MockBean
+    protected PositionService positionService;
     @MockBean
     protected SteadyService steadyService;
     @MockBean
