@@ -1,7 +1,7 @@
 package dev.steady.user.service;
 
 import dev.steady.user.domain.repository.PositionRepository;
-import dev.steady.user.dto.response.PositionResponses;
+import dev.steady.user.dto.response.PositionsResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ class PositionServiceTest {
         positionRepository.save(createAnotherPosition());
 
         // when
-        PositionResponses response = positionService.getPositions();
+        PositionsResponse response = positionService.getPositions();
 
         // then
         int expectedSize = 2;

@@ -1,6 +1,6 @@
 package dev.steady.user.controller;
 
-import dev.steady.user.dto.response.PositionResponses;
+import dev.steady.user.dto.response.PositionsResponse;
 import dev.steady.user.service.PositionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +16,8 @@ public class PositionController {
     private final PositionService positionService;
 
     @GetMapping
-    public ResponseEntity<PositionResponses> getPositions() {
-        PositionResponses response = positionService.getPositions();
+    public ResponseEntity<PositionsResponse> getPositions() {
+        PositionsResponse response = positionService.getPositions();
         return ResponseEntity.ok(response);
     }
 

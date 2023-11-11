@@ -1,6 +1,6 @@
 package dev.steady.user.controller;
 
-import dev.steady.user.dto.response.StackResponses;
+import dev.steady.user.dto.response.StacksResponse;
 import dev.steady.user.service.StackService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +16,8 @@ public class StackController {
     private final StackService stackService;
 
     @GetMapping
-    public ResponseEntity<StackResponses> getStacks() {
-        StackResponses response = stackService.getStacks();
+    public ResponseEntity<StacksResponse> getStacks() {
+        StacksResponse response = stackService.getStacks();
         return ResponseEntity.ok(response);
     }
 

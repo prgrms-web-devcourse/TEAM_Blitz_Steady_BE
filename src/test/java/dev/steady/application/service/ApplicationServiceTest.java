@@ -10,7 +10,6 @@ import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.exception.ForbiddenException;
 import dev.steady.steady.domain.repository.SteadyRepository;
-import dev.steady.steady.exception.LeaderPermissionNeededException;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
@@ -140,7 +139,7 @@ class ApplicationServiceTest {
         assertThatThrownBy(() -> applicationService.getApplications(steady.getId(),
                 userInfo,
                 pageRequest)
-        ).isInstanceOf(LeaderPermissionNeededException.class);
+        ).isInstanceOf(ForbiddenException.class);
     }
 
     @DisplayName("스테디 리더는 신청서를 상세조회할 수 있다.")
