@@ -5,8 +5,10 @@ import dev.steady.global.exception.ErrorCode;
 
 public class SteadyIsNotEmptyException extends BusinessException {
 
+    private final ErrorCode errorCode;
+
     public SteadyIsNotEmptyException(ErrorCode errorCode) {
-        super(errorCode);
+        this.errorCode = errorCode;
     }
 
 }

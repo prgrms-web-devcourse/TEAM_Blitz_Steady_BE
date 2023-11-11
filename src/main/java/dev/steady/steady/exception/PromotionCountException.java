@@ -5,8 +5,10 @@ import dev.steady.global.exception.ErrorCode;
 
 public class PromotionCountException extends BusinessException {
 
+    private final ErrorCode errorCode;
+
     public PromotionCountException(ErrorCode errorCode) {
-        super(errorCode);
+        this.errorCode = errorCode;
     }
 
 }

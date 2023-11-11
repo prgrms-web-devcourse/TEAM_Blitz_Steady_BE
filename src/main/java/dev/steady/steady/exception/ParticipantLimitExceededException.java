@@ -5,8 +5,10 @@ import dev.steady.global.exception.ErrorCode;
 
 public class ParticipantLimitExceededException extends BusinessException {
 
+    private final ErrorCode errorCode;
+
     public ParticipantLimitExceededException(ErrorCode errorCode) {
-        super(errorCode);
+        this.errorCode = errorCode;
     }
 
 }

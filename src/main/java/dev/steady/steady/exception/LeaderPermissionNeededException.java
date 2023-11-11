@@ -5,8 +5,10 @@ import dev.steady.global.exception.ErrorCode;
 
 public class LeaderPermissionNeededException extends BusinessException {
 
+    private final ErrorCode errorCode;
+
     public LeaderPermissionNeededException(ErrorCode errorCode) {
-        super(errorCode);
+        this.errorCode = errorCode;
     }
 
 }
