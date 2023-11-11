@@ -1,6 +1,7 @@
 package dev.steady.steady.service;
 
 import dev.steady.global.auth.UserInfo;
+import dev.steady.global.exception.ForbiddenException;
 import dev.steady.global.exception.NotFoundException;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
@@ -22,8 +23,7 @@ import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadyPositionResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.steady.dto.response.SteadyStackResponse;
-import dev.steady.steady.exception.LeaderPermissionNeededException;
-import dev.steady.steady.exception.SteadyIsNotEmptyException;
+import dev.steady.steady.exception.InvalidStateException;
 import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
@@ -33,7 +33,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -343,7 +342,7 @@ class SteadyServiceTest {
         UserInfo anotherUserInfo = createUserInfo(anotherUser.getId());
         SteadyUpdateRequest steadyUpdateRequest = createSteadyUpdateRequest(anotherStack.getId(), anotherPosition.getId());
         assertThatThrownBy(() -> steadyService.updateSteady(steadyId, steadyUpdateRequest, anotherUserInfo))
-                .isInstanceOf(LeaderPermissionNeededException.class);
+                .isInstanceOf(ForbiddenException.class);
     }
 
     @Test
@@ -391,7 +390,7 @@ class SteadyServiceTest {
         User anotherUser = userRepository.save(createSecondUser(position));
         var anotherUserInfo = createUserInfo(anotherUser.getId());
         assertThatThrownBy(() -> steadyService.promoteSteady(steadyId, anotherUserInfo))
-                .isInstanceOf(LeaderPermissionNeededException.class);
+                .isInstanceOf(ForbiddenException.class);
     }
 
     @Test
@@ -438,7 +437,7 @@ class SteadyServiceTest {
 
         // when & then
         assertThatThrownBy(() -> steadyService.finishSteady(steadyId, anotherUserInfo))
-                .isInstanceOf(LeaderPermissionNeededException.class);
+                .isInstanceOf(ForbiddenException.class);
     }
 
     @Test
@@ -498,7 +497,7 @@ class SteadyServiceTest {
 
         // then
         assertThatThrownBy(() -> steadyService.deleteSteady(steadyId, userInfo))
-                .isInstanceOf(SteadyIsNotEmptyException.class);
+                .isInstanceOf(InvalidStateException.class);
     }
 
     @Test
@@ -520,7 +519,7 @@ class SteadyServiceTest {
 
         // when & then
         assertThatThrownBy(() -> steadyService.deleteSteady(steadyId, anotherUserInfo))
-                .isInstanceOf(LeaderPermissionNeededException.class);
+                .isInstanceOf(ForbiddenException.class);
     }
 
 }

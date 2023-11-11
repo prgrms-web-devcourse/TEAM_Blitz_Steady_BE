@@ -14,7 +14,7 @@ import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
-import dev.steady.steady.exception.SteadyIsNotEmptyException;
+import dev.steady.steady.exception.InvalidStateException;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
@@ -139,7 +139,7 @@ public class SteadyService {
             steadyRepository.delete(steady);
             return;
         }
-        throw new SteadyIsNotEmptyException(STEADY_IS_NOT_EMPTY);
+        throw new InvalidStateException(STEADY_IS_NOT_EMPTY);
     }
 
     private boolean isWaitingApplication(User user, Steady steady) {

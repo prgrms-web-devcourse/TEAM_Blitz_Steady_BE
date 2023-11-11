@@ -1,7 +1,7 @@
 package dev.steady.steady.domain;
 
 import dev.steady.global.entity.BaseEntity;
-import dev.steady.steady.exception.LeaderPermissionNeededException;
+import dev.steady.global.exception.ForbiddenException;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
 import jakarta.persistence.CascadeType;
@@ -139,7 +139,7 @@ public class Steady extends BaseEntity {
 
     public void validateLeader(User user) {
         if (!isLeader(user)) {
-            throw new LeaderPermissionNeededException(LEADER_PERMISSION_NEEDED);
+            throw new ForbiddenException(LEADER_PERMISSION_NEEDED);
         }
     }
 

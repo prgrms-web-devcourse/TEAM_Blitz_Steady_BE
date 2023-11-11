@@ -1,6 +1,6 @@
 package dev.steady.steady.domain;
 
-import dev.steady.steady.exception.ParticipantLimitExceededException;
+import dev.steady.steady.exception.InvalidStateException;
 import dev.steady.user.domain.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embeddable;
@@ -49,7 +49,7 @@ public class Participants {
 
     private void validateParticipantLimit() {
         if (participantLimits == steadyParticipants.size()) {
-            throw new ParticipantLimitExceededException(PARTICIPANT_LIMIT_EXCEEDED);
+            throw new InvalidStateException(PARTICIPANT_LIMIT_EXCEEDED);
         }
     }
 
