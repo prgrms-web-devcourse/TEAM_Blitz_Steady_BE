@@ -19,37 +19,46 @@ public record SearchConditionDto(
 ) {
 
     public static SearchConditionDto from(SteadySearchRequest request) {
-        SteadyMode steadyMode = null;
-        if (!request.steadyMode().equals("all")) {
-            steadyMode = SteadyMode.from(request.steadyMode());
-        }
+        SteadyMode steadyMode = filterSteadyModeCondition(request.steadyMode());
+        List<String> stack = filterStackOrPositionCondition(request.stack());
+        List<String> position = filterStackOrPositionCondition(request.position());
+        SteadyStatus status = filterSteadyStatusCondition(request.status());
+        boolean like = filterLikeCondition(request.like());
 
-        List<String> stackArr = new ArrayList<>();
-        if (StringUtils.hasText(request.stack())) {
-            stackArr = Arrays.stream(request.stack().split(",")).toList();
-        }
-
-        List<String> positionArr = new ArrayList<>();
-        if (StringUtils.hasText(request.position())) {
-            positionArr = Arrays.stream(request.position().split(",")).toList();
-        }
-
-        SteadyStatus status = null;
-        if (!request.status().equals("all")) {
-            status = SteadyStatus.from(request.status());
-        }
-
-        boolean like = false;
-        if (request.like().equals("true")) {
-            like = true;
-        }
-        // TODO: 2023-11-04 현재 상태를 유지하고 private 메서드로 분리할지, Service로 분리해야 할지?
         return new SearchConditionDto(steadyMode,
-                stackArr,
-                positionArr,
+                stack,
+                position,
                 status,
                 like,
                 request.keyword());
+    }
+
+    private static SteadyMode filterSteadyModeCondition(String steadyMode) {
+        SteadyMode result = null;
+        if (!steadyMode.equals("all")) {
+            result = SteadyMode.from(steadyMode);
+        }
+        return result;
+    }
+
+    private static List<String> filterStackOrPositionCondition(String request) {
+        List<String> result = new ArrayList<>();
+        if (StringUtils.hasText(request)) {
+            result = Arrays.stream(request.split(",")).toList();
+        }
+        return result;
+    }
+
+    private static SteadyStatus filterSteadyStatusCondition(String steadyStatus) {
+        SteadyStatus result = null;
+        if (!steadyStatus.equals("all")) {
+            result = SteadyStatus.from(steadyStatus);
+        }
+        return result;
+    }
+
+    private static boolean filterLikeCondition(String like) {
+        return like.equals("true");
     }
 
 }

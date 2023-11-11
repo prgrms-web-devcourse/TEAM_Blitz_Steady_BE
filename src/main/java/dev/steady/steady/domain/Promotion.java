@@ -1,10 +1,13 @@
 package dev.steady.steady.domain;
 
+import dev.steady.steady.exception.InvalidStateException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+
+import static dev.steady.steady.exception.SteadyErrorCode.PROMOTION_COUNT_EXCEPTION;
 
 @Getter
 @Embeddable
@@ -24,8 +27,15 @@ public class Promotion {
     }
 
     public void use() {
+        validatePromotionCount();
         this.promotionCount--;
         this.promotedAt = LocalDateTime.now();
+    }
+
+    private void validatePromotionCount() {
+        if (promotionCount <= 0) {
+            throw new InvalidStateException(PROMOTION_COUNT_EXCEPTION);
+        }
     }
 
 }

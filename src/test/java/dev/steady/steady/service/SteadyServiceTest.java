@@ -1,8 +1,12 @@
 package dev.steady.steady.service;
 
 import dev.steady.global.auth.UserInfo;
+import dev.steady.global.exception.ForbiddenException;
+import dev.steady.global.exception.NotFoundException;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
+import dev.steady.steady.domain.SteadyPosition;
+import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.domain.SteadyStack;
 import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.repository.ParticipantRepository;
@@ -10,10 +14,17 @@ import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.domain.repository.SteadyStackRepository;
+import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyPageRequest;
+import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.LeaderResponse;
+import dev.steady.steady.dto.response.PageResponse;
+import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadyPositionResponse;
+import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.steady.dto.response.SteadyStackResponse;
+import dev.steady.steady.exception.InvalidStateException;
+import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
@@ -22,9 +33,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
@@ -79,29 +90,26 @@ class SteadyServiceTest {
     @DisplayName("스터디 생성 요청을 통해 스테디와 스테디 관련 정보를 생성할 수 있다.")
     void createSteadyTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var stack = createStack();
-        var savedStack = stackRepository.save(stack);
-        var userInfo = createUserInfo(savedUser.getId());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
 
         // when
-        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
-        var steadyId = steadyService.create(steadyRequest, userInfo);
+        SteadyCreateRequest steadyRequest = createSteadyRequest(stack.getId(), position.getId());
+        Long steadyId = steadyService.create(steadyRequest, userInfo);
         entityManager.flush();
         entityManager.clear();
 
         // then
-        var steady = steadyRepository.findById(steadyId).get();
-        var participants = participantRepository.findBySteadyId(steadyId);
-        var steadyStacks = steadyStackRepository.findBySteadyId(steadyId);
-        var steadyQuestions = steadyQuestionRepository.findBySteadyId(steadyId);
-        var steadyPositions = steadyPositionRepository.findBySteadyId(steadyId);
+        Steady steady = steadyRepository.findById(steadyId).get();
+        List<Participant> participants = participantRepository.findBySteadyId(steadyId);
+        List<SteadyStack> steadyStacks = steadyStackRepository.findBySteadyId(steadyId);
+        List<SteadyQuestion> steadyQuestions = steadyQuestionRepository.findBySteadyId(steadyId);
+        List<SteadyPosition> steadyPositions = steadyPositionRepository.findBySteadyId(steadyId);
         assertAll(
                 () -> assertThat(steady.getId()).isEqualTo(steadyId),
-                () -> assertThat(participants).hasSameSizeAs(steady.getParticipants().getAllMembers()),
+                () -> assertThat(participants).hasSameSizeAs(steady.getParticipants().getAllParticipants()),
                 () -> assertThat(steadyStacks).hasSameSizeAs(steady.getSteadyStacks()),
                 () -> assertThat(steadyQuestions).hasSameSizeAs(steadyRequest.questions()),
                 () -> assertThat(steadyPositions).hasSameSizeAs(steadyRequest.positions())
@@ -112,26 +120,23 @@ class SteadyServiceTest {
     @DisplayName("스테디 페이징 조회 요청을 통해 페이징 처리 된 응답을 반환할 수 있다.")
     void getSteadiesPageTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var stack = createStack();
-        var savedStack = stackRepository.save(stack);
-        var userInfo = createUserInfo(savedUser.getId());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
 
-        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
         steadyService.create(steadyRequest, userInfo);
         entityManager.flush();
         entityManager.clear();
 
         // when
-        var steadyPageRequest = new SteadyPageRequest(0, "asc");
-        var steadiesResponse = steadyService.getSteadies(steadyPageRequest.toPageable());
+        SteadyPageRequest steadyPageRequest = new SteadyPageRequest(0, "asc");
+        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(steadyPageRequest.toPageable());
 
         // then
         List<Steady> steadies = steadyRepository.findAll();
-        var content = steadiesResponse.content();
+        List<SteadySearchResponse> content = response.content();
         assertThat(content.size()).isEqualTo(steadies.size());
     }
 
@@ -139,25 +144,22 @@ class SteadyServiceTest {
     @DisplayName("스테디 식별자를 통해 스테디 상세 조회를 할 수 있다.")
     void getDetailSteadyTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var stack = createStack();
-        var savedStack = stackRepository.save(stack);
-        var userInfo = createUserInfo(savedUser.getId());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
 
-        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
         var steadyId = steadyService.create(steadyRequest, userInfo);
         entityManager.flush();
         entityManager.clear();
 
         // when
-        var response = steadyService.getDetailSteady(steadyId, userInfo);
+        SteadyDetailResponse response = steadyService.getDetailSteady(steadyId, userInfo);
 
         // then
-        var steady = steadyRepository.findById(steadyId).get();
-        var positions = steadyPositionRepository.findBySteadyId(steadyId);
+        Steady steady = steadyRepository.findById(steadyId).get();
+        List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steadyId);
         assertAll(
                 () -> assertThat(response.id()).isEqualTo(steady.getId()),
                 () -> assertThat(response.leaderResponse()).isEqualTo(LeaderResponse.from(steady.getParticipants().getLeader())),
@@ -187,25 +189,23 @@ class SteadyServiceTest {
     @DisplayName("리더가 아닌 사용자도 스테디 식별자를 통해 스테디 상세 조회를 할 수 있다.")
     void getDetailSteadyNotLeaderTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var otherUser = userRepository.save(createSecondUser(savedPosition));
-        var savedStack = stackRepository.save(createStack());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var otherUser = userRepository.save(createSecondUser(position));
         var userInfo = createUserInfo(otherUser.getId());
 
-        var steady = steadyRepository.save(creatSteady(savedUser, savedStack));
+        var steady = steadyRepository.save(creatSteady(leader, stack));
         var steadyId = steady.getId();
         entityManager.flush();
         entityManager.clear();
 
         // when
-        var response = steadyService.getDetailSteady(steadyId, userInfo);
+        SteadyDetailResponse response = steadyService.getDetailSteady(steadyId, userInfo);
 
         // then
-        var foundSteady = steadyRepository.findById(steadyId).get();
-        var positions = steadyPositionRepository.findBySteadyId(steadyId);
+        Steady foundSteady = steadyRepository.findById(steadyId).get();
+        List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steadyId);
         assertAll(
                 () -> assertThat(response.id()).isEqualTo(foundSteady.getId()),
                 () -> assertThat(response.leaderResponse()).isEqualTo(LeaderResponse.from(foundSteady.getParticipants().getLeader())),
@@ -235,24 +235,22 @@ class SteadyServiceTest {
     @DisplayName("로그인 하지 않은 사용자도 스테디 식별자를 통해 스테디 상세 조회를 할 수 있다.")
     void getDetailSteadyNotLoginUserTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var savedStack = stackRepository.save(createStack());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
         var userInfo = new UserInfo(null);
 
-        var steady = steadyRepository.save(creatSteady(savedUser, savedStack));
+        var steady = steadyRepository.save(creatSteady(leader, stack));
         var steadyId = steady.getId();
         entityManager.flush();
         entityManager.clear();
 
         // when
-        var response = steadyService.getDetailSteady(steadyId, userInfo);
+        SteadyDetailResponse response = steadyService.getDetailSteady(steadyId, userInfo);
 
         // then
-        var foundSteady = steadyRepository.findById(steadyId).get();
-        var positions = steadyPositionRepository.findBySteadyId(steadyId);
+        Steady foundSteady = steadyRepository.findById(steadyId).get();
+        List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steadyId);
         assertAll(
                 () -> assertThat(response.id()).isEqualTo(foundSteady.getId()),
                 () -> assertThat(response.leaderResponse()).isEqualTo(LeaderResponse.from(foundSteady.getParticipants().getLeader())),
@@ -282,15 +280,12 @@ class SteadyServiceTest {
     @DisplayName("스테디 수정 요청을 통해 스테디 정보를 수정할 수 있다.")
     void steadyUpdateTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var stack = createStack();
-        var savedStack = stackRepository.save(stack);
-        var userInfo = createUserInfo(savedUser.getId());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
 
-        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
         var steadyId = steadyService.create(steadyRequest, userInfo);
 
         var anotherPosition = createAnotherPosition();
@@ -301,13 +296,13 @@ class SteadyServiceTest {
         entityManager.clear();
 
         // when
-        var steadyUpdateRequest = createSteadyUpdateRequest(savedAnotherStack.getId(), savedAnotherPosition.getId());
+        SteadyUpdateRequest steadyUpdateRequest = createSteadyUpdateRequest(savedAnotherStack.getId(), savedAnotherPosition.getId());
         steadyService.updateSteady(steadyId, steadyUpdateRequest, userInfo);
         entityManager.flush();
         entityManager.clear();
 
         // then
-        var updatedSteady = steadyRepository.findById(steadyId).get();
+        Steady updatedSteady = steadyRepository.findById(steadyId).get();
         List<SteadyStack> steadyStacks = steadyStackRepository.findBySteadyId(steadyId);
         assertAll(
                 () -> assertThat(updatedSteady.getName()).isEqualTo(steadyUpdateRequest.name()),
@@ -329,59 +324,51 @@ class SteadyServiceTest {
     @DisplayName("리더가 아닌 유저가 수정 요청을 보내면 에러를 반환한다.")
     void updateSteadyByAnotherUserTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var stack = createStack();
-        var savedStack = stackRepository.save(stack);
-        var userInfo = createUserInfo(savedUser.getId());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
 
-        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
         var steadyId = steadyService.create(steadyRequest, userInfo);
 
-        var anotherPosition = createAnotherPosition();
-        var savedAnotherPosition = positionRepository.save(anotherPosition);
-        var anotherStack = createAnotherStack();
-        var savedAnotherStack = stackRepository.save(anotherStack);
+        var anotherPosition = positionRepository.save(createAnotherPosition());
+        var anotherStack = stackRepository.save(createAnotherStack());
         entityManager.flush();
         entityManager.clear();
 
         // when & then
-        var anotherUser = createSecondUser(savedAnotherPosition);
-        var anotherUserInfo = createUserInfo(anotherUser.getId());
-        var steadyUpdateRequest = createSteadyUpdateRequest(savedAnotherStack.getId(), savedAnotherPosition.getId());
+        User anotherUser = userRepository.save(createSecondUser(anotherPosition));
+        UserInfo anotherUserInfo = createUserInfo(anotherUser.getId());
+        SteadyUpdateRequest steadyUpdateRequest = createSteadyUpdateRequest(anotherStack.getId(), anotherPosition.getId());
         assertThatThrownBy(() -> steadyService.updateSteady(steadyId, steadyUpdateRequest, anotherUserInfo))
-                .isInstanceOf(InvalidDataAccessApiUsageException.class);
+                .isInstanceOf(ForbiddenException.class);
     }
 
     @Test
     @DisplayName("스테디 리더가 끌어올리기 요청을 통해 스테디를 끌어올릴 수 있다.")
     void promoteSteadyTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var stack = createStack();
-        var savedStack = stackRepository.save(stack);
-        var userInfo = createUserInfo(savedUser.getId());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
 
-        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
         var steadyId = steadyService.create(steadyRequest, userInfo);
         entityManager.flush();
         entityManager.clear();
 
         // when
-        var steady = steadyRepository.findById(steadyId).get();
+        Steady steady = steadyRepository.findById(steadyId).get();
         steadyService.promoteSteady(steadyId, userInfo);
         entityManager.flush();
         entityManager.clear();
 
         // then
-        var updatedSteady = steadyRepository.findById(steadyId).get();
-        var createdAt = steady.getCreatedAt();
-        var promotedAt = updatedSteady.getPromotion().getPromotedAt();
+        Steady updatedSteady = steadyRepository.findById(steadyId).get();
+        LocalDateTime createdAt = steady.getCreatedAt();
+        LocalDateTime promotedAt = updatedSteady.getPromotion().getPromotedAt();
         assertThat(createdAt.isBefore(promotedAt)).isTrue();
     }
 
@@ -389,40 +376,33 @@ class SteadyServiceTest {
     @DisplayName("리더가 아닌 유저가 끌어올리기 요청을 보내면 에러를 반환한다.")
     void promoteSteadyByAnotherUserTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var stack = createStack();
-        var savedStack = stackRepository.save(stack);
-        var userInfo = createUserInfo(savedUser.getId());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
 
-        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
         var steadyId = steadyService.create(steadyRequest, userInfo);
         entityManager.flush();
         entityManager.clear();
 
-        var anotherUser = createSecondUser(savedPosition);
         // when & then
-        userRepository.save(anotherUser);
+        User anotherUser = userRepository.save(createSecondUser(position));
         var anotherUserInfo = createUserInfo(anotherUser.getId());
         assertThatThrownBy(() -> steadyService.promoteSteady(steadyId, anotherUserInfo))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ForbiddenException.class);
     }
 
     @Test
     @DisplayName("스테디 리더가 스테디를 종료 상태로 변경할 수 있다.")
     void finishSteadyTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var stack = createStack();
-        var savedStack = stackRepository.save(stack);
-        var userInfo = createUserInfo(savedUser.getId());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
 
-        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
         var steadyId = steadyService.create(steadyRequest, userInfo);
         entityManager.flush();
         entityManager.clear();
@@ -433,8 +413,8 @@ class SteadyServiceTest {
         entityManager.clear();
 
         // then
-        var steady = steadyRepository.findById(steadyId).get();
-        var status = steady.getStatus();
+        Steady steady = steadyRepository.findById(steadyId).get();
+        SteadyStatus status = steady.getStatus();
         assertThat(status).isEqualTo(SteadyStatus.FINISHED);
     }
 
@@ -442,41 +422,34 @@ class SteadyServiceTest {
     @DisplayName("리더가 아닌 유저가 스테디 종료를 요청하면 에러를 반환한다.")
     void finishSteadyByAnotherUserTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var stack = createStack();
-        var savedStack = stackRepository.save(stack);
-        var userInfo = createUserInfo(savedUser.getId());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
 
-        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
         var steadyId = steadyService.create(steadyRequest, userInfo);
 
-        var anotherUser = createSecondUser(savedPosition);
-        userRepository.save(anotherUser);
+        var anotherUser = userRepository.save(createSecondUser(position));
         var anotherUserInfo = createUserInfo(anotherUser.getId());
         entityManager.flush();
         entityManager.clear();
 
         // when & then
         assertThatThrownBy(() -> steadyService.finishSteady(steadyId, anotherUserInfo))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ForbiddenException.class);
     }
 
     @Test
     @DisplayName("스테디 참여자가 리더뿐이며 리더가 삭제 요청을 보내면 스테디를 삭제할 수 있다.")
     void deleteSteadyTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var stack = createStack();
-        var savedStack = stackRepository.save(stack);
-        var userInfo = createUserInfo(savedUser.getId());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
 
-        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
         var steadyId = steadyService.create(steadyRequest, userInfo);
         entityManager.flush();
         entityManager.clear();
@@ -488,13 +461,13 @@ class SteadyServiceTest {
 
         // then
         int expectedSize = 0;
-        var participants = participantRepository.findBySteadyId(steadyId);
-        var steadyStacks = steadyStackRepository.findBySteadyId(steadyId);
-        var steadyPositions = steadyPositionRepository.findBySteadyId(steadyId);
-        var steadyQuestions = steadyQuestionRepository.findBySteadyId(steadyId);
+        List<Participant> participants = participantRepository.findBySteadyId(steadyId);
+        List<SteadyStack> steadyStacks = steadyStackRepository.findBySteadyId(steadyId);
+        List<SteadyPosition> steadyPositions = steadyPositionRepository.findBySteadyId(steadyId);
+        List<SteadyQuestion> steadyQuestions = steadyQuestionRepository.findBySteadyId(steadyId);
         assertAll(
                 () -> assertThatThrownBy(() -> steadyRepository.getSteady(steadyId))
-                        .isInstanceOf(InvalidDataAccessApiUsageException.class),
+                        .isInstanceOf(NotFoundException.class),
                 () -> assertThat(participants).hasSize(expectedSize),
                 () -> assertThat(steadyStacks).hasSize(expectedSize),
                 () -> assertThat(steadyPositions).hasSize(expectedSize),
@@ -506,55 +479,47 @@ class SteadyServiceTest {
     @DisplayName("리더를 제외한 참여자가 존재하는 경우 스테디를 삭제할 수 없다.")
     void deleteSteadyWhenParticipantIsExistTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var stack = createStack();
-        var savedStack = stackRepository.save(stack);
-        var userInfo = createUserInfo(savedUser.getId());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
 
-        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
         var steadyId = steadyService.create(steadyRequest, userInfo);
 
         var steady = steadyRepository.findById(steadyId).get();
-        var anotherUser = createSecondUser(savedPosition);
-        userRepository.save(anotherUser);
+        var anotherUser = userRepository.save(createSecondUser(position));
 
         // when
-        steady.addParticipant(Participant.createMember(anotherUser, steady));
+        steady.addParticipant(leader, Participant.createMember(anotherUser, steady));
         entityManager.flush();
         entityManager.clear();
 
         // then
         assertThatThrownBy(() -> steadyService.deleteSteady(steadyId, userInfo))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(InvalidStateException.class);
     }
 
     @Test
     @DisplayName("리더가 아닌 유저가 스테디 삭제 요청을 보내면 에러를 반환한다.")
     void deleteSteadyByAnotherUserTest() {
         // given
-        var position = createPosition();
-        var savedPosition = positionRepository.save(position);
-        var user = createFirstUser(savedPosition);
-        var savedUser = userRepository.save(user);
-        var stack = createStack();
-        var savedStack = stackRepository.save(stack);
-        var userInfo = createUserInfo(savedUser.getId());
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
 
-        var steadyRequest = createSteadyRequest(savedStack.getId(), savedPosition.getId());
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
         var steadyId = steadyService.create(steadyRequest, userInfo);
 
-        var anotherUser = createSecondUser(savedPosition);
-        userRepository.save(anotherUser);
+        var anotherUser = userRepository.save(createSecondUser(position));
         var anotherUserInfo = createUserInfo(anotherUser.getId());
         entityManager.flush();
         entityManager.clear();
 
         // when & then
         assertThatThrownBy(() -> steadyService.deleteSteady(steadyId, anotherUserInfo))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ForbiddenException.class);
     }
 
 }

@@ -1,6 +1,7 @@
 package dev.steady.steady.domain;
 
 import dev.steady.global.entity.BaseEntity;
+import dev.steady.global.exception.ForbiddenException;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
 import jakarta.persistence.CascadeType;
@@ -23,6 +24,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static dev.steady.steady.exception.SteadyErrorCode.LEADER_PERMISSION_NEEDED;
 
 @Entity
 @Getter
@@ -92,13 +95,13 @@ public class Steady extends BaseEntity {
                    User user,
                    List<Stack> stacks) {
         this.promotion = new Promotion();
+        this.participantLimit = participantLimit;
         this.participants = createParticipants(user);
         this.numberOfParticipants = participants.getNumberOfParticipants();
         this.name = name;
         this.bio = bio;
         this.type = type;
         this.status = SteadyStatus.RECRUITING;
-        this.participantLimit = participantLimit;
         this.steadyMode = steadyMode;
         this.scheduledPeriod = scheduledPeriod;
         this.deadline = deadline;
@@ -107,7 +110,8 @@ public class Steady extends BaseEntity {
         this.steadyStacks = createSteadyStack(stacks);
     }
 
-    public void update(String name,
+    public void update(User user,
+                       String name,
                        String bio,
                        SteadyType type,
                        SteadyStatus status,
@@ -118,6 +122,7 @@ public class Steady extends BaseEntity {
                        String title,
                        String content,
                        List<Stack> stacks) {
+        validateLeader(user);
         this.name = name;
         this.bio = bio;
         this.type = type;
@@ -134,7 +139,7 @@ public class Steady extends BaseEntity {
 
     public void validateLeader(User user) {
         if (!isLeader(user)) {
-            throw new IllegalArgumentException();
+            throw new ForbiddenException(LEADER_PERMISSION_NEEDED);
         }
     }
 
@@ -143,19 +148,19 @@ public class Steady extends BaseEntity {
         return leader.equals(user);
     }
 
-    public void addParticipant(Participant participant) {
+    public void addParticipant(User user, Participant participant) {
+        validateLeader(user);
         participants.add(participant);
+        numberOfParticipants = participants.getNumberOfParticipants();
     }
 
-    public void usePromotion() {
+    public void usePromotion(User user) {
+        validateLeader(user);
         promotion.use();
     }
 
-    public boolean hasParticipants() {
-        return participants.getNumberOfParticipants() > 1;
-    }
-
-    public void finish() {
+    public void finish(User user) {
+        validateLeader(user);
         this.status = SteadyStatus.FINISHED;
     }
 
@@ -163,8 +168,17 @@ public class Steady extends BaseEntity {
         return promotion.getPromotionCount();
     }
 
+    public boolean isDeletable(User user) {
+        validateLeader(user);
+        return numberOfParticipants == 1;
+    }
+
+    public User getLeader() {
+        return participants.getLeader();
+    }
+
     private Participants createParticipants(User user) {
-        Participants participants = new Participants();
+        Participants participants = new Participants(participantLimit);
         participants.add(Participant.createLeader(user, this));
         return participants;
     }

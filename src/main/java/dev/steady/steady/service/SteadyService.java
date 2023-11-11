@@ -14,6 +14,7 @@ import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
+import dev.steady.steady.exception.InvalidStateException;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static dev.steady.application.domain.ApplicationStatus.WAITING;
+import static dev.steady.steady.exception.SteadyErrorCode.STEADY_IS_NOT_EMPTY;
 
 @Service
 @RequiredArgsConstructor
@@ -98,9 +100,9 @@ public class SteadyService {
     public void updateSteady(Long steadyId, SteadyUpdateRequest request, UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
-        steady.validateLeader(user);
         List<Stack> stacks = getStacks(request.stacks());
-        steady.update(request.name(),
+        steady.update(user,
+                request.name(),
                 request.bio(),
                 request.type(),
                 request.status(),
@@ -117,29 +119,27 @@ public class SteadyService {
     public void promoteSteady(Long steadyId, UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
-        steady.validateLeader(user);
-        steady.usePromotion();
+        steady.usePromotion(user);
     }
 
     @Transactional
     public void finishSteady(Long steadyId, UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
-        steady.validateLeader(user);
-        steady.finish();
+        steady.finish(user);
     }
 
     @Transactional
     public void deleteSteady(Long steadyId, UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
         Steady steady = steadyRepository.getSteady(steadyId);
-        if (steady.isLeader(user) && !steady.hasParticipants()) {
+        if (steady.isDeletable(user)) {
             steadyPositionRepository.deleteBySteadyId(steadyId);
             steadyQuestionRepository.deleteBySteadyId(steadyId);
             steadyRepository.delete(steady);
             return;
         }
-        throw new IllegalArgumentException();
+        throw new InvalidStateException(STEADY_IS_NOT_EMPTY);
     }
 
     private boolean isWaitingApplication(User user, Steady steady) {
@@ -156,8 +156,7 @@ public class SteadyService {
     }
 
     private Stack getStack(Long stackId) {
-        return stackRepository.findById(stackId)
-                .orElseThrow(IllegalArgumentException::new);
+        return stackRepository.getById(stackId);
     }
 
     private List<SteadyPosition> createSteadyPositions(List<Long> positions, Steady steady) {
@@ -167,8 +166,7 @@ public class SteadyService {
     }
 
     private SteadyPosition createSteadyPosition(List<Long> positions, Steady steady, int index) {
-        Position position = positionRepository.findById(positions.get(index))
-                .orElseThrow(IllegalArgumentException::new);
+        Position position = positionRepository.getById(positions.get(index));
 
         return SteadyPosition.builder()
                 .position(position)

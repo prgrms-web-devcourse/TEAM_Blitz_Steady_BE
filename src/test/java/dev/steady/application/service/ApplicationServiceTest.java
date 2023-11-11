@@ -139,7 +139,7 @@ class ApplicationServiceTest {
         assertThatThrownBy(() -> applicationService.getApplications(steady.getId(),
                 userInfo,
                 pageRequest)
-        ).isInstanceOf(IllegalArgumentException.class);
+        ).isInstanceOf(ForbiddenException.class);
     }
 
     @DisplayName("스테디 리더는 신청서를 상세조회할 수 있다.")
