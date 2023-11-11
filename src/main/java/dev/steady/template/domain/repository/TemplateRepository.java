@@ -1,9 +1,7 @@
 package dev.steady.template.domain.repository;
 
-import dev.steady.global.exception.ForbiddenException;
 import dev.steady.global.exception.NotFoundException;
 import dev.steady.template.domain.Template;
-import dev.steady.template.exception.TemplateErrorCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
