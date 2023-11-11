@@ -8,6 +8,7 @@ import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.dto.request.SteadySearchRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.PageResponse;
+import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.steady.service.SteadyService;
@@ -58,6 +59,12 @@ public class SteadyController {
     public ResponseEntity<SteadyDetailResponse> getDetailSteady(@PathVariable Long steadyId,
                                                                 @Auth(required = false) UserInfo userInfo) {
         SteadyDetailResponse response = steadyService.getDetailSteady(steadyId, userInfo);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{steadyId}/participants")
+    public ResponseEntity<ParticipantsResponse> getSteadyParticipants(@PathVariable Long steadyId) {
+        ParticipantsResponse response = steadyService.getSteadyParticipants(steadyId);
         return ResponseEntity.ok(response);
     }
 

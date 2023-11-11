@@ -2,6 +2,7 @@ package dev.steady.steady.service;
 
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.global.auth.UserInfo;
+import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyPosition;
 import dev.steady.steady.domain.SteadyQuestion;
@@ -12,6 +13,7 @@ import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.PageResponse;
+import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.steady.exception.SteadyIsNotEmptyException;
@@ -94,6 +96,13 @@ public class SteadyService {
         }
 
         return SteadyDetailResponse.of(steady, positions, isLeader, isWaitingApplication);
+    }
+
+    @Transactional(readOnly = true)
+    public ParticipantsResponse getSteadyParticipants(Long steadyId) {
+        Steady steady = steadyRepository.getSteady(steadyId);
+        List<Participant> participants = steady.getParticipants().getAllParticipants();
+        return ParticipantsResponse.from(participants);
     }
 
     @Transactional
