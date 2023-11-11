@@ -11,6 +11,7 @@ import dev.steady.steady.domain.repository.SteadyQuestionRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
+import dev.steady.steady.dto.request.SteadyQuestionUpdateRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.ParticipantsResponse;
@@ -122,6 +123,17 @@ public class SteadyService {
                 request.title(),
                 request.content(),
                 stacks);
+    }
+
+    @Transactional
+    public void updateSteadyQuestions(Long steadyId, SteadyQuestionUpdateRequest request, UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        Steady steady = steadyRepository.getSteady(steadyId);
+        steady.validateLeader(user);
+
+        steadyQuestionRepository.deleteBySteadyId(steadyId);
+        List<SteadyQuestion> steadyQuestions = createSteadyQuestions(request.questions(), steady);
+        steadyQuestionRepository.saveAll(steadyQuestions);
     }
 
     @Transactional
