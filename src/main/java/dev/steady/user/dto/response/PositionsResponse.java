@@ -4,16 +4,16 @@ import dev.steady.user.domain.Position;
 
 import java.util.List;
 
-public record PositionResponses(
+public record PositionsResponse(
         List<PositionResponse> positions
 ) {
 
-    public static PositionResponses from(List<Position> positions) {
+    public static PositionsResponse from(List<Position> positions) {
         List<PositionResponse> responses = positions.stream()
                 .map(PositionResponse::from)
                 .toList();
 
-        return new PositionResponses(responses);
+        return new PositionsResponse(responses);
     }
 
 }

@@ -1,7 +1,7 @@
 package dev.steady.user.service;
 
 import dev.steady.user.domain.repository.StackRepository;
-import dev.steady.user.dto.response.StackResponses;
+import dev.steady.user.dto.response.StacksResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ class StackServiceTest {
         stackRepository.save(createAnotherStack());
 
         // when
-        StackResponses response = stackService.getStacks();
+        StacksResponse response = stackService.getStacks();
 
         // then
         int expectedSize = 2;

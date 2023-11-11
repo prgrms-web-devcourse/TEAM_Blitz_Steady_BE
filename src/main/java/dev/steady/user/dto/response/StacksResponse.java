@@ -4,16 +4,16 @@ import dev.steady.user.domain.Stack;
 
 import java.util.List;
 
-public record StackResponses(
+public record StacksResponse(
         List<StackResponse> stacks
 ) {
 
-    public static StackResponses from(List<Stack> stacks) {
+    public static StacksResponse from(List<Stack> stacks) {
         List<StackResponse> responses = stacks.stream()
                 .map(StackResponse::from)
                 .toList();
 
-        return new StackResponses(responses);
+        return new StacksResponse(responses);
     }
 
 }
