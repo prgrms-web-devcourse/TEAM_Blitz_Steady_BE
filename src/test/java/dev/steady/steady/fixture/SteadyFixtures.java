@@ -10,6 +10,8 @@ import dev.steady.steady.domain.SteadyType;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.PageResponse;
+import dev.steady.steady.dto.response.ParticipantResponse;
+import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
@@ -108,6 +110,13 @@ public class SteadyFixtures {
     public static PageResponse<SteadySearchResponse> createSteadyPageResponse(Steady steady, Pageable pageable) {
         Page<Steady> steadies = new PageImpl<>(List.of(steady), pageable, 1);
         return PageResponse.from(steadies.map(SteadySearchResponse::from));
+    }
+
+    public static ParticipantsResponse createParticipantsResponse() {
+        return new ParticipantsResponse(List.of(
+                new ParticipantResponse(1L, "weonest", "url1", true),
+                new ParticipantResponse(2L, "nayjk", "url2", false)
+        ));
     }
 
 }
