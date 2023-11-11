@@ -6,6 +6,7 @@ import dev.steady.global.config.ControllerTestConfig;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.dto.request.SteadySearchRequest;
+import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import java.util.List;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
+import static dev.steady.steady.fixture.SteadyFixtures.createParticipantsResponse;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyPageResponse;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyPosition;
@@ -282,6 +284,28 @@ class SteadyControllerTest extends ControllerTestConfig {
                 ))
                 .andExpect(status().isOk())
                 .andExpect(content().string(objectMapper.writeValueAsString(response)));
+    }
+
+    @Test
+    @DisplayName("스테디 식별자를 통해 스테디 참여자 목록을 조회할 수 있다.")
+    void getSteadyParticipantsTest() throws Exception {
+        var steadyId = 1L;
+        ParticipantsResponse participantsResponse = createParticipantsResponse();
+
+        given(steadyService.getSteadyParticipants(steadyId)).willReturn(participantsResponse);
+
+        mockMvc.perform(get("/api/v1/steadies/{steadyId}/participants", steadyId))
+                .andDo(document("steady-get-participants",
+                        resourceDetails().tag("스테디").description("스테디 참여자 조회")
+                                .responseSchema(Schema.schema("ParticipantsResponse")),
+                        responseFields(
+                                fieldWithPath("participants[].id").type(NUMBER).description("참여자 식별자"),
+                                fieldWithPath("participants[].nickname").type(STRING).description("참여자 닉네임"),
+                                fieldWithPath("participants[].profileImage").type(STRING).description("참여자 프로필 이미지"),
+                                fieldWithPath("participants[].isLeader").type(BOOLEAN).description("리더 여부")
+                        )
+                )).andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(participantsResponse)));
     }
 
     @Test

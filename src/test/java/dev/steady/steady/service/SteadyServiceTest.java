@@ -19,6 +19,7 @@ import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.LeaderResponse;
 import dev.steady.steady.dto.response.PageResponse;
+import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadyPositionResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
@@ -277,6 +278,32 @@ class SteadyServiceTest {
     }
 
     @Test
+    @DisplayName("스테디 식별자를 통해 참여자 전체 조회를 할 수 있다.")
+    void getSteadyParticipantsTest() {
+        // given
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+
+        var steady = steadyRepository.save(creatSteady(leader, stack));
+        var steadyId = steady.getId();
+
+        var anotherUser = userRepository.save(createSecondUser(position));
+        steady.addParticipant(leader, Participant.createMember(anotherUser, steady));
+        entityManager.flush();
+        entityManager.clear();
+
+        // when & then
+        int expectedSize = 2;
+        ParticipantsResponse response = steadyService.getSteadyParticipants(steadyId);
+        assertAll(
+                () -> assertThat(response.participants()).hasSize(expectedSize)
+                        .extracting("nickname")
+                        .containsExactlyInAnyOrder(leader.getNickname(), anotherUser.getNickname())
+        );
+    }
+
+    @Test
     @DisplayName("스테디 수정 요청을 통해 스테디 정보를 수정할 수 있다.")
     void steadyUpdateTest() {
         // given
@@ -288,15 +315,13 @@ class SteadyServiceTest {
         var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
         var steadyId = steadyService.create(steadyRequest, userInfo);
 
-        var anotherPosition = createAnotherPosition();
-        var savedAnotherPosition = positionRepository.save(anotherPosition);
-        var anotherStack = createAnotherStack();
-        var savedAnotherStack = stackRepository.save(anotherStack);
+        var anotherStack = stackRepository.save(createAnotherStack());
+        var anotherPosition = positionRepository.save(createAnotherPosition());
         entityManager.flush();
         entityManager.clear();
 
         // when
-        SteadyUpdateRequest steadyUpdateRequest = createSteadyUpdateRequest(savedAnotherStack.getId(), savedAnotherPosition.getId());
+        SteadyUpdateRequest steadyUpdateRequest = createSteadyUpdateRequest(anotherStack.getId(), anotherPosition.getId());
         steadyService.updateSteady(steadyId, steadyUpdateRequest, userInfo);
         entityManager.flush();
         entityManager.clear();
