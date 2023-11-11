@@ -5,6 +5,7 @@ import dev.steady.global.auth.Authentication;
 import dev.steady.global.config.ControllerTestConfig;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyPageRequest;
+import dev.steady.steady.dto.request.SteadyQuestionUpdateRequest;
 import dev.steady.steady.dto.request.SteadySearchRequest;
 import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
@@ -48,6 +49,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class SteadyControllerTest extends ControllerTestConfig {
@@ -94,8 +96,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                         )
                 ))
                 .andExpect(status().isCreated())
-                .andExpect(header().string(LOCATION, String.format("/api/v1/steadies/%d", steadyId)));
-
+                .andExpect(redirectedUrl(String.format("/api/v1/steadies/%d", steadyId)));
     }
 
     @Test
@@ -309,7 +310,7 @@ class SteadyControllerTest extends ControllerTestConfig {
     }
 
     @Test
-    @DisplayName("스테디 id를 통해 스테디 정보를 수정할 수 있다.")
+    @DisplayName("스테디 식별자를 통해 스테디 정보를 수정할 수 있다.")
     void updateSteadyTest() throws Exception {
         // given
         var steadyId = 1L;
@@ -350,6 +351,36 @@ class SteadyControllerTest extends ControllerTestConfig {
                         )
                 ))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("스테디 식별자를 통해 스테디 질문을 수정할 수 있다.")
+    void updateSteadyQuestionsTest() throws Exception {
+        // given
+        var steadyId = 1L;
+        var userId = 1L;
+        var userInfo = createUserInfo(userId);
+        var authentication = new Authentication(userId);
+        var steadyQuestionUpdateRequest = new SteadyQuestionUpdateRequest(List.of("변경된 질문1", "변경된 질문2"));
+
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
+        willDoNothing().given(steadyService).updateSteadyQuestions(steadyId, steadyQuestionUpdateRequest, userInfo);
+
+        //when & then
+        mockMvc.perform(patch("/api/v1/steadies/{steadyId}/steadyQuestions", steadyId)
+                        .header(AUTHORIZATION, TOKEN)
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(steadyQuestionUpdateRequest)))
+                .andDo(document("steady-update-steady-questions",
+                        resourceDetails().tag("스테디").description("스테디 질문 수정")
+                                        .requestSchema(Schema.schema("SteadyQuestionUpdateRequest")),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("questions").type(ARRAY).description("질문 목록")
+                        )
+                )).andExpect(status().isNoContent());
     }
 
     @Test

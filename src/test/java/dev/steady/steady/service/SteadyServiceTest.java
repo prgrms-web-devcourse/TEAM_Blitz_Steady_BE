@@ -15,6 +15,7 @@ import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.domain.repository.SteadyStackRepository;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyPageRequest;
+import dev.steady.steady.dto.request.SteadyQuestionUpdateRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.LeaderResponse;
 import dev.steady.steady.dto.response.PageResponse;
@@ -368,6 +369,34 @@ class SteadyServiceTest {
         SteadyUpdateRequest steadyUpdateRequest = createSteadyUpdateRequest(anotherStack.getId(), anotherPosition.getId());
         assertThatThrownBy(() -> steadyService.updateSteady(steadyId, steadyUpdateRequest, anotherUserInfo))
                 .isInstanceOf(LeaderPermissionNeededException.class);
+    }
+
+    @Test
+    @DisplayName("스테디 질문 수정 요청을 통해 스테디 질문을 수정할 수 있다.")
+    void updateSteadyQuestionsTest() {
+        // given
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
+
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
+        var steadyId = steadyService.create(steadyRequest, userInfo);
+
+        // when
+        List<SteadyQuestion> originalSteadyQuestions = steadyQuestionRepository.findBySteadyId(steadyId);
+        SteadyQuestionUpdateRequest request = new SteadyQuestionUpdateRequest(List.of("변경된 질문1", "변경된 질문2"));
+        steadyService.updateSteadyQuestions(steadyId, request, userInfo);
+        entityManager.flush();
+        entityManager.clear();
+
+        // then
+        List<SteadyQuestion> updatedSteadyQuestions = steadyQuestionRepository.findBySteadyId(steadyId);
+        assertAll(
+                () -> assertThat(originalSteadyQuestions).isNotEqualTo(updatedSteadyQuestions),
+                () -> assertThat(originalSteadyQuestions.get(0).getContent()).isNotEqualTo(request.questions().get(0)),
+                () -> assertThat(updatedSteadyQuestions.get(0).getContent()).isEqualTo(request.questions().get(0))
+        );
     }
 
     @Test
