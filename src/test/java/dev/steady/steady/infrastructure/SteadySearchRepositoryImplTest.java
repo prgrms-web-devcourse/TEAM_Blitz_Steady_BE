@@ -75,6 +75,7 @@ class SteadySearchRepositoryImplTest {
         // when
         var request = new SteadySearchRequest(0,
                 "DESC",
+                null,
                 "online",
                 "Java",
                 "백엔드",
@@ -114,6 +115,7 @@ class SteadySearchRepositoryImplTest {
         // when
         var request = new SteadySearchRequest(0,
                 "DESC",
+                null,
                 "both",
                 "Java",
                 "데브옵스",
@@ -150,6 +152,7 @@ class SteadySearchRepositoryImplTest {
         // when
         var request = new SteadySearchRequest(0,
                 "DESC",
+                null,
                 "all",
                 null,
                 null,

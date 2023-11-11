@@ -159,6 +159,7 @@ class SteadyControllerTest extends ControllerTestConfig {
         // given
         var searchRequest = new SteadySearchRequest(0,
                 "desc",
+                null,
                 "online",
                 "Java",
                 "Backend",
@@ -168,6 +169,7 @@ class SteadyControllerTest extends ControllerTestConfig {
         MultiValueMap params = new LinkedMultiValueMap<>() {{
             add("page", "0");
             add("direction", "desc");
+            add("criteria", null);
             add("steadyMode", "online");
             add("stack", "Java");
             add("position", "Backend");
@@ -191,13 +193,14 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 .responseSchema(Schema.schema("PageResponse")),
                         queryParameters(
                                 parameterWithName("page").description("요청 페이지 번호"),
-                                parameterWithName("direction").description("내림/오름차순"),
+                                parameterWithName("direction").description("내림/오름차순").optional(),
+                                parameterWithName("criteria").description("정렬 조건").optional(),
                                 parameterWithName("steadyMode").description("스테디 진행 방식"),
-                                parameterWithName("stack").description("스테디 기술 스택"),
-                                parameterWithName("position").description("스테디 포지션"),
+                                parameterWithName("stack").description("스테디 기술 스택").optional(),
+                                parameterWithName("position").description("스테디 포지션").optional(),
                                 parameterWithName("status").description("스테디 상태"),
                                 parameterWithName("like").description("내 좋아요"),
-                                parameterWithName("keyword").description("검색 키워드")
+                                parameterWithName("keyword").description("검색 키워드").optional()
                         ),
                         responseFields(
                                 fieldWithPath("content[].id").type(NUMBER).description("스테디 id"),
@@ -255,7 +258,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                         resourceDetails().tag("스테디").description("스테디 상세조회")
                                 .responseSchema(Schema.schema("SteadyDetailResponse")),
                         requestHeaders(
-                                headerWithName(AUTHORIZATION).description("토큰")
+                                headerWithName(AUTHORIZATION).description("토큰").optional()
                         ),
                         responseFields(
                                 fieldWithPath("id").type(NUMBER).description("스테디 id"),
