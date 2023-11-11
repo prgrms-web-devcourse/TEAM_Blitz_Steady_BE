@@ -1,6 +1,7 @@
 package dev.steady.steady.infrastructure;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import dev.steady.steady.domain.Steady;
@@ -19,6 +20,7 @@ import static dev.steady.steady.domain.QSteady.steady;
 import static dev.steady.steady.domain.QSteadyPosition.steadyPosition;
 import static dev.steady.steady.domain.QSteadyStack.steadyStack;
 import static dev.steady.steady.infrastructure.util.DynamicQueryUtils.filterCondition;
+import static dev.steady.steady.infrastructure.util.DynamicQueryUtils.orderBySort;
 
 @Repository
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
                 .join(steady.steadyStacks, steadyStack).fetchJoin()
                 .join(steadyPosition).on(steady.id.eq(steadyPosition.steady.id))
                 .where(searchCondition(condition))
+                .orderBy(orderBySort(pageable.getSort()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
