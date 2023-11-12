@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "stcikers")
+@Table(name = "cards")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Sticker {
+public class Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class Sticker {
     private String content;
 
     @Builder
-    private Sticker(String content) {
+    public Card(String content) {
         this.content = content;
     }
 
