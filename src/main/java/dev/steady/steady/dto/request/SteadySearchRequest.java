@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 public record SteadySearchRequest(
+        String steadyType,
         Integer page,
         String direction,
         String criteria,
