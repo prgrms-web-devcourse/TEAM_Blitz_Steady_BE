@@ -43,7 +43,7 @@ public class User extends BaseEntity {
     private Position position;
 
     @Builder
-    public User(String profileImage, String nickname, String bio, Position position) {
+    private User(String profileImage, String nickname, String bio, Position position) {
         this.profileImage = profileImage;
         this.nickname = nickname;
         this.bio = bio;
