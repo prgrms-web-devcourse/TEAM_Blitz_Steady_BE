@@ -73,7 +73,8 @@ class SteadySearchRepositoryImplTest {
         entityManager.clear();
 
         // when
-        var request = new SteadySearchRequest(0,
+        var request = new SteadySearchRequest("study",
+                0,
                 "DESC",
                 null,
                 "online",
@@ -113,7 +114,8 @@ class SteadySearchRepositoryImplTest {
         entityManager.clear();
 
         // when
-        var request = new SteadySearchRequest(0,
+        var request = new SteadySearchRequest("study",
+                0,
                 "DESC",
                 null,
                 "both",
@@ -150,13 +152,14 @@ class SteadySearchRepositoryImplTest {
         entityManager.clear();
 
         // when
-        var request = new SteadySearchRequest(0,
+        var request = new SteadySearchRequest("study",
+                0,
                 "DESC",
                 null,
-                "all",
                 null,
                 null,
-                "all",
+                null,
+                null,
                 "false",
                 null);
         var pageable = request.toPageable();

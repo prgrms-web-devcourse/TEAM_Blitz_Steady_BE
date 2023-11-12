@@ -163,13 +163,14 @@ class SteadyServiceTest {
         entityManager.clear();
 
         // when
-        SteadySearchRequest searchRequest = new SteadySearchRequest(0,
+        SteadySearchRequest searchRequest = new SteadySearchRequest(null,
+                0,
                 null,
                 null,
-                "all",
                 null,
                 null,
-                "all",
+                null,
+                null,
                 "false",
                 null);
         SearchConditionDto condition = SearchConditionDto.from(searchRequest);
@@ -202,13 +203,14 @@ class SteadyServiceTest {
         entityManager.clear();
 
         // when
-        SteadySearchRequest searchRequest = new SteadySearchRequest(0,
+        SteadySearchRequest searchRequest = new SteadySearchRequest(null,
+                0,
                 "asc",
                 "deadline",
-                "all",
                 null,
                 null,
-                "all",
+                null,
+                null,
                 "false",
                 null);
         SearchConditionDto condition = SearchConditionDto.from(searchRequest);
