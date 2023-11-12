@@ -1,6 +1,8 @@
 package dev.steady.review.service;
 
+import dev.steady.review.domain.Card;
 import dev.steady.review.domain.Review;
+import dev.steady.review.domain.UserCard;
 import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
@@ -21,8 +23,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
+import static dev.steady.review.fixture.ReviewFixtures.createCard;
 import static dev.steady.review.fixture.ReviewFixtures.createReviewCreateRequest;
 import static dev.steady.steady.fixture.SteadyFixtures.createFinishedSteady;
 import static dev.steady.steady.fixture.SteadyFixtures.createParticipant;
@@ -113,6 +117,31 @@ class ReviewServiceTest {
                 () -> assertThat(review.getId()).isEqualTo(reviewId),
                 () -> assertThat(review.getReviewer().getId()).isEqualTo(reviewer.getId()),
                 () -> assertThat(review.getReviewee().getId()).isEqualTo(reviewee.getId())
+        );
+    }
+
+    @DisplayName("사용자의 리뷰 카드를 생성할 수 있다.")
+    @Test
+    void createUserCards() {
+        // given
+        List<Card> cards = IntStream.range(0, 3)
+                .mapToObj(i -> createCard())
+                .toList();
+        cardRepository.saveAll(cards);
+
+        // when
+        List<Long> cardIds = List.of(1L, 2L);
+        var request = createReviewCreateRequest(
+                reviewer.getId(),
+                reviewee.getId(),
+                cardIds
+        );
+
+        List<UserCard> userCards = reviewService.createUserCards(request);
+
+        // then
+        assertAll(
+                () -> assertThat(userCards).hasSameSizeAs(cardIds)
         );
     }
 
