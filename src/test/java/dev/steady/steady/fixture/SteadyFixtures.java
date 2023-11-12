@@ -102,6 +102,25 @@ public class SteadyFixtures {
                 .build();
     }
 
+    public static Steady createFinishedSteady(User user, Stack stack) {
+        Steady steady = Steady.builder()
+                .name("스테디")
+                .bio("bio")
+                .type(STUDY)
+                .participantLimit(6)
+                .scheduledPeriod(ScheduledPeriod.FIVE_MONTH)
+                .deadline(LocalDate.of(2025, 1, 2))
+                .title("title")
+                .content("content")
+                .user(user)
+                .stacks(List.of(stack))
+                .steadyMode(ONLINE)
+                .build();
+        ReflectionTestUtils.setField(steady, "status", SteadyStatus.FINISHED);
+
+        return steady;
+    }
+
     public static SteadyPosition createSteadyPosition(Steady steady, Position position) {
         return SteadyPosition.builder().steady(steady).position(position).build();
     }
