@@ -1,5 +1,6 @@
 package dev.steady.review.domain;
 
+import dev.steady.user.domain.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -14,24 +15,24 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "review_stickers")
+@Table(name = "user_cards")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReviewSticker {
+public class UserCard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Review review;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Sticker sticker;
+    private Card card;
 
     @Builder
-    private ReviewSticker(Review review, Sticker sticker) {
-        this.review = review;
-        this.sticker = sticker;
+    public UserCard(User user, Card card) {
+        this.user = user;
+        this.card = card;
     }
 
 }
