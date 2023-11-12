@@ -2,7 +2,9 @@ package dev.steady.review.service;
 
 import dev.steady.global.auth.UserInfo;
 import dev.steady.global.exception.ForbiddenException;
+import dev.steady.review.domain.Card;
 import dev.steady.review.domain.Review;
+import dev.steady.review.domain.UserCard;
 import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
@@ -12,11 +14,13 @@ import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.exception.InvalidStateException;
+import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 import static dev.steady.review.exception.ReviewErrorCode.REVIEWEE_EQUALS_REVIEWER;
@@ -59,6 +63,28 @@ public class ReviewService {
         Review savedReview = reviewRepository.save(review);
 
         return savedReview.getId();
+    }
+
+
+    @Transactional
+    public List<UserCard> createUserCards(ReviewCreateRequest request) {
+        User reviewee = getParticipant(request.revieweeId()).getUser();
+        List<Card> cards = getCards(request.cardIds());
+        List<UserCard> userCards = cards.stream()
+                .map(card -> new UserCard(reviewee, card))
+                .toList();
+
+        return userCardRepository.saveAll(userCards);
+    }
+
+    private List<Card> getCards(List<Long> cardIds) {
+        return cardIds.stream()
+                .map(this::getCard)
+                .toList();
+    }
+
+    private Card getCard(Long cardId) {
+        return cardRepository.getById(cardId);
     }
 
     private Steady getSteady(Long steadyId) {
