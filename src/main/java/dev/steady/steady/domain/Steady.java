@@ -177,6 +177,10 @@ public class Steady extends BaseEntity {
         return participants.getLeader();
     }
 
+    public boolean isFinished() {
+        return this.status == SteadyStatus.FINISHED;
+    }
+
     private Participants createParticipants(User user) {
         Participants participants = new Participants(participantLimit);
         participants.add(Participant.createLeader(user, this));
