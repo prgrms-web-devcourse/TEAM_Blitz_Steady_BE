@@ -1,5 +1,6 @@
 package dev.steady.steady.fixture;
 
+import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.ScheduledPeriod;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyMode;
@@ -138,4 +139,7 @@ public class SteadyFixtures {
         ));
     }
 
+    public static Participant createParticipant(User user, Steady steady) {
+        return new Participant(user, steady, false);
+    }
 }
