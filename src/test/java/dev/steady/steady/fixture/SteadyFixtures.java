@@ -85,7 +85,7 @@ public class SteadyFixtures {
                 .build();
     }
 
-    public static Steady creatSteady(User user, Stack stack) {
+    public static Steady createSteady(User user, Stack stack) {
         return Steady.builder()
                 .name("스테디")
                 .bio("boi")
