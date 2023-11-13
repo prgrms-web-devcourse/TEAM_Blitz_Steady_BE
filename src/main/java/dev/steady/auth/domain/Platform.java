@@ -1,6 +1,6 @@
 package dev.steady.auth.domain;
 
-import dev.steady.auth.exception.OAuthPlatformException;
+import dev.steady.global.exception.InvalidValueException;
 
 import static dev.steady.auth.exception.AuthErrorCode.NOT_SUPPORTED_PLATFORM;
 
@@ -12,7 +12,7 @@ public enum Platform {
         try {
             return Platform.valueOf(platformName.toUpperCase());
         } catch (IllegalArgumentException exception) {
-            throw new OAuthPlatformException(NOT_SUPPORTED_PLATFORM);
+            throw new InvalidValueException(NOT_SUPPORTED_PLATFORM);
         }
     }
 
