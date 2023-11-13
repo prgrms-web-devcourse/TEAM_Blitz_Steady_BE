@@ -37,7 +37,7 @@ public class Participants {
         return steadyParticipants.stream()
                 .filter(Participant::isLeader)
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new)
+                .orElseThrow(() -> new NotFoundException(PARTICIPANT_NOT_FOUND))
                 .getUser();
     }
 
