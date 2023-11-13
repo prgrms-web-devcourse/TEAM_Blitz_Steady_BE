@@ -1,6 +1,7 @@
 package dev.steady.review.service;
 
 import dev.steady.global.auth.UserInfo;
+import dev.steady.global.exception.InvalidStateException;
 import dev.steady.review.domain.Card;
 import dev.steady.review.domain.Review;
 import dev.steady.review.domain.UserCard;
@@ -12,7 +13,6 @@ import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Participants;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.repository.SteadyRepository;
-import dev.steady.steady.exception.InvalidStateException;
 import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
