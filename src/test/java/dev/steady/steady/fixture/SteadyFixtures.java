@@ -161,4 +161,5 @@ public class SteadyFixtures {
     public static Participant createParticipant(User user, Steady steady) {
         return new Participant(user, steady, false);
     }
+
 }

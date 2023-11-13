@@ -23,5 +23,5 @@ public enum ParticipantErrorCode implements ErrorCode {
     public String message() {
         return message;
     }
-    
+
 }

@@ -12,5 +12,5 @@ public interface CardRepository extends JpaRepository<Card, Long> {
         return findById(cardId)
                 .orElseThrow(() -> new NotFoundException(CARD_NOT_FOUND));
     }
-    
+
 }
