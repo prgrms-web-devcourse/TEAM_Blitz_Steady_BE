@@ -281,7 +281,7 @@ class SteadyServiceTest {
         var otherUser = userRepository.save(createSecondUser(position));
         var userInfo = createUserInfo(otherUser.getId());
 
-        var steady = steadyRepository.save(creatSteady(leader, stack));
+        var steady = steadyRepository.save(createSteady(leader, stack));
         var steadyId = steady.getId();
         entityManager.flush();
         entityManager.clear();
