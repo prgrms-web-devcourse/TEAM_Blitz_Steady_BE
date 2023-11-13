@@ -69,7 +69,7 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
                         participant.isLeader,
                         participant.createdAt))
                 .from(steady)
-                .leftJoin(participant).on(steady.id.eq(participant.steady.id))
+                .innerJoin(participant).on(participant.steady.id.eq(steady.id))
                 .where(
                         isFinishSteady(status),
                         isWorkSteady(status),
