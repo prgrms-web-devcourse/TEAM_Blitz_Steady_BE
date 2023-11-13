@@ -1,6 +1,6 @@
 package dev.steady.global.exception;
 
-public class ForbiddenException extends BusinessException{
+public class ForbiddenException extends BusinessException {
 
     private final ErrorCode errorCode;
 

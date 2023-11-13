@@ -30,7 +30,6 @@ import static dev.steady.user.fixture.UserFixtures.createPosition;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -378,7 +377,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                         .content(objectMapper.writeValueAsString(steadyQuestionUpdateRequest)))
                 .andDo(document("steady-update-steady-questions",
                         resourceDetails().tag("스테디").description("스테디 질문 수정")
-                                        .requestSchema(Schema.schema("SteadyQuestionUpdateRequest")),
+                                .requestSchema(Schema.schema("SteadyQuestionUpdateRequest")),
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("토큰")
                         ),

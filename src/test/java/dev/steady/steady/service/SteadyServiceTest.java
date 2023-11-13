@@ -2,6 +2,7 @@ package dev.steady.steady.service;
 
 import dev.steady.global.auth.UserInfo;
 import dev.steady.global.exception.ForbiddenException;
+import dev.steady.global.exception.InvalidStateException;
 import dev.steady.global.exception.NotFoundException;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
@@ -27,7 +28,6 @@ import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadyPositionResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.steady.dto.response.SteadyStackResponse;
-import dev.steady.steady.exception.InvalidStateException;
 import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;

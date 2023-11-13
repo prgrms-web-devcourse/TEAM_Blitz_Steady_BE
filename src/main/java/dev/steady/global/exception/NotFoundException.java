@@ -1,6 +1,6 @@
 package dev.steady.global.exception;
 
-public class NotFoundException extends BusinessException{
+public class NotFoundException extends BusinessException {
 
     private final ErrorCode errorCode;
 
