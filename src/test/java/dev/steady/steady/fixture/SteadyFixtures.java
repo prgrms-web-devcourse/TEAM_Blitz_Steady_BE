@@ -146,6 +146,24 @@ public class SteadyFixtures {
         return steady;
     }
 
+    public static Steady createSteady(User user, List<Stack> stacks, SteadyStatus status) {
+        Steady steady = Steady.builder()
+                .name("스테디 제목")
+                .bio("Bio")
+                .type(STUDY)
+                .participantLimit(5)
+                .steadyMode(SteadyMode.BOTH)
+                .scheduledPeriod(ScheduledPeriod.FIVE_MONTH)
+                .deadline(LocalDate.of(2023, 12, 20))
+                .title("게시글 제목")
+                .content("내용")
+                .user(user)
+                .stacks(stacks)
+                .build();
+        ReflectionTestUtils.setField(steady, "status", status);
+        return steady;
+    }
+
     public static PageResponse<SteadySearchResponse> createSteadyPageResponse(Steady steady, Pageable pageable) {
         Page<Steady> steadies = new PageImpl<>(List.of(steady), pageable, 1);
         return PageResponse.from(steadies.map(SteadySearchResponse::from));

@@ -2,11 +2,14 @@ package dev.steady.steady.infrastructure;
 
 import dev.steady.global.config.JpaConfig;
 import dev.steady.global.config.QueryDslConfig;
+import dev.steady.steady.domain.Steady;
+import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadySearchRequest;
+import dev.steady.steady.dto.response.MySteadyQueryResponse;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
@@ -16,9 +19,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
+import static dev.steady.steady.domain.SteadyStatus.CLOSED;
+import static dev.steady.steady.domain.SteadyStatus.FINISHED;
+import static dev.steady.steady.domain.SteadyStatus.RECRUITING;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyPosition;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyQuestion;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyRequest;
@@ -55,6 +65,9 @@ class SteadySearchRepositoryImplTest {
 
     @Autowired
     private SteadyQuestionRepository steadyQuestionRepository;
+
+    @Autowired
+    private ParticipantRepository participantRepository;
 
     @Test
     @DisplayName("검색 조건에 해당하는 스테디를 조회할 수 있다.")
@@ -169,6 +182,63 @@ class SteadySearchRepositoryImplTest {
         // then
         int expectedSize = 1;
         assertThat(response.getTotalElements()).isEqualTo(expectedSize);
+    }
+
+    @DisplayName("내가 참여한 전체 스테디를 조회한다.")
+    @Test
+    void findMyAllSteadies() {
+        //given
+        var position = positionRepository.save(createPosition());
+        var user = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        Steady steady = createSteady(user, List.of(stack), RECRUITING);
+        Steady secondSteady = createSteady(user, List.of(stack), CLOSED);
+        Steady thirdSteady = createSteady(user, List.of(stack), FINISHED);
+        List<Steady> steadies = steadyRepository.saveAll(List.of(steady, secondSteady, thirdSteady));
+        //when
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
+        Slice<MySteadyQueryResponse> mySteadies = queryDslRepository.findMySteadies(pageRequest, null, user);
+        //then
+        assertThat(mySteadies.hasNext()).isFalse();
+        assertThat(mySteadies.getNumberOfElements()).isEqualTo(steadies.size());
+    }
+
+    @DisplayName("내가 참여했지만 종료된 스테디를 조회한다.")
+    @Test
+    void findMyFinishedSteadies() {
+        //given
+        var position = positionRepository.save(createPosition());
+        var user = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        Steady steady = createSteady(user, List.of(stack), RECRUITING);
+        Steady secondSteady = createSteady(user, List.of(stack), CLOSED);
+        Steady thirdSteady = createSteady(user, List.of(stack), FINISHED);
+        List<Steady> steadies = steadyRepository.saveAll(List.of(steady, secondSteady, thirdSteady));
+        //when
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
+        Slice<MySteadyQueryResponse> mySteadies = queryDslRepository.findMySteadies(pageRequest, FINISHED, user);
+        //then
+        assertThat(mySteadies.hasNext()).isFalse();
+        assertThat(mySteadies.getNumberOfElements()).isOne();
+    }
+
+    @DisplayName("내가 참여했지만 종료된 스테디를 조회한다.")
+    @Test
+    void findMyNotFinishedSteadies() {
+        //given
+        var position = positionRepository.save(createPosition());
+        var user = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        Steady steady = createSteady(user, List.of(stack), RECRUITING);
+        Steady secondSteady = createSteady(user, List.of(stack), CLOSED);
+        Steady thirdSteady = createSteady(user, List.of(stack), FINISHED);
+        List<Steady> steadies = steadyRepository.saveAll(List.of(steady, secondSteady, thirdSteady));
+        //when
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
+        Slice<MySteadyQueryResponse> mySteadies = queryDslRepository.findMySteadies(pageRequest, RECRUITING, user);
+        //then
+        assertThat(mySteadies.hasNext()).isFalse();
+        assertThat(mySteadies.getNumberOfElements()).isEqualTo(2);
     }
 
 }
