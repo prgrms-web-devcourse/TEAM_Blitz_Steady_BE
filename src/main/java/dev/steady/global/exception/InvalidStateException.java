@@ -1,7 +1,4 @@
-package dev.steady.steady.exception;
-
-import dev.steady.global.exception.BusinessException;
-import dev.steady.global.exception.ErrorCode;
+package dev.steady.global.exception;
 
 public class InvalidStateException extends BusinessException {
 

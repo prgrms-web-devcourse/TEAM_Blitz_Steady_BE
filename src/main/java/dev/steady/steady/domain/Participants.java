@@ -1,6 +1,6 @@
 package dev.steady.steady.domain;
 
-import dev.steady.steady.exception.InvalidStateException;
+import dev.steady.global.exception.InvalidStateException;
 import dev.steady.user.domain.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embeddable;
@@ -18,13 +18,12 @@ import static dev.steady.steady.exception.SteadyErrorCode.PARTICIPANT_LIMIT_EXCE
 public class Participants {
 
     private int participantLimits;
+    @OneToMany(mappedBy = "steady", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Participant> steadyParticipants = new ArrayList<>();
 
     public Participants(int participantLimits) {
         this.participantLimits = participantLimits;
     }
-
-    @OneToMany(mappedBy = "steady", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participant> steadyParticipants = new ArrayList<>();
 
     public void add(Participant participant) {
         validateParticipantLimit();

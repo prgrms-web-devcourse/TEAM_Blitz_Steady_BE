@@ -1,6 +1,6 @@
 package dev.steady.steady.domain;
 
-import dev.steady.steady.exception.InvalidStateException;
+import dev.steady.global.exception.InvalidStateException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
