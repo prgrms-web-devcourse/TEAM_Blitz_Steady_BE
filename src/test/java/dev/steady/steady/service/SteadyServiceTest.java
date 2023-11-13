@@ -267,7 +267,9 @@ class SteadyServiceTest {
                         .map(SteadyStackResponse::from)
                         .toList()),
                 () -> assertThat(response.isLeader()).isTrue(),
-                () -> assertThat(response.isSubmittedUser()).isFalse()
+                () -> assertThat(response.isSubmittedUser()).isFalse(),
+                () -> assertThat(response.promotionCount()).isEqualTo(steady.getPromotionCount()),
+                () -> assertThat(response.createdAt()).isEqualTo(steady.getCreatedAt())
         );
     }
 
@@ -313,7 +315,9 @@ class SteadyServiceTest {
                         .map(SteadyStackResponse::from)
                         .toList()),
                 () -> assertThat(response.isLeader()).isFalse(),
-                () -> assertThat(response.isSubmittedUser()).isFalse()
+                () -> assertThat(response.isSubmittedUser()).isFalse(),
+                () -> assertThat(response.promotionCount()).isEqualTo(steady.getPromotionCount()),
+                () -> assertThat(response.createdAt()).isEqualTo(steady.getCreatedAt())
         );
     }
 
@@ -358,7 +362,9 @@ class SteadyServiceTest {
                         .map(SteadyStackResponse::from)
                         .toList()),
                 () -> assertThat(response.isLeader()).isFalse(),
-                () -> assertThat(response.isSubmittedUser()).isFalse()
+                () -> assertThat(response.isSubmittedUser()).isFalse(),
+                () -> assertThat(response.promotionCount()).isEqualTo(steady.getPromotionCount()),
+                () -> assertThat(response.createdAt()).isEqualTo(steady.getCreatedAt())
         );
     }
 

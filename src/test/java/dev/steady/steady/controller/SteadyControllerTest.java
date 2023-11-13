@@ -140,9 +140,6 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("numberOfElements").type(NUMBER).description("현재 페이지 조회된 개수"),
                                 fieldWithPath("page").type(NUMBER).description("현재 페이지"),
                                 fieldWithPath("size").type(NUMBER).description("페이지 크기"),
-                                fieldWithPath("sort.empty").type(BOOLEAN).description("결과 유무"),
-                                fieldWithPath("sort.sorted").type(BOOLEAN).description("정렬 유무"),
-                                fieldWithPath("sort.unsorted").type(BOOLEAN).description("비정렬 유무"),
                                 fieldWithPath("totalPages").type(NUMBER).description("전체 페이지 개수"),
                                 fieldWithPath("totalElements").type(NUMBER).description("전체 개수")
                         )
@@ -220,9 +217,6 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("numberOfElements").type(NUMBER).description("현재 페이지 조회된 개수"),
                                 fieldWithPath("page").type(NUMBER).description("현재 페이지"),
                                 fieldWithPath("size").type(NUMBER).description("페이지 크기"),
-                                fieldWithPath("sort.empty").type(BOOLEAN).description("결과 유무"),
-                                fieldWithPath("sort.sorted").type(BOOLEAN).description("정렬 유무"),
-                                fieldWithPath("sort.unsorted").type(BOOLEAN).description("비정렬 유무"),
                                 fieldWithPath("totalPages").type(NUMBER).description("전체 페이지 개수"),
                                 fieldWithPath("totalElements").type(NUMBER).description("전체 개수")
                         )
@@ -284,7 +278,8 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("stacks[].imageUrl").type(STRING).description("기술 스택 이미지"),
                                 fieldWithPath("isLeader").type(BOOLEAN).description("리더 여부"),
                                 fieldWithPath("isSubmittedUser").type(BOOLEAN).description("신청 여부"),
-                                fieldWithPath("promotionCount").type(NUMBER).description("끌어올리가 남은 횟수")
+                                fieldWithPath("promotionCount").type(NUMBER).description("끌어올리가 남은 횟수"),
+                                fieldWithPath("createdAt").type(STRING).description("스테디 생성일")
                         )
                 ))
                 .andExpect(status().isOk())
