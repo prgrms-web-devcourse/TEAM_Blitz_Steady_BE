@@ -10,7 +10,6 @@ public record PageResponse<T>(
         long numberOfElements,
         int page,
         int size,
-        Sort sort,
         int totalPages,
         long totalElements
 ) {
@@ -21,7 +20,6 @@ public record PageResponse<T>(
                 page.getNumberOfElements(),
                 page.getPageable().getPageNumber(),
                 page.getPageable().getPageSize(),
-                page.getPageable().getSort(),
                 page.getTotalPages(),
                 page.getTotalElements());
     }
