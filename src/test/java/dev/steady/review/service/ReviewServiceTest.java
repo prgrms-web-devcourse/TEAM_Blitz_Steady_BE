@@ -134,7 +134,8 @@ class ReviewServiceTest {
                 cardIds
         );
 
-        List<UserCard> userCards = reviewService.createUserCards(request);
+        reviewService.createUserCards(request);
+        List<UserCard> userCards = userCardRepository.findAllByUser(reviewee.getUser());
 
         // then
         assertAll(
