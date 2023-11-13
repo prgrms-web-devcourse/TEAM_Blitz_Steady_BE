@@ -8,6 +8,7 @@ import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.SteadyType;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record SteadyDetailResponse(
@@ -28,7 +29,8 @@ public record SteadyDetailResponse(
         List<SteadyStackResponse> stacks,
         boolean isLeader,
         boolean isSubmittedUser,
-        int promotionCount
+        int promotionCount,
+        LocalDateTime createdAt
 ) {
 
     public static SteadyDetailResponse of(Steady steady, List<SteadyPosition> positions, boolean isLeader, boolean isSubmittedUser) {
@@ -54,7 +56,8 @@ public record SteadyDetailResponse(
                         .toList(),
                 isLeader,
                 isSubmittedUser,
-                steady.getPromotionCount()
+                steady.getPromotionCount(),
+                steady.getCreatedAt()
         );
     }
 
