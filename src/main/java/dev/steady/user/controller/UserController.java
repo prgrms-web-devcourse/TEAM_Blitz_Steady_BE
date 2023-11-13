@@ -13,6 +13,7 @@ import dev.steady.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +44,13 @@ public class UserController {
     public ResponseEntity<UserMyDetailResponse> getMyUserDetail(@Auth UserInfo userInfo) {
         UserMyDetailResponse response = userService.getMyUserDetail(userInfo);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/profile")
+    public ResponseEntity<Void> updateUser(@RequestBody UserUpdateRequest request,
+                                           @Auth UserInfo userInfo) {
+        userService.updateUser(request, userInfo);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/profile/exist")
