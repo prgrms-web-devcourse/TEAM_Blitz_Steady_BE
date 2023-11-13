@@ -1,7 +1,6 @@
 package dev.steady.review.service;
 
 import dev.steady.global.auth.UserInfo;
-import dev.steady.global.exception.ForbiddenException;
 import dev.steady.review.domain.Card;
 import dev.steady.review.domain.Review;
 import dev.steady.review.domain.UserCard;
@@ -10,8 +9,8 @@ import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
 import dev.steady.review.dto.ReviewCreateRequest;
 import dev.steady.steady.domain.Participant;
+import dev.steady.steady.domain.Participants;
 import dev.steady.steady.domain.Steady;
-import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.exception.InvalidStateException;
 import dev.steady.user.domain.User;
@@ -24,7 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static dev.steady.review.exception.ReviewErrorCode.REVIEWEE_EQUALS_REVIEWER;
-import static dev.steady.review.exception.ReviewErrorCode.REVIEWER_ID_MISMATCH;
+import static dev.steady.review.exception.ReviewErrorCode.REVIEW_DUPLICATE;
 import static dev.steady.review.exception.ReviewErrorCode.STEADY_NOT_FINISHED;
 
 @Service
@@ -65,7 +64,6 @@ public class ReviewService {
         return savedReview.getId();
     }
 
-
     @Transactional
     public List<UserCard> createUserCards(ReviewCreateRequest request) {
         User reviewee = userRepository.getUserBy(request.revieweeId());
@@ -91,8 +89,12 @@ public class ReviewService {
         return steadyRepository.getSteady(steadyId);
     }
 
-    private Participant getParticipant(Long participantId) {
-        return participantRepository.getById(participantId);
+    private boolean isAlreadyReviewed(Participant reviewer, Participant reviewee, Steady steady) {
+        return reviewRepository.existsByReviewerAndRevieweeAndSteady(
+                reviewer,
+                reviewee,
+                steady
+        );
     }
 
 }
