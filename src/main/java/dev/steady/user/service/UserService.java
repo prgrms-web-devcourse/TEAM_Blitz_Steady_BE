@@ -13,6 +13,7 @@ import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
 import dev.steady.user.domain.repository.UserStackRepository;
 import dev.steady.user.dto.request.UserCreateRequest;
+import dev.steady.user.dto.request.UserUpdateRequest;
 import dev.steady.user.dto.response.UserMyDetailResponse;
 import dev.steady.user.dto.response.UserNicknameExistResponse;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,21 @@ public class UserService {
         userStackRepository.saveAll(userStacks);
 
         return savedUser.getId();
+    }
+
+    @Transactional
+    public void updateUser(UserUpdateRequest request, UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        Position updatedPosition = positionRepository.getById(request.positionId());
+        user.update(request.profileImage(),
+                request.nickname(),
+                request.bio(),
+                updatedPosition
+        );
+
+        userStackRepository.deleteAllByUser(user);
+        List<UserStack> userStacks = createUserStacks(request.stackIds(), user);
+        userStackRepository.saveAll(userStacks);
     }
 
     @Transactional(readOnly = true)
