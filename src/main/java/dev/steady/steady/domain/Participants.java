@@ -1,6 +1,7 @@
 package dev.steady.steady.domain;
 
 import dev.steady.global.exception.InvalidStateException;
+import dev.steady.global.exception.NotFoundException;
 import dev.steady.user.domain.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embeddable;
@@ -10,7 +11,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import static dev.steady.steady.exception.ParticipantErrorCode.PARTICIPANT_NOT_FOUND;
 import static dev.steady.steady.exception.SteadyErrorCode.PARTICIPANT_LIMIT_EXCEEDED;
 
 @Embeddable
@@ -34,8 +37,15 @@ public class Participants {
         return steadyParticipants.stream()
                 .filter(Participant::isLeader)
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new)
+                .orElseThrow(() -> new NotFoundException(PARTICIPANT_NOT_FOUND))
                 .getUser();
+    }
+
+    public Participant getParticipantByUserId(Long userId) {
+        return steadyParticipants.stream()
+                .filter(participant -> Objects.equals(participant.getUserId(), userId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(PARTICIPANT_NOT_FOUND));
     }
 
     public List<Participant> getAllParticipants() {

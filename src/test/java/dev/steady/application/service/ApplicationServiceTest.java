@@ -32,7 +32,7 @@ import static dev.steady.application.domain.ApplicationStatus.REJECTED;
 import static dev.steady.application.fixture.ApplicationFixture.createApplication;
 import static dev.steady.application.fixture.SurveyResultFixture.createSurveyResultRequests;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
-import static dev.steady.steady.fixture.SteadyFixtures.creatSteady;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
 import static dev.steady.user.fixture.UserFixtures.createFirstUser;
 import static dev.steady.user.fixture.UserFixtures.createPosition;
 import static dev.steady.user.fixture.UserFixtures.createSecondUser;
@@ -89,7 +89,7 @@ class ApplicationServiceTest {
     void createApplicationTest() {
         //given
         var user = userRepository.save(createSecondUser(position));
-        var steady = steadyRepository.save(creatSteady(user, stack));
+        var steady = steadyRepository.save(createSteady(user, stack));
         var surveyResultRequests = createSurveyResultRequests();
         var userInfo = createUserInfo(user.getId());
 
@@ -106,7 +106,7 @@ class ApplicationServiceTest {
     @Test
     void getApplicationsTest() {
         //given
-        var steady = steadyRepository.save(creatSteady(leader, stack));
+        var steady = steadyRepository.save(createSteady(leader, stack));
         var secondUser = userRepository.save(createSecondUser(position));
         var thirdUser = userRepository.save(createThirdUser(position));
         applicationRepository.saveAll(List.of(createApplication(secondUser, steady),
@@ -128,7 +128,7 @@ class ApplicationServiceTest {
     @Test
     void getApplicationsFailTest() {
         //given
-        var steady = steadyRepository.save(creatSteady(leader, stack));
+        var steady = steadyRepository.save(createSteady(leader, stack));
         var secondUser = userRepository.save(createSecondUser(position));
         var thirdUser = userRepository.save(createThirdUser(position));
         applicationRepository.save(createApplication(secondUser, steady));
@@ -146,7 +146,7 @@ class ApplicationServiceTest {
     @Test
     void getApplicationDetailTest() {
         //given
-        var steady = steadyRepository.save(creatSteady(leader, stack));
+        var steady = steadyRepository.save(createSteady(leader, stack));
         var secondUser = userRepository.save(createSecondUser(position));
         var application = applicationRepository.save(createApplication(secondUser, steady));
         var userInfo = createUserInfo(leader.getId());
@@ -166,7 +166,7 @@ class ApplicationServiceTest {
     @Test
     void getApplicationDetailFailTest() {
         //given
-        var steady = steadyRepository.save(creatSteady(leader, stack));
+        var steady = steadyRepository.save(createSteady(leader, stack));
         var secondUser = userRepository.save(createSecondUser(position));
         var thirdUser = userRepository.save(createThirdUser(position));
         var application = applicationRepository.save(createApplication(secondUser, steady));
@@ -181,7 +181,7 @@ class ApplicationServiceTest {
     @Test
     void createSurveyResultTest() {
         //given
-        var steady = steadyRepository.save(creatSteady(leader, stack));
+        var steady = steadyRepository.save(createSteady(leader, stack));
         var secondUser = userRepository.save(createSecondUser(position));
         var application = applicationRepository.save(createApplication(secondUser, steady));
         var userInfo = createUserInfo(leader.getId());
@@ -198,7 +198,7 @@ class ApplicationServiceTest {
     @Test
     void createSurveyResultFailTest() {
         //given
-        var steady = steadyRepository.save(creatSteady(leader, stack));
+        var steady = steadyRepository.save(createSteady(leader, stack));
         var secondUser = userRepository.save(createSecondUser(position));
         var entity = createApplication(secondUser, steady);
         ReflectionTestUtils.setField(entity, "status", REJECTED);

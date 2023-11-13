@@ -44,8 +44,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
-import static dev.steady.steady.fixture.SteadyFixtures.creatSteady;
 import static dev.steady.steady.fixture.SteadyFixtures.createAnotherSteadyRequest;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyRequest;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyUpdateRequest;
 import static dev.steady.user.fixture.UserFixtures.createAnotherPosition;
@@ -281,7 +281,7 @@ class SteadyServiceTest {
         var otherUser = userRepository.save(createSecondUser(position));
         var userInfo = createUserInfo(otherUser.getId());
 
-        var steady = steadyRepository.save(creatSteady(leader, stack));
+        var steady = steadyRepository.save(createSteady(leader, stack));
         var steadyId = steady.getId();
         entityManager.flush();
         entityManager.clear();
@@ -326,7 +326,7 @@ class SteadyServiceTest {
         var stack = stackRepository.save(createStack());
         var userInfo = new UserInfo(null);
 
-        var steady = steadyRepository.save(creatSteady(leader, stack));
+        var steady = steadyRepository.save(createSteady(leader, stack));
         var steadyId = steady.getId();
         entityManager.flush();
         entityManager.clear();
@@ -370,7 +370,7 @@ class SteadyServiceTest {
         var leader = userRepository.save(createFirstUser(position));
         var stack = stackRepository.save(createStack());
 
-        var steady = steadyRepository.save(creatSteady(leader, stack));
+        var steady = steadyRepository.save(createSteady(leader, stack));
         var steadyId = steady.getId();
 
         var anotherUser = userRepository.save(createSecondUser(position));

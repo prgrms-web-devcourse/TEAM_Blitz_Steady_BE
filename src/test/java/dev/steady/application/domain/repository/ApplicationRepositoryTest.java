@@ -20,7 +20,7 @@ import java.util.List;
 
 import static dev.steady.application.domain.ApplicationStatus.WAITING;
 import static dev.steady.application.fixture.ApplicationFixture.createApplication;
-import static dev.steady.steady.fixture.SteadyFixtures.creatSteady;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
 import static dev.steady.user.fixture.UserFixtures.createFirstUser;
 import static dev.steady.user.fixture.UserFixtures.createPosition;
 import static dev.steady.user.fixture.UserFixtures.createSecondUser;
@@ -64,7 +64,7 @@ class ApplicationRepositoryTest {
         var position = positionRepository.save(createPosition());
         var leader = userRepository.save(createFirstUser(position));
         var savedStack = stackRepository.save(createStack());
-        var steady = steadyRepository.save(creatSteady(leader, savedStack));
+        var steady = steadyRepository.save(createSteady(leader, savedStack));
         var secondUser = userRepository.save(createSecondUser(position));
         var thirdUser = userRepository.save(createThirdUser(position));
         applicationRepository.saveAll(List.of(createApplication(secondUser, steady),

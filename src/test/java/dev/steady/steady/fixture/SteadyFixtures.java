@@ -1,5 +1,6 @@
 package dev.steady.steady.fixture;
 
+import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.ScheduledPeriod;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyMode;
@@ -85,7 +86,7 @@ public class SteadyFixtures {
                 .build();
     }
 
-    public static Steady creatSteady(User user, Stack stack) {
+    public static Steady createSteady(User user, Stack stack) {
         return Steady.builder()
                 .name("스테디")
                 .bio("boi")
@@ -99,6 +100,25 @@ public class SteadyFixtures {
                 .stacks(List.of(stack))
                 .steadyMode(ONLINE)
                 .build();
+    }
+
+    public static Steady createFinishedSteady(User user, Stack stack) {
+        Steady steady = Steady.builder()
+                .name("스테디")
+                .bio("bio")
+                .type(STUDY)
+                .participantLimit(6)
+                .scheduledPeriod(ScheduledPeriod.FIVE_MONTH)
+                .deadline(LocalDate.of(2025, 1, 2))
+                .title("title")
+                .content("content")
+                .user(user)
+                .stacks(List.of(stack))
+                .steadyMode(ONLINE)
+                .build();
+        ReflectionTestUtils.setField(steady, "status", SteadyStatus.FINISHED);
+
+        return steady;
     }
 
     public static SteadyPosition createSteadyPosition(Steady steady, Position position) {
@@ -136,6 +156,10 @@ public class SteadyFixtures {
                 new ParticipantResponse(1L, "weonest", "url1", true),
                 new ParticipantResponse(2L, "nayjk", "url2", false)
         ));
+    }
+
+    public static Participant createParticipant(User user, Steady steady) {
+        return new Participant(user, steady, false);
     }
 
 }

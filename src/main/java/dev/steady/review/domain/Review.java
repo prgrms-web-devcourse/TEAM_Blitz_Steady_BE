@@ -1,7 +1,7 @@
 package dev.steady.review.domain;
 
+import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
-import dev.steady.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,11 +28,11 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewer_id")
-    private User reviewer;
+    private Participant reviewer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewee_id")
-    private User reviewee;
+    private Participant reviewee;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Steady steady;
@@ -44,16 +44,15 @@ public class Review {
     private boolean isPublic;
 
     @Builder
-    private Review(User reviewer,
-                   User reviewee,
+    private Review(Participant reviewer,
+                   Participant reviewee,
                    Steady steady,
-                   String comment,
-                   boolean isPublic) {
+                   String comment) {
         this.reviewer = reviewer;
         this.reviewee = reviewee;
         this.steady = steady;
         this.comment = comment;
-        this.isPublic = isPublic;
+        this.isPublic = true;
     }
 
 }
