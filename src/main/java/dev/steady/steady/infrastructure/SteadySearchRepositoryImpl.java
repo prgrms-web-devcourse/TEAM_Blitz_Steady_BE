@@ -62,7 +62,7 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
     }
 
     @Override
-    public Slice<MySteadyQueryResponse> findMySteadies(Pageable pageable, SteadyStatus status, User user) {
+    public Slice<MySteadyQueryResponse> findMySteadies(SteadyStatus status, User user, Pageable pageable) {
         List<MySteadyQueryResponse> steadies = jpaQueryFactory
                 .select(Projections.constructor(MySteadyQueryResponse.class,
                         steady.id,

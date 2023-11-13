@@ -197,7 +197,7 @@ class SteadySearchRepositoryImplTest {
         List<Steady> steadies = steadyRepository.saveAll(List.of(steady, secondSteady, thirdSteady));
         //when
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
-        Slice<MySteadyQueryResponse> mySteadies = queryDslRepository.findMySteadies(pageRequest, null, user);
+        Slice<MySteadyQueryResponse> mySteadies = queryDslRepository.findMySteadies(RECRUITING, user, pageRequest);
         //then
         assertThat(mySteadies.hasNext()).isFalse();
         assertThat(mySteadies.getNumberOfElements()).isEqualTo(steadies.size());
@@ -216,7 +216,7 @@ class SteadySearchRepositoryImplTest {
         List<Steady> steadies = steadyRepository.saveAll(List.of(steady, secondSteady, thirdSteady));
         //when
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
-        Slice<MySteadyQueryResponse> mySteadies = queryDslRepository.findMySteadies(pageRequest, FINISHED, user);
+        Slice<MySteadyQueryResponse> mySteadies = queryDslRepository.findMySteadies(RECRUITING, user, pageRequest);
         //then
         assertThat(mySteadies.hasNext()).isFalse();
         assertThat(mySteadies.getNumberOfElements()).isOne();
@@ -235,7 +235,7 @@ class SteadySearchRepositoryImplTest {
         List<Steady> steadies = steadyRepository.saveAll(List.of(steady, secondSteady, thirdSteady));
         //when
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
-        Slice<MySteadyQueryResponse> mySteadies = queryDslRepository.findMySteadies(pageRequest, RECRUITING, user);
+        Slice<MySteadyQueryResponse> mySteadies = queryDslRepository.findMySteadies(RECRUITING, user, pageRequest);
         //then
         assertThat(mySteadies.hasNext()).isFalse();
         assertThat(mySteadies.getNumberOfElements()).isEqualTo(2);

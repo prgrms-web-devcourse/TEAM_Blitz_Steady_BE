@@ -172,7 +172,7 @@ public class SteadyService {
     public SliceResponse<MySteadyResponse> findMySteadies(SteadyStatus status, UserInfo userInfo, Pageable pageable) {
         User user = userRepository.getUserBy(userInfo.userId());
 
-        Slice<MySteadyQueryResponse> mySteadies = steadyRepository.findMySteadies(pageable, status, user);
+        Slice<MySteadyQueryResponse> mySteadies = steadyRepository.findMySteadies(status, user, pageable);
         Slice<MySteadyResponse> response = mySteadies.map(MySteadyResponse::from);
         return SliceResponse.from(response);
     }
