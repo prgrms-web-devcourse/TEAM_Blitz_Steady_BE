@@ -16,7 +16,7 @@ public record UserMyDetailResponse(
         List<StackResponse> stacks
 ) {
 
-    public static UserMyDetailResponse from(Platform platform, User user, List<UserStack> userStacks) {
+    public static UserMyDetailResponse of(Platform platform, User user, List<UserStack> userStacks) {
         PositionResponse position = PositionResponse.from(user.getPosition());
         List<StackResponse> stacks = userStacks.stream()
                 .map(userStack -> StackResponse.from(userStack.getStack()))

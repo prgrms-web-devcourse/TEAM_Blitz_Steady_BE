@@ -37,7 +37,7 @@ public class UserService {
         User user = userRepository.getUserBy(userInfo.userId());
         List<UserStack> userStacks = userStackRepository.findAllByUser(user);
         Platform platform = getAccount(user).getPlatform();
-        return UserMyDetailResponse.from(platform, user, userStacks);
+        return UserMyDetailResponse.of(platform, user, userStacks);
     }
 
     @Transactional
