@@ -19,6 +19,7 @@ import static dev.steady.steady.domain.QSteady.steady;
 import static dev.steady.steady.domain.QSteadyPosition.steadyPosition;
 import static dev.steady.steady.domain.QSteadyStack.steadyStack;
 import static dev.steady.steady.infrastructure.util.DynamicQueryUtils.filterCondition;
+import static dev.steady.steady.infrastructure.util.DynamicQueryUtils.orderBySort;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,9 +32,11 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
     public Page<Steady> findAllBySearchCondition(SearchConditionDto condition, Pageable pageable) {
         List<Steady> steadies = jpaQueryFactory
                 .selectFrom(steady)
-                .join(steady.steadyStacks, steadyStack).fetchJoin()
-                .join(steadyPosition).on(steady.id.eq(steadyPosition.steady.id))
+                .innerJoin(steady.steadyStacks, steadyStack)
+                .innerJoin(steadyPosition)
+                .on(steady.id.eq(steadyPosition.steady.id))
                 .where(searchCondition(condition))
+                .orderBy(orderBySort(pageable.getSort()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

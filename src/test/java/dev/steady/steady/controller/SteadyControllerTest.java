@@ -48,7 +48,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -157,8 +156,10 @@ class SteadyControllerTest extends ControllerTestConfig {
     @DisplayName("검색 조건에 따른 전체 조회 결과를 반환한다.")
     void getSteadiesByConditionTest() throws Exception {
         // given
-        var searchRequest = new SteadySearchRequest(0,
+        var searchRequest = new SteadySearchRequest(null,
+                0,
                 "desc",
+                null,
                 "online",
                 "Java",
                 "Backend",
@@ -166,8 +167,10 @@ class SteadyControllerTest extends ControllerTestConfig {
                 "false",
                 "");
         MultiValueMap params = new LinkedMultiValueMap<>() {{
+            add("steadyType", null);
             add("page", "0");
             add("direction", "desc");
+            add("criteria", null);
             add("steadyMode", "online");
             add("stack", "Java");
             add("position", "Backend");
@@ -190,14 +193,16 @@ class SteadyControllerTest extends ControllerTestConfig {
                         resourceDetails().tag("스테디").description("스테디 검색 및 필터링 조회")
                                 .responseSchema(Schema.schema("PageResponse")),
                         queryParameters(
+                                parameterWithName("steadyType").description("스테디 타입").optional(),
                                 parameterWithName("page").description("요청 페이지 번호"),
-                                parameterWithName("direction").description("내림/오름차순"),
-                                parameterWithName("steadyMode").description("스테디 진행 방식"),
-                                parameterWithName("stack").description("스테디 기술 스택"),
-                                parameterWithName("position").description("스테디 포지션"),
-                                parameterWithName("status").description("스테디 상태"),
+                                parameterWithName("direction").description("내림/오름차순").optional(),
+                                parameterWithName("criteria").description("정렬 조건").optional(),
+                                parameterWithName("steadyMode").description("스테디 진행 방식").optional(),
+                                parameterWithName("stack").description("스테디 기술 스택").optional(),
+                                parameterWithName("position").description("스테디 포지션").optional(),
+                                parameterWithName("status").description("스테디 상태").optional(),
                                 parameterWithName("like").description("내 좋아요"),
-                                parameterWithName("keyword").description("검색 키워드")
+                                parameterWithName("keyword").description("검색 키워드").optional()
                         ),
                         responseFields(
                                 fieldWithPath("content[].id").type(NUMBER).description("스테디 id"),
@@ -255,7 +260,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                         resourceDetails().tag("스테디").description("스테디 상세조회")
                                 .responseSchema(Schema.schema("SteadyDetailResponse")),
                         requestHeaders(
-                                headerWithName(AUTHORIZATION).description("토큰")
+                                headerWithName(AUTHORIZATION).description("토큰").optional()
                         ),
                         responseFields(
                                 fieldWithPath("id").type(NUMBER).description("스테디 id"),

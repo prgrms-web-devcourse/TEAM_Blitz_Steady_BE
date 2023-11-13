@@ -27,7 +27,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static dev.steady.steady.domain.SteadyMode.OFFLINE;
 import static dev.steady.steady.domain.SteadyMode.ONLINE;
+import static dev.steady.steady.domain.SteadyType.PROJECT;
 import static dev.steady.steady.domain.SteadyType.STUDY;
 
 public class SteadyFixtures {
@@ -40,6 +42,23 @@ public class SteadyFixtures {
                 .participantLimit(6)
                 .steadyMode(ONLINE)
                 .scheduledPeriod("ONE_WEEK")
+                .deadline(LocalDate.now().plusDays(7))
+                .title("스테디원 모집합니다")
+                .content("많관부")
+                .positions(List.of(positionId))
+                .stacks(List.of(stackId))
+                .questions(List.of("1번 질문", "2번 질문", "3번 질문"))
+                .build();
+    }
+
+    public static SteadyCreateRequest createAnotherSteadyRequest(Long stackId, Long positionId) {
+        return SteadyCreateRequest.builder()
+                .name("테스트 스테디")
+                .bio("무슨 스터디")
+                .type(PROJECT)
+                .participantLimit(6)
+                .steadyMode(OFFLINE)
+                .scheduledPeriod("TWO_WEEK")
                 .deadline(LocalDate.now().plusDays(14))
                 .title("스테디원 모집합니다")
                 .content("많관부")

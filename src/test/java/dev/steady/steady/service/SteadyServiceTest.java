@@ -14,9 +14,11 @@ import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.domain.repository.SteadyStackRepository;
+import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.dto.request.SteadyQuestionUpdateRequest;
+import dev.steady.steady.dto.request.SteadySearchRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.LeaderResponse;
 import dev.steady.steady.dto.response.PageResponse;
@@ -35,6 +37,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -42,6 +45,7 @@ import java.util.List;
 
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.steady.fixture.SteadyFixtures.creatSteady;
+import static dev.steady.steady.fixture.SteadyFixtures.createAnotherSteadyRequest;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyRequest;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyUpdateRequest;
 import static dev.steady.user.fixture.UserFixtures.createAnotherPosition;
@@ -140,6 +144,86 @@ class SteadyServiceTest {
         List<Steady> steadies = steadyRepository.findAll();
         List<SteadySearchResponse> content = response.content();
         assertThat(content.size()).isEqualTo(steadies.size());
+    }
+
+    @Test
+    @DisplayName("스테디 검색 조회 요청을 통해 페이징 처리된 응답을 반환할 수 있다.")
+    void getSteadiesSearchTest() {
+        // given
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
+
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
+        var anotherSteadyRequest = createAnotherSteadyRequest(stack.getId(), position.getId());
+        steadyService.create(steadyRequest, userInfo);
+        steadyService.create(anotherSteadyRequest, userInfo);
+        entityManager.flush();
+        entityManager.clear();
+
+        // when
+        SteadySearchRequest searchRequest = new SteadySearchRequest(null,
+                0,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "false",
+                null);
+        SearchConditionDto condition = SearchConditionDto.from(searchRequest);
+        Pageable pageable = searchRequest.toPageable();
+        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(condition, pageable);
+
+        // then
+        List<Steady> steadies = steadyRepository.findAll();
+        List<SteadySearchResponse> content = response.content();
+        assertAll(
+                () -> assertThat(content.size()).isEqualTo(steadies.size()),
+                () -> assertThat(content.get(0).createdAt()).isAfter(content.get(1).createdAt())
+        );
+    }
+
+    @Test
+    @DisplayName("마감임박순 조건을 통해 페이징 처리된 응답을 반환할 수 있다.")
+    void getSteadiesSearchOrderByDeadlineTest() {
+        // given
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
+
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
+        var anotherSteadyRequest = createAnotherSteadyRequest(stack.getId(), position.getId());
+        steadyService.create(steadyRequest, userInfo);
+        steadyService.create(anotherSteadyRequest, userInfo);
+        entityManager.flush();
+        entityManager.clear();
+
+        // when
+        SteadySearchRequest searchRequest = new SteadySearchRequest(null,
+                0,
+                "asc",
+                "deadline",
+                null,
+                null,
+                null,
+                null,
+                "false",
+                null);
+        SearchConditionDto condition = SearchConditionDto.from(searchRequest);
+        Pageable pageable = searchRequest.toPageable();
+        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(condition, pageable);
+
+        // then
+        List<Steady> steadies = steadyRepository.findAll();
+        List<SteadySearchResponse> content = response.content();
+        assertAll(
+                () -> assertThat(content.size()).isEqualTo(steadies.size()),
+                () -> assertThat(content.get(0).deadline()).isBefore(content.get(1).deadline())
+        );
     }
 
     @Test

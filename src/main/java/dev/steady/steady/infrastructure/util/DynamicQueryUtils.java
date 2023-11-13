@@ -1,6 +1,11 @@
 package dev.steady.steady.infrastructure.util;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.PathBuilder;
+import dev.steady.steady.domain.Steady;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -24,6 +29,16 @@ public class DynamicQueryUtils {
         return Optional.ofNullable(conditionResult)
                 .map(function)
                 .orElse(null);
+    }
+
+    public static OrderSpecifier orderBySort(Sort sort) {
+        for (Sort.Order order : sort) {
+            Order direction = order.isAscending() ? Order.ASC : Order.DESC;
+            String property = order.getProperty();
+            PathBuilder<Steady> target = new PathBuilder<>(Steady.class, "steady");
+            return new OrderSpecifier(direction, target.get(property));
+        }
+        return null;
     }
 
 }
