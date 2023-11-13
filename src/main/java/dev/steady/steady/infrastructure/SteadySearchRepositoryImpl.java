@@ -29,6 +29,7 @@ import static dev.steady.steady.domain.QSteadyPosition.steadyPosition;
 import static dev.steady.steady.domain.QSteadyStack.steadyStack;
 import static dev.steady.steady.domain.SteadyStatus.CLOSED;
 import static dev.steady.steady.domain.SteadyStatus.FINISHED;
+import static dev.steady.steady.domain.SteadyStatus.RECRUITING;
 import static dev.steady.steady.infrastructure.util.DynamicQueryUtils.filterCondition;
 import static dev.steady.steady.infrastructure.util.DynamicQueryUtils.orderBySort;
 
@@ -75,7 +76,7 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
                         isWorkSteady(status),
                         isParticipantUserIdEqual(user)
                 )
-                .orderBy(orderBySort(pageable.getSort(), Participant.class))
+                .orderBy(orderBySort(pageable.getSort(), Participant.class), steady.id.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
@@ -98,7 +99,7 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
     }
 
     private BooleanExpression isWorkSteady(SteadyStatus status) {
-        if (CLOSED == status) {
+        if (status == RECRUITING || status == CLOSED) {
             return steady.status.eq(SteadyStatus.RECRUITING)
                     .or(steady.status.eq(CLOSED));
         }
