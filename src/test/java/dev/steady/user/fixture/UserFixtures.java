@@ -4,6 +4,7 @@ import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
 import dev.steady.user.dto.request.UserCreateRequest;
+import dev.steady.user.dto.request.UserUpdateRequest;
 import dev.steady.user.dto.response.PositionResponse;
 import dev.steady.user.dto.response.PositionsResponse;
 import dev.steady.user.dto.response.StackResponse;
@@ -89,6 +90,16 @@ public class UserFixtures {
                 new PositionResponse(1L, "백엔드"),
                 new PositionResponse(2L, "프론트엔드")
         ));
+    }
+
+    public static UserUpdateRequest createUserUpdateRequest(Long positionId, List<Long> stackIds) {
+        return new UserUpdateRequest(
+                "new_image.jpg",
+                "newNickname",
+                "newBio",
+                positionId,
+                stackIds
+        );
     }
 
 }
