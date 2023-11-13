@@ -675,10 +675,10 @@ class SteadyServiceTest {
         var position = positionRepository.save(createPosition());
         var user = userRepository.save(createFirstUser(position));
         var stack = stackRepository.save(createStack());
-        Steady steady = createSteady(user, List.of(stack), RECRUITING);
-        Steady secondSteady = createSteady(user, List.of(stack), CLOSED);
-        Steady thirdSteady = createSteady(user, List.of(stack), FINISHED);
-        List<Steady> steadies = steadyRepository.saveAll(List.of(steady, secondSteady, thirdSteady));
+        var steady = createSteady(user, List.of(stack), RECRUITING);
+        var secondSteady = createSteady(user, List.of(stack), CLOSED);
+        var thirdSteady = createSteady(user, List.of(stack), FINISHED);
+        var steadies = steadyRepository.saveAll(List.of(steady, secondSteady, thirdSteady));
         //when
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
         UserInfo userInfo = new UserInfo(user.getId());
