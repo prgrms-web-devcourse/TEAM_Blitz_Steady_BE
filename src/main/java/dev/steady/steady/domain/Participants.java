@@ -24,6 +24,9 @@ public class Participants {
     private final List<Participant> steadyParticipants = new ArrayList<>();
     private int participantLimits;
 
+    @OneToMany(mappedBy = "steady", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Participant> steadyParticipants = new ArrayList<>();
+
     public Participants(int participantLimits) {
         this.participantLimits = participantLimits;
     }
