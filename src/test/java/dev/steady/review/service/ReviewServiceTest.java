@@ -102,7 +102,7 @@ class ReviewServiceTest {
                 List.of(1L, 2L)
         );
 
-        var reviewId = reviewService.createReview(1L, request, userInfo);
+        var reviewId = reviewService.createReview(steady.getId(), request, userInfo);
 
         Review review = transactionTemplate.execute(status -> {
             var foundReview = reviewRepository.findById(reviewId).get();
