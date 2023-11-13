@@ -197,7 +197,7 @@ class SteadySearchRepositoryImplTest {
         List<Steady> steadies = steadyRepository.saveAll(List.of(steady, secondSteady, thirdSteady));
         //when
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
-        Slice<MySteadyQueryResponse> mySteadies = queryDslRepository.findMySteadies(RECRUITING, user, pageRequest);
+        Slice<MySteadyQueryResponse> mySteadies = queryDslRepository.findMySteadies(null, user, pageRequest);
         //then
         assertThat(mySteadies.hasNext()).isFalse();
         assertThat(mySteadies.getNumberOfElements()).isEqualTo(steadies.size());
@@ -216,13 +216,13 @@ class SteadySearchRepositoryImplTest {
         List<Steady> steadies = steadyRepository.saveAll(List.of(steady, secondSteady, thirdSteady));
         //when
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
-        Slice<MySteadyQueryResponse> mySteadies = queryDslRepository.findMySteadies(RECRUITING, user, pageRequest);
+        Slice<MySteadyQueryResponse> mySteadies = queryDslRepository.findMySteadies(FINISHED, user, pageRequest);
         //then
         assertThat(mySteadies.hasNext()).isFalse();
         assertThat(mySteadies.getNumberOfElements()).isOne();
     }
 
-    @DisplayName("내가 참여했지만 종료된 스테디를 조회한다.")
+    @DisplayName("내가 참여해 진행중 스테디를 조회한다.")
     @Test
     void findMyNotFinishedSteadies() {
         //given

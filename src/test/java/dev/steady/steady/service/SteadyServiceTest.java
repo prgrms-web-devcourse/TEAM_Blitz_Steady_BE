@@ -1,8 +1,8 @@
 package dev.steady.steady.service;
 
+import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.global.exception.ForbiddenException;
-import dev.steady.global.exception.InvalidStateException;
 import dev.steady.global.exception.NotFoundException;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
@@ -22,28 +22,36 @@ import dev.steady.steady.dto.request.SteadyQuestionUpdateRequest;
 import dev.steady.steady.dto.request.SteadySearchRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.LeaderResponse;
+import dev.steady.steady.dto.response.MySteadyResponse;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadyPositionResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.steady.dto.response.SteadyStackResponse;
+import dev.steady.steady.exception.InvalidStateException;
 import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
+import static dev.steady.steady.domain.SteadyStatus.CLOSED;
+import static dev.steady.steady.domain.SteadyStatus.FINISHED;
+import static dev.steady.steady.domain.SteadyStatus.RECRUITING;
 import static dev.steady.steady.fixture.SteadyFixtures.createAnotherSteadyRequest;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyRequest;
@@ -658,6 +666,31 @@ class SteadyServiceTest {
         // when & then
         assertThatThrownBy(() -> steadyService.deleteSteady(steadyId, anotherUserInfo))
                 .isInstanceOf(ForbiddenException.class);
+    }
+
+    @DisplayName("필터링 조건에 따라 내 스테디를 조회한다.")
+    @Test
+    void findMySteadiesTest() {
+        //given
+        var position = positionRepository.save(createPosition());
+        var user = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        Steady steady = createSteady(user, List.of(stack), RECRUITING);
+        Steady secondSteady = createSteady(user, List.of(stack), CLOSED);
+        Steady thirdSteady = createSteady(user, List.of(stack), FINISHED);
+        List<Steady> steadies = steadyRepository.saveAll(List.of(steady, secondSteady, thirdSteady));
+        //when
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
+        UserInfo userInfo = new UserInfo(user.getId());
+        SliceResponse<MySteadyResponse> response = steadyService.findMySteadies(RECRUITING, userInfo, pageRequest);
+        //then
+        Assertions.assertAll(
+                () -> assertThat(response.hasNext()).isFalse(),
+                () -> assertThat(response.numberOfElements()).isEqualTo(2),
+                () -> assertThat(response.content()).hasSize(2)
+                        .extracting("steadyId")
+                        .contains(steady.getId(), secondSteady.getId())
+        );
     }
 
 }

@@ -180,4 +180,15 @@ public class SteadyFixtures {
         return new Participant(user, steady, false);
     }
 
+    public static SliceResponse<MySteadyResponse> createMySteadyResponse() {
+        return new SliceResponse<>(
+                List.of(
+                        new MySteadyResponse(1L, "스테디 제목", true, LocalDateTime.of(2023, 12, 31, 11, 10)),
+                        new MySteadyResponse(2L, "스테디 제목2", false, LocalDateTime.of(2023, 12, 31, 11, 10))
+                ),
+                2,
+                false
+        );
+    }
+
 }
