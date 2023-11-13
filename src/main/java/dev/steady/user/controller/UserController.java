@@ -3,7 +3,11 @@ package dev.steady.user.controller;
 import dev.steady.auth.domain.Platform;
 import dev.steady.auth.oauth.service.OAuthService;
 import dev.steady.auth.service.AccountService;
+import dev.steady.global.auth.Auth;
+import dev.steady.global.auth.UserInfo;
 import dev.steady.user.dto.request.UserCreateRequest;
+import dev.steady.user.dto.request.UserUpdateRequest;
+import dev.steady.user.dto.response.UserMyDetailResponse;
 import dev.steady.user.dto.response.UserNicknameExistResponse;
 import dev.steady.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,12 @@ public class UserController {
         URI authCodeRequestUrl = oAuthService.getAuthCodeRequestUrlProvider(platform);
 
         return ResponseEntity.created(authCodeRequestUrl).build();
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserMyDetailResponse> getMyUserDetail(@Auth UserInfo userInfo) {
+        UserMyDetailResponse response = userService.getMyUserDetail(userInfo);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/profile/exist")
