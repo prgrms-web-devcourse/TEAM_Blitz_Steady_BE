@@ -40,21 +40,31 @@ class UserServiceTest {
     private UserStackRepository userStackRepository;
 
     @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
     private TransactionTemplate transactionTemplate;
+
+    private Position position;
+
+    @BeforeEach
+    void setUp() {
+        this.position = positionRepository.save(createPosition());
+    }
 
     @AfterEach
     void tearDown() {
         userStackRepository.deleteAll();
+        accountRepository.deleteAll();
         userRepository.deleteAll();
         positionRepository.deleteAll();
         stackRepository.deleteAll();
     }
 
-    @DisplayName("프로필 정보를 입력 받아 유저를 생성한다.")
     @Test
+    @DisplayName("프로필 정보를 입력 받아 유저를 생성한다.")
     void createUser() {
         // given
-        var savedPosition = positionRepository.save(createPosition());
         var stacks = IntStream.range(0, 3)
                 .mapToObj(i -> createStack())
                 .toList();
@@ -62,21 +72,52 @@ class UserServiceTest {
         var stackIds = savedStacks.stream().map(Stack::getId).toList();
 
         // when
-        var request = new UserCreateRequest(1L, "Nickname", savedPosition.getId(), stackIds);
+        var request = new UserCreateRequest(1L, "Nickname", position.getId(), stackIds);
         var userId = userService.createUser(request);
-
-        var userStacks = userStackRepository.findAllByUserId(userId);
-
 
         User user = transactionTemplate.execute(status -> {
             var foundUser = userRepository.findById(userId).get();
             foundUser.getPosition().getName();
             return foundUser;
         });
+        var userStacks = userStackRepository.findAllByUser(user);
 
         assertAll(
                 () -> assertThat(user.getId()).isEqualTo(userId),
                 () -> assertThat(user.getPosition().getName()).isEqualTo(savedPosition.getName()),
+                () -> assertThat(user.getPosition().getName()).isEqualTo(position.getName()),
+                () -> assertThat(userStacks).hasSameSizeAs(request.stackIds())
+        );
+    }
+
+    @Test
+    @DisplayName("내 프로필을 조회할 수 있다.")
+    void getMyUserDetail() {
+        // given
+        var savedUser = userRepository.save(createFirstUser(position));
+        var userInfo = createUserInfo(savedUser.getId());
+        var account = createAccount(savedUser);
+        var savedAccount = accountRepository.save(account);
+
+        // when
+        UserMyDetailResponse response = userService.getMyUserDetail(userInfo);
+        User user = transactionTemplate.execute(status -> {
+            var foundUser = userRepository.findById(userInfo.userId()).get();
+            foundUser.getPosition().getName();
+            return foundUser;
+        });
+        List<UserStack> userStacks = userStackRepository.findAllByUser(user);
+
+        // then
+        assertAll(
+                () -> assertThat(response.platform()).isEqualTo(savedAccount.getPlatform()),
+                () -> assertThat(response.userId()).isEqualTo(user.getId()),
+                () -> assertThat(response.nickname()).isEqualTo(user.getNickname()),
+                () -> assertThat(response.profileImage()).isEqualTo(user.getProfileImage()),
+                () -> assertThat(response.position().name()).isEqualTo(user.getPosition().getName()),
+                () -> assertThat(response.stacks()).hasSameSizeAs(userStacks)
+        );
+    }
                 () -> assertThat(userStacks).hasSameSizeAs(request.stackIds())
         );
     }
