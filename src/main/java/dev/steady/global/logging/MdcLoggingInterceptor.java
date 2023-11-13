@@ -13,8 +13,7 @@ public class MdcLoggingInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (handler instanceof HandlerMethod) {
-            HandlerMethod handlerMethod = (HandlerMethod) handler;
+        if (handler instanceof HandlerMethod handlerMethod) {
             String controllerInfo = getHandlerInfo(handlerMethod);
             String ip = request.getHeader("X-Forwarded-For");
 

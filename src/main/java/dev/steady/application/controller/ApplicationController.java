@@ -40,8 +40,8 @@ public class ApplicationController {
 
     @GetMapping("/steadies/{steadyId}/applications")
     public ResponseEntity<SliceResponse<ApplicationSummaryResponse>> getApplications(@PathVariable Long steadyId,
-                                                                     @Auth UserInfo userInfo,
-                                                                     ApplicationPageRequest request) {
+                                                                                     @Auth UserInfo userInfo,
+                                                                                     ApplicationPageRequest request) {
         Pageable pageable = request.toPageable();
         SliceResponse<ApplicationSummaryResponse> response = applicationService.getApplications(steadyId, userInfo, pageable);
         return ResponseEntity.ok(response);

@@ -1,6 +1,7 @@
 package dev.steady.auth.domain;
 
 import dev.steady.global.entity.BaseEntity;
+import dev.steady.global.exception.InvalidStateException;
 import dev.steady.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,6 +17,8 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import static dev.steady.auth.exception.AuthErrorCode.ACCOUNT_USER_ALREADY_REGISTERED;
 
 @Getter
 @Entity
@@ -50,6 +53,8 @@ public class Account extends BaseEntity {
     public void registerUser(User user) {
         if (this.hasNoUser()) {
             this.user = user;
+        } else {
+            throw new InvalidStateException(ACCOUNT_USER_ALREADY_REGISTERED);
         }
     }
 

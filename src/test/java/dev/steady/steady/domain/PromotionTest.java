@@ -1,6 +1,6 @@
 package dev.steady.steady.domain;
 
-import dev.steady.steady.exception.InvalidStateException;
+import dev.steady.global.exception.InvalidStateException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
