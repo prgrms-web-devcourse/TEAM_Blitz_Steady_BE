@@ -17,9 +17,9 @@ import static dev.steady.steady.exception.SteadyErrorCode.PARTICIPANT_LIMIT_EXCE
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Participants {
 
-    private int participantLimits;
     @OneToMany(mappedBy = "steady", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participant> steadyParticipants = new ArrayList<>();
+    private final List<Participant> steadyParticipants = new ArrayList<>();
+    private int participantLimits;
 
     public Participants(int participantLimits) {
         this.participantLimits = participantLimits;
