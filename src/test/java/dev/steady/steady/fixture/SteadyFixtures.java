@@ -1,5 +1,6 @@
 package dev.steady.steady.fixture;
 
+import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.ScheduledPeriod;
 import dev.steady.steady.domain.Steady;
@@ -10,6 +11,7 @@ import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.SteadyType;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
+import dev.steady.steady.dto.response.MySteadyResponse;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.ParticipantResponse;
 import dev.steady.steady.dto.response.ParticipantsResponse;

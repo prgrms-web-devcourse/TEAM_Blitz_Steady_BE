@@ -48,7 +48,7 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
                 .innerJoin(steadyPosition)
                 .on(steady.id.eq(steadyPosition.steady.id))
                 .where(searchCondition(condition))
-                .orderBy(orderBySort(pageable.getSort()))
+                .orderBy(orderBySort(pageable.getSort(), Steady.class))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
