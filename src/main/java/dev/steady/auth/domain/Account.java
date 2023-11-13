@@ -1,7 +1,7 @@
 package dev.steady.auth.domain;
 
-import dev.steady.auth.exception.DuplicateRequestException;
 import dev.steady.global.entity.BaseEntity;
+import dev.steady.global.exception.InvalidStateException;
 import dev.steady.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,7 +54,7 @@ public class Account extends BaseEntity {
         if (this.hasNoUser()) {
             this.user = user;
         } else {
-            throw new DuplicateRequestException(ACCOUNT_USER_ALREADY_REGISTERED);
+            throw new InvalidStateException(ACCOUNT_USER_ALREADY_REGISTERED);
         }
     }
 
