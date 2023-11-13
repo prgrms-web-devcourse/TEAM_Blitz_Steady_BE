@@ -7,7 +7,6 @@ import dev.steady.steady.domain.Steady;
 import java.util.List;
 
 public record ReviewCreateRequest(
-        Long reviewerId,
         Long revieweeId,
         List<Long> cardIds,
         String comment

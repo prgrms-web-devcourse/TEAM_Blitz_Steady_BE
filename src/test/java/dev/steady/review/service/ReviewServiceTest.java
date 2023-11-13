@@ -68,13 +68,14 @@ class ReviewServiceTest {
         var position = positionRepository.save(createPosition());
         var stack = stackRepository.save(createStack());
 
-        var firstUser = userRepository.save(UserFixtures.createFirstUser(position));
-        var secoundUser = userRepository.save(UserFixtures.createSecondUser(position));
+        var leaderUser = userRepository.save(UserFixtures.createFirstUser(position));
+        var reviewerUser = userRepository.save(UserFixtures.createSecondUser(position));
+        var revieweeUser = userRepository.save(UserFixtures.createThirdUser(position));
 
-        this.steady = steadyRepository.save(createFinishedSteady(firstUser, stack));
+        this.steady = steadyRepository.save(createFinishedSteady(leaderUser, stack));
 
-        this.reviewer = participantRepository.save(createParticipant(firstUser, steady));
-        this.reviewee = participantRepository.save(createParticipant(secoundUser, steady));
+        this.reviewer = participantRepository.save(createParticipant(reviewerUser, steady));
+        this.reviewee = participantRepository.save(createParticipant(revieweeUser, steady));
     }
 
     @AfterEach
@@ -93,20 +94,17 @@ class ReviewServiceTest {
     @Test
     void createReview() {
         // given
-        var userInfo = createUserInfo(reviewer.getUser().getId());
+        var userInfo = createUserInfo(reviewer.getUserId());
 
         // when
         var request = createReviewCreateRequest(
-                reviewer.getId(),
-                reviewee.getId(),
+                reviewee.getUserId(),
                 List.of(1L, 2L)
         );
 
         var reviewId = reviewService.createReview(steady.getId(), request, userInfo);
-
         Review review = transactionTemplate.execute(status -> {
             var foundReview = reviewRepository.findById(reviewId).get();
-            foundReview.getId();
             foundReview.getReviewer();
             foundReview.getReviewee();
             return foundReview;
@@ -132,8 +130,7 @@ class ReviewServiceTest {
         // when
         List<Long> cardIds = List.of(1L, 2L);
         var request = createReviewCreateRequest(
-                reviewer.getId(),
-                reviewee.getId(),
+                reviewee.getUserId(),
                 cardIds
         );
 

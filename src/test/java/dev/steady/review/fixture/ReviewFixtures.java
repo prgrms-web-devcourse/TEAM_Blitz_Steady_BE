@@ -7,9 +7,8 @@ import java.util.List;
 
 public class ReviewFixtures {
 
-    public static ReviewCreateRequest createReviewCreateRequest(Long reviewerId, Long revieweeId, List<Long> cardIds) {
+    public static ReviewCreateRequest createReviewCreateRequest(Long revieweeId, List<Long> cardIds) {
         return new ReviewCreateRequest(
-                reviewerId,
                 revieweeId,
                 cardIds,
                 "리뷰 한 줄 코멘트"

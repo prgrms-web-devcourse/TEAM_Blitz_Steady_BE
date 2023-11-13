@@ -33,31 +33,31 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final SteadyRepository steadyRepository;
-    private final ParticipantRepository participantRepository;
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
     private final UserCardRepository userCardRepository;
 
     @Transactional
     public Long createReview(Long steadyId, ReviewCreateRequest request, UserInfo userInfo) {
-        Long reviewerId = request.reviewerId();
+        Long reviewerId = userInfo.userId();
         Long revieweeId = request.revieweeId();
         if (Objects.equals(revieweeId, reviewerId)) {
             throw new InvalidStateException(REVIEWEE_EQUALS_REVIEWER);
         }
 
-        Long reviewerUserId = getParticipant(reviewerId).getUser().getId();
-        if (!Objects.equals(reviewerUserId, userInfo.userId())) {
-            throw new ForbiddenException(REVIEWER_ID_MISMATCH);
-        }
-
         Steady steady = getSteady(steadyId);
+        Participants participants = steady.getParticipants();
+
         if (!steady.isFinished()) {
             throw new InvalidStateException(STEADY_NOT_FINISHED);
         }
 
-        Participant reviewer = getParticipant(reviewerId);
-        Participant reviewee = getParticipant(revieweeId);
+        Participant reviewer = participants.getParticipantByUserId(reviewerId);
+        Participant reviewee = participants.getParticipantByUserId(revieweeId);
+
+        if (isAlreadyReviewed(reviewer, reviewee, steady)) {
+            throw new InvalidStateException(REVIEW_DUPLICATE);
+        }
 
         Review review = request.toEntity(reviewer, reviewee, steady);
         Review savedReview = reviewRepository.save(review);
@@ -68,7 +68,7 @@ public class ReviewService {
 
     @Transactional
     public List<UserCard> createUserCards(ReviewCreateRequest request) {
-        User reviewee = getParticipant(request.revieweeId()).getUser();
+        User reviewee = userRepository.getUserBy(request.revieweeId());
         List<Card> cards = getCards(request.cardIds());
         List<UserCard> userCards = cards.stream()
                 .map(card -> new UserCard(reviewee, card))

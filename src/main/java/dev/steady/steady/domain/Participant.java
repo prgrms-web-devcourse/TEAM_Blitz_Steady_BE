@@ -48,4 +48,8 @@ public class Participant extends BaseEntity {
         return new Participant(user, steady, false);
     }
 
+    public Long getUserId() {
+        return this.user.getId();
+    }
+
 }
