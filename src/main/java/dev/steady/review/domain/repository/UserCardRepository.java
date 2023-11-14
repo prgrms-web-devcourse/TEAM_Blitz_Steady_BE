@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface UserCardRepository extends JpaRepository<UserCard, Long> {
+
     List<UserCard> findAllByUser(User user);
-    
+
 }
