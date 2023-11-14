@@ -5,7 +5,17 @@ import dev.steady.global.exception.ForbiddenException;
 import dev.steady.global.exception.InvalidStateException;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -145,9 +155,9 @@ public class Steady extends BaseEntity {
         return leader.equals(user);
     }
 
-    public void addParticipant(User user, Participant participant) {
-        validateLeader(user);
-        participants.add(participant);
+    public void addParticipantByLeader(User leader, User member) {
+        validateLeader(leader);
+        participants.add(Participant.createMember(member, this));
         numberOfParticipants = participants.getNumberOfParticipants();
     }
 

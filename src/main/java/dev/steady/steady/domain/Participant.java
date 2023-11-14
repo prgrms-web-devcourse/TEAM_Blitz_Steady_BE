@@ -34,7 +34,7 @@ public class Participant extends BaseEntity {
     @Column(name = "is_leader", nullable = false)
     private boolean isLeader;
 
-    public Participant(User user, Steady steady, boolean isLeader) {
+    private Participant(User user, Steady steady, boolean isLeader) {
         this.user = user;
         this.steady = steady;
         this.isLeader = isLeader;
