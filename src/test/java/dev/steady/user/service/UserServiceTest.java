@@ -79,10 +79,10 @@ class UserServiceTest {
                 .mapToObj(i -> createStack())
                 .toList();
         var savedStacks = stackRepository.saveAll(stacks);
-        var stackIds = savedStacks.stream().map(Stack::getId).toList();
+        var stacksId = savedStacks.stream().map(Stack::getId).toList();
 
         // when
-        var request = new UserCreateRequest(1L, "Nickname", position.getId(), stackIds);
+        var request = new UserCreateRequest(1L, "Nickname", position.getId(), stacksId);
         var userId = userService.createUser(request);
 
         User user = transactionTemplate.execute(status -> {
@@ -95,7 +95,7 @@ class UserServiceTest {
         assertAll(
                 () -> assertThat(user.getId()).isEqualTo(userId),
                 () -> assertThat(user.getPosition().getName()).isEqualTo(position.getName()),
-                () -> assertThat(userStacks).hasSameSizeAs(request.stackIds())
+                () -> assertThat(userStacks).hasSameSizeAs(request.stacksId())
         );
     }
 
@@ -139,10 +139,10 @@ class UserServiceTest {
                 .mapToObj(i -> createStack())
                 .toList();
         var savedStacks = stackRepository.saveAll(stacks);
-        var stackIds = savedStacks.stream().map(Stack::getId).toList();
+        var stacksId = savedStacks.stream().map(Stack::getId).toList();
 
         // when
-        var request = createUserUpdateRequest(newPosition.getId(), stackIds);
+        var request = createUserUpdateRequest(newPosition.getId(), stacksId);
         userService.updateUser(request, userInfo);
         User user = transactionTemplate.execute(status -> {
             var foundUser = userRepository.findById(userInfo.userId()).get();
@@ -157,7 +157,7 @@ class UserServiceTest {
                 () -> assertThat(user.getProfileImage()).isEqualTo(request.profileImage()),
                 () -> assertThat(user.getBio()).isEqualTo(request.bio()),
                 () -> assertThat(user.getPosition().getId()).isEqualTo(newPosition.getId()),
-                () -> assertThat(userStacks).hasSameSizeAs(request.stackIds())
+                () -> assertThat(userStacks).hasSameSizeAs(request.stacksId())
         );
     }
 

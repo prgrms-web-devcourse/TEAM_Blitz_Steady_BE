@@ -46,7 +46,7 @@ public class UserService {
         User user = request.toEntity(position);
         User savedUser = userRepository.save(user);
 
-        List<UserStack> userStacks = createUserStacks(request.stackIds(), savedUser);
+        List<UserStack> userStacks = createUserStacks(request.stacksId(), savedUser);
         userStackRepository.saveAll(userStacks);
 
         return savedUser.getId();
@@ -63,7 +63,7 @@ public class UserService {
         );
 
         userStackRepository.deleteAllByUser(user);
-        List<UserStack> userStacks = createUserStacks(request.stackIds(), user);
+        List<UserStack> userStacks = createUserStacks(request.stacksId(), user);
         userStackRepository.saveAll(userStacks);
     }
 
@@ -76,8 +76,8 @@ public class UserService {
         return stackRepository.getById(stackId);
     }
 
-    private List<Stack> getStacks(List<Long> stackIds) {
-        return stackIds.stream()
+    private List<Stack> getStacks(List<Long> stacksId) {
+        return stacksId.stream()
                 .map(this::getStack)
                 .toList();
     }
@@ -86,8 +86,8 @@ public class UserService {
         return positionRepository.getById(positionId);
     }
 
-    private List<UserStack> createUserStacks(List<Long> stackIds, User user) {
-        List<Stack> stacks = getStacks(stackIds);
+    private List<UserStack> createUserStacks(List<Long> stacksId, User user) {
+        List<Stack> stacks = getStacks(stacksId);
         return stacks.stream()
                 .map(stack -> new UserStack(user, stack))
                 .toList();

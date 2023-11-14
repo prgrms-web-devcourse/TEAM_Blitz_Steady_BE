@@ -92,13 +92,13 @@ public class UserFixtures {
         ));
     }
 
-    public static UserUpdateRequest createUserUpdateRequest(Long positionId, List<Long> stackIds) {
+    public static UserUpdateRequest createUserUpdateRequest(Long positionId, List<Long> stacksId) {
         return new UserUpdateRequest(
                 "new_image.jpg",
                 "newNickname",
                 "newBio",
                 positionId,
-                stackIds
+                stacksId
         );
     }
 

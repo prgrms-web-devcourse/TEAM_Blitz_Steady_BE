@@ -9,7 +9,7 @@ public record UserCreateRequest(
         Long accountId,
         String nickname,
         Long positionId,
-        List<Long> stackIds
+        List<Long> stacksId
 ) {
 
     public User toEntity(Position position) {
