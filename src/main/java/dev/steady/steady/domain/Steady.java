@@ -77,7 +77,7 @@ public class Steady extends BaseEntity {
     private List<SteadyStack> steadyStacks = new ArrayList<>();
 
     @Column(nullable = true)
-    LocalDate finishedAt;
+    private LocalDate finishedAt;
 
     @Builder
     private Steady(String name,
