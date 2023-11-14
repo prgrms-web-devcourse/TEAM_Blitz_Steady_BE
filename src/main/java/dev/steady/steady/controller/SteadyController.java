@@ -78,13 +78,13 @@ public class SteadyController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{steadyId}/steadyQuestions")
+    @GetMapping("/{steadyId}/questions")
     public ResponseEntity<SteadyQuestionsResponse> getSteadyQuestions(@PathVariable Long steadyId) {
         SteadyQuestionsResponse response = steadyService.getSteadyQuestions(steadyId);
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{steadyId}/steadyQuestions")
+    @PatchMapping("/{steadyId}/questions")
     public ResponseEntity<Void> updateSteadyQuestions(@PathVariable Long steadyId,
                                                       @RequestBody SteadyQuestionUpdateRequest request,
                                                       @Auth UserInfo userInfo) {
