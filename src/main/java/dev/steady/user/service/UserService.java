@@ -1,6 +1,5 @@
 package dev.steady.user.service;
 
-import dev.steady.auth.domain.Account;
 import dev.steady.auth.domain.Platform;
 import dev.steady.auth.domain.repository.AccountRepository;
 import dev.steady.global.auth.UserInfo;
@@ -36,7 +35,7 @@ public class UserService {
     public UserMyDetailResponse getMyUserDetail(UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
         List<UserStack> userStacks = userStackRepository.findAllByUser(user);
-        Platform platform = getAccount(user).getPlatform();
+        Platform platform = accountRepository.findByUser(user).getPlatform();
         return UserMyDetailResponse.of(platform, user, userStacks);
     }
 
