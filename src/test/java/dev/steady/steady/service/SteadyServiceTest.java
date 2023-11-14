@@ -414,7 +414,7 @@ class SteadyServiceTest {
         var steadyId = steady.getId();
 
         var anotherUser = userRepository.save(createSecondUser(position));
-        steady.addParticipant(leader, Participant.createMember(anotherUser, steady));
+        steady.addParticipantByLeader(leader, anotherUser);
         entityManager.flush();
         entityManager.clear();
 
@@ -669,7 +669,7 @@ class SteadyServiceTest {
         var anotherUser = userRepository.save(createSecondUser(position));
 
         // when
-        steady.addParticipant(leader, Participant.createMember(anotherUser, steady));
+        steady.addParticipantByLeader(leader, anotherUser);
         entityManager.flush();
         entityManager.clear();
 

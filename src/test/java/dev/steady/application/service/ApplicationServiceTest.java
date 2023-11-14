@@ -187,7 +187,7 @@ class ApplicationServiceTest {
         var userInfo = createUserInfo(leader.getId());
         var request = new ApplicationStatusUpdateRequest(ACCEPTED);
         //when
-        applicationService.updateApplicationStatus(application.getId(), request, userInfo);
+        applicationService.updateStatusOfApplication(application.getId(), request, userInfo);
         //then
         Application foundApplication = applicationRepository.getById(application.getId());
         ApplicationStatus status = foundApplication.getStatus();
@@ -208,7 +208,7 @@ class ApplicationServiceTest {
         //when
         //then
         assertThatThrownBy(() -> {
-            applicationService.updateApplicationStatus(application.getId(), request, userInfo);
+            applicationService.updateStatusOfApplication(application.getId(), request, userInfo);
         }).isInstanceOf(ForbiddenException.class);
     }
 
