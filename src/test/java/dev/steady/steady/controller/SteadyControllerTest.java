@@ -1,17 +1,20 @@
 package dev.steady.steady.controller;
 
 import com.epages.restdocs.apispec.Schema;
+import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.Authentication;
 import dev.steady.global.config.ControllerTestConfig;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.dto.request.SteadyQuestionUpdateRequest;
 import dev.steady.steady.dto.request.SteadySearchRequest;
+import dev.steady.steady.dto.response.MySteadyResponse;
 import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadyQuestionsResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -21,7 +24,14 @@ import java.util.List;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
-import static dev.steady.steady.fixture.SteadyFixtures.*;
+import static dev.steady.steady.domain.SteadyStatus.RECRUITING;
+import static dev.steady.steady.fixture.SteadyFixtures.createMySteadyResponse;
+import static dev.steady.steady.fixture.SteadyFixtures.createParticipantsResponse;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyPageResponse;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyPosition;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyRequest;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyUpdateRequest;
 import static dev.steady.user.fixture.UserFixtures.createPosition;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -138,6 +148,48 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("size").type(NUMBER).description("페이지 크기"),
                                 fieldWithPath("totalPages").type(NUMBER).description("전체 페이지 개수"),
                                 fieldWithPath("totalElements").type(NUMBER).description("전체 개수")
+                        )
+                ))
+                .andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
+    }
+
+    @Test
+    @DisplayName("전체 스테디를 반환한다.")
+    void findMySteadiesTest() throws Exception {
+        // given
+        var userId = 1L;
+        var request = new SteadyPageRequest(0, "desc");
+        var authentication = new Authentication(userId);
+        var userInfo = createUserInfo(userId);
+
+        Pageable pageable = request.toPageable();
+        SliceResponse<MySteadyResponse> response = createMySteadyResponse();
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
+        given(steadyService.findMySteadies(RECRUITING, userInfo, pageable)).willReturn(response);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/steadies/my")
+                        .param("status", "RECRUITING")
+                        .param("page", "0")
+                        .param("direction", "desc")
+                        .header(AUTHORIZATION, TOKEN))
+                .andDo(document("search-my-steady",
+                        resourceDetails().tag("스테디").description("내 스테디 전체 및 필터링 조회")
+                                .responseSchema(Schema.schema("MySteadyResponse")),
+                        queryParameters(
+                                parameterWithName("status").description("스테디 상태"),
+                                parameterWithName("page").description("페이지 넘버"),
+                                parameterWithName("direction").description("내림/오름차순")
+                        ),
+                        responseFields(
+                                fieldWithPath("content[]").type(ARRAY).description("내 스테디 목록"),
+                                fieldWithPath("content[].steadyId").type(NUMBER).description("스테디 식별자"),
+                                fieldWithPath("content[].name").type(STRING).description("스테디 제목"),
+                                fieldWithPath("content[].isLeader").type(BOOLEAN).description("리더 여부"),
+                                fieldWithPath("content[].joinedAt").type(STRING).description("스테디 참여 시간"),
+                                fieldWithPath("numberOfElements").type(NUMBER).description("조회된 스테디 갯수"),
+                                fieldWithPath("hasNext").type(BOOLEAN).description("다음페이지 유무")
                         )
                 ))
                 .andExpect(status().isOk())

@@ -1,5 +1,8 @@
 package dev.steady.steady.fixture;
 
+
+import dev.steady.application.dto.response.SliceResponse;
+import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.ScheduledPeriod;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyMode;
@@ -9,7 +12,11 @@ import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.SteadyType;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
-import dev.steady.steady.dto.response.*;
+import dev.steady.steady.dto.response.MySteadyResponse;
+import dev.steady.steady.dto.response.PageResponse;
+import dev.steady.steady.dto.response.ParticipantResponse;
+import dev.steady.steady.dto.response.ParticipantsResponse;
+import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
@@ -142,6 +149,24 @@ public class SteadyFixtures {
         return steady;
     }
 
+    public static Steady createSteady(User user, List<Stack> stacks, SteadyStatus status) {
+        Steady steady = Steady.builder()
+                .name("스테디 제목")
+                .bio("Bio")
+                .type(STUDY)
+                .participantLimit(5)
+                .steadyMode(SteadyMode.BOTH)
+                .scheduledPeriod(ScheduledPeriod.FIVE_MONTH)
+                .deadline(LocalDate.of(2023, 12, 20))
+                .title("게시글 제목")
+                .content("내용")
+                .user(user)
+                .stacks(stacks)
+                .build();
+        ReflectionTestUtils.setField(steady, "status", status);
+        return steady;
+    }
+
     public static PageResponse<SteadySearchResponse> createSteadyPageResponse(Steady steady, Pageable pageable) {
         Page<Steady> steadies = new PageImpl<>(List.of(steady), pageable, 1);
         return PageResponse.from(steadies.map(SteadySearchResponse::from));
@@ -159,6 +184,17 @@ public class SteadyFixtures {
                 new SteadyQuestionResponse(1L, "누구세요?", 1),
                 new SteadyQuestionResponse(2L, "뭐세요?", 2)
         ));
+    }
+
+    public static SliceResponse<MySteadyResponse> createMySteadyResponse() {
+        return new SliceResponse<>(
+                List.of(
+                        new MySteadyResponse(1L, "스테디 제목", true, LocalDateTime.of(2023, 12, 31, 11, 10)),
+                        new MySteadyResponse(2L, "스테디 제목2", false, LocalDateTime.of(2023, 12, 31, 11, 10))
+                ),
+                2,
+                false
+        );
     }
 
 }
