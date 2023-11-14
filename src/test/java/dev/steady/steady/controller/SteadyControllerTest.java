@@ -11,6 +11,7 @@ import dev.steady.steady.dto.request.SteadySearchRequest;
 import dev.steady.steady.dto.response.MySteadyResponse;
 import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
+import dev.steady.steady.dto.response.SteadyQuestionsResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Pageable;
@@ -24,13 +25,7 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.docume
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.steady.domain.SteadyStatus.RECRUITING;
-import static dev.steady.steady.fixture.SteadyFixtures.createMySteadyResponse;
-import static dev.steady.steady.fixture.SteadyFixtures.createParticipantsResponse;
-import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
-import static dev.steady.steady.fixture.SteadyFixtures.createSteadyPageResponse;
-import static dev.steady.steady.fixture.SteadyFixtures.createSteadyPosition;
-import static dev.steady.steady.fixture.SteadyFixtures.createSteadyRequest;
-import static dev.steady.steady.fixture.SteadyFixtures.createSteadyUpdateRequest;
+import static dev.steady.steady.fixture.SteadyFixtures.*;
 import static dev.steady.user.fixture.UserFixtures.createPosition;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -145,9 +140,6 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("numberOfElements").type(NUMBER).description("현재 페이지 조회된 개수"),
                                 fieldWithPath("page").type(NUMBER).description("현재 페이지"),
                                 fieldWithPath("size").type(NUMBER).description("페이지 크기"),
-                                fieldWithPath("sort.empty").type(BOOLEAN).description("결과 유무"),
-                                fieldWithPath("sort.sorted").type(BOOLEAN).description("정렬 유무"),
-                                fieldWithPath("sort.unsorted").type(BOOLEAN).description("비정렬 유무"),
                                 fieldWithPath("totalPages").type(NUMBER).description("전체 페이지 개수"),
                                 fieldWithPath("totalElements").type(NUMBER).description("전체 개수")
                         )
@@ -267,9 +259,6 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("numberOfElements").type(NUMBER).description("현재 페이지 조회된 개수"),
                                 fieldWithPath("page").type(NUMBER).description("현재 페이지"),
                                 fieldWithPath("size").type(NUMBER).description("페이지 크기"),
-                                fieldWithPath("sort.empty").type(BOOLEAN).description("결과 유무"),
-                                fieldWithPath("sort.sorted").type(BOOLEAN).description("정렬 유무"),
-                                fieldWithPath("sort.unsorted").type(BOOLEAN).description("비정렬 유무"),
                                 fieldWithPath("totalPages").type(NUMBER).description("전체 페이지 개수"),
                                 fieldWithPath("totalElements").type(NUMBER).description("전체 개수")
                         )
@@ -331,11 +320,35 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("stacks[].imageUrl").type(STRING).description("기술 스택 이미지"),
                                 fieldWithPath("isLeader").type(BOOLEAN).description("리더 여부"),
                                 fieldWithPath("isSubmittedUser").type(BOOLEAN).description("신청 여부"),
-                                fieldWithPath("promotionCount").type(NUMBER).description("끌어올리가 남은 횟수")
+                                fieldWithPath("promotionCount").type(NUMBER).description("끌어올리가 남은 횟수"),
+                                fieldWithPath("createdAt").type(STRING).description("스테디 생성일"),
+                                fieldWithPath("finishedAt").type(STRING).description("스테디 종료일").optional(),
+                                fieldWithPath("isReviewEnabled").type(BOOLEAN).description("리뷰 작성 가능 여부")
                         )
                 ))
                 .andExpect(status().isOk())
                 .andExpect(content().string(objectMapper.writeValueAsString(response)));
+    }
+
+    @Test
+    @DisplayName("스테디 식별자를 통해 스테디 질문을 조회할 수 있다.")
+    void getSteadyQuestionsTest() throws Exception {
+        var steadyId = 1L;
+        SteadyQuestionsResponse steadyQuestionsResponse = createSteadyQuestionsResponse();
+
+        given(steadyService.getSteadyQuestions(steadyId)).willReturn(steadyQuestionsResponse);
+
+        mockMvc.perform(get("/api/v1/steadies/{steadyId}/questions", steadyId))
+                .andDo(document("steady-get-steadyQuestions",
+                        resourceDetails().tag("스테디").description("스테디 질문 조회")
+                                .responseSchema(Schema.schema("SteadyQuestionsResponse")),
+                        responseFields(
+                                fieldWithPath("steadyQuestions[].id").type(NUMBER).description("스테디 질문 식별자"),
+                                fieldWithPath("steadyQuestions[].content").type(STRING).description("질문 내용"),
+                                fieldWithPath("steadyQuestions[].sequence").type(NUMBER).description("질문 순서")
+                        )
+                )).andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(steadyQuestionsResponse)));
     }
 
     @Test
@@ -418,7 +431,7 @@ class SteadyControllerTest extends ControllerTestConfig {
         willDoNothing().given(steadyService).updateSteadyQuestions(steadyId, steadyQuestionUpdateRequest, userInfo);
 
         //when & then
-        mockMvc.perform(patch("/api/v1/steadies/{steadyId}/steadyQuestions", steadyId)
+        mockMvc.perform(patch("/api/v1/steadies/{steadyId}/questions", steadyId)
                         .header(AUTHORIZATION, TOKEN)
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(steadyQuestionUpdateRequest)))

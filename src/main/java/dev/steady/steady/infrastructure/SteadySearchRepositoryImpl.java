@@ -108,6 +108,7 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
 
     private BooleanBuilder searchCondition(SearchConditionDto condition) {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
+        booleanBuilder.and(filterCondition(condition.steadyType(), steady.type::eq));
         booleanBuilder.and(filterCondition(condition.steadyMode(), steady.steadyMode::eq));
         booleanBuilder.and(filterCondition(condition.stacks(), steadyStack.stack.name::in));
         booleanBuilder.and(filterCondition(condition.positions(), steadyPosition.position.name::in));

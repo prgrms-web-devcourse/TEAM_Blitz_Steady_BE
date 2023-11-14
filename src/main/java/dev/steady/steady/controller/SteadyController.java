@@ -14,6 +14,7 @@ import dev.steady.steady.dto.response.MySteadyResponse;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
+import dev.steady.steady.dto.response.SteadyQuestionsResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.steady.service.SteadyService;
 import lombok.RequiredArgsConstructor;
@@ -93,7 +94,13 @@ public class SteadyController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{steadyId}/steadyQuestions")
+    @GetMapping("/{steadyId}/questions")
+    public ResponseEntity<SteadyQuestionsResponse> getSteadyQuestions(@PathVariable Long steadyId) {
+        SteadyQuestionsResponse response = steadyService.getSteadyQuestions(steadyId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{steadyId}/questions")
     public ResponseEntity<Void> updateSteadyQuestions(@PathVariable Long steadyId,
                                                       @RequestBody SteadyQuestionUpdateRequest request,
                                                       @Auth UserInfo userInfo) {
