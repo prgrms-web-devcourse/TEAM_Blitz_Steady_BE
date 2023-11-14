@@ -93,8 +93,4 @@ public class UserService {
                 .toList();
     }
 
-    private Account getAccount(User user) {
-        return accountRepository.findByUser(user);
-    }
-
 }
