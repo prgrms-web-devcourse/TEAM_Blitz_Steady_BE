@@ -79,9 +79,8 @@ public class SteadyController {
     }
 
     @GetMapping("/{steadyId}/steadyQuestions")
-    public ResponseEntity<SteadyQuestionsResponse> getSteadyQuestions(@PathVariable Long steadyId,
-                                                                     @Auth UserInfo userInfo) {
-        SteadyQuestionsResponse response = steadyService.getSteadyQuestions(steadyId, userInfo);
+    public ResponseEntity<SteadyQuestionsResponse> getSteadyQuestions(@PathVariable Long steadyId) {
+        SteadyQuestionsResponse response = steadyService.getSteadyQuestions(steadyId);
         return ResponseEntity.ok(response);
     }
 

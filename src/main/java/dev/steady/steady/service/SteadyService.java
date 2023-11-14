@@ -102,7 +102,7 @@ public class SteadyService {
     }
 
     @Transactional(readOnly = true)
-    public SteadyQuestionsResponse getSteadyQuestions(Long steadyId, UserInfo userInfo) {
+    public SteadyQuestionsResponse getSteadyQuestions(Long steadyId) {
         List<SteadyQuestion> steadyQuestions = steadyQuestionRepository.findBySteadyId(steadyId);
         return SteadyQuestionsResponse.from(steadyQuestions);
     }
