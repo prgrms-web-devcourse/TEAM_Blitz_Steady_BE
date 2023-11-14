@@ -275,7 +275,9 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("isLeader").type(BOOLEAN).description("리더 여부"),
                                 fieldWithPath("isSubmittedUser").type(BOOLEAN).description("신청 여부"),
                                 fieldWithPath("promotionCount").type(NUMBER).description("끌어올리가 남은 횟수"),
-                                fieldWithPath("createdAt").type(STRING).description("스테디 생성일")
+                                fieldWithPath("createdAt").type(STRING).description("스테디 생성일"),
+                                fieldWithPath("finishedAt").type(STRING).description("스테디 종료일").optional(),
+                                fieldWithPath("isReviewEnabled").type(BOOLEAN).description("리뷰 작성 가능 여부")
                         )
                 ))
                 .andExpect(status().isOk())
