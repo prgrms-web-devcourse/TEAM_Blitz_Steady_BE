@@ -11,11 +11,14 @@ import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.UserInfo;
+import dev.steady.notification.Notification;
+import dev.steady.notification.NotificationType;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ public class ApplicationService {
     private final UserRepository userRepository;
     private final SteadyRepository steadyRepository;
     private final ApplicationRepository applicationRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     public CreateApplicationResponse createApplication(Long steadyId, List<SurveyResultRequest> request, UserInfo userInfo) {
@@ -44,6 +48,7 @@ public class ApplicationService {
         createSurveyResult(application, request);
 
         Application savedApplication = applicationRepository.save(application);
+        publisher.publishEvent(Notification.createRecruitNotification(steady.getLeader()));
         return CreateApplicationResponse.from(savedApplication);
     }
 
