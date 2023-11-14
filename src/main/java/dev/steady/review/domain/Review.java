@@ -1,5 +1,6 @@
 package dev.steady.review.domain;
 
+import dev.steady.global.entity.BaseEntity;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
 import jakarta.persistence.Column;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "reviews")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Review {
+public class Review extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
