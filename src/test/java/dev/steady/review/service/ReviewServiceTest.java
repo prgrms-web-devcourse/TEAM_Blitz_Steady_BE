@@ -13,7 +13,6 @@ import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
-import dev.steady.user.fixture.UserFixtures;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,10 +27,9 @@ import java.util.stream.IntStream;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.review.fixture.ReviewFixtures.createCard;
 import static dev.steady.review.fixture.ReviewFixtures.createReviewCreateRequest;
+import static dev.steady.steady.domain.Participant.createMember;
 import static dev.steady.steady.fixture.SteadyFixtures.createFinishedSteady;
-import static dev.steady.steady.fixture.SteadyFixtures.createParticipant;
-import static dev.steady.user.fixture.UserFixtures.createPosition;
-import static dev.steady.user.fixture.UserFixtures.createStack;
+import static dev.steady.user.fixture.UserFixtures.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -68,14 +66,14 @@ class ReviewServiceTest {
         var position = positionRepository.save(createPosition());
         var stack = stackRepository.save(createStack());
 
-        var leaderUser = userRepository.save(UserFixtures.createFirstUser(position));
-        var reviewerUser = userRepository.save(UserFixtures.createSecondUser(position));
-        var revieweeUser = userRepository.save(UserFixtures.createThirdUser(position));
+        var leaderUser = userRepository.save(createFirstUser(position));
+        var reviewerUser = userRepository.save(createSecondUser(position));
+        var revieweeUser = userRepository.save(createThirdUser(position));
 
         this.steady = steadyRepository.save(createFinishedSteady(leaderUser, stack));
 
-        this.reviewer = participantRepository.save(createParticipant(reviewerUser, steady));
-        this.reviewee = participantRepository.save(createParticipant(revieweeUser, steady));
+        this.reviewer = participantRepository.save(createMember(reviewerUser, steady));
+        this.reviewee = participantRepository.save(createMember(revieweeUser, steady));
     }
 
     @AfterEach
