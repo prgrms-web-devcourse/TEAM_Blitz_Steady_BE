@@ -270,7 +270,9 @@ class SteadyServiceTest {
                 () -> assertThat(response.isLeader()).isTrue(),
                 () -> assertThat(response.isSubmittedUser()).isFalse(),
                 () -> assertThat(response.promotionCount()).isEqualTo(steady.getPromotionCount()),
-                () -> assertThat(response.createdAt()).isEqualTo(steady.getCreatedAt())
+                () -> assertThat(response.createdAt()).isEqualTo(steady.getCreatedAt()),
+                () -> assertThat(response.finishedAt()).isEqualTo(steady.getFinishedAt()),
+                () -> assertThat(response.isReviewEnabled()).isEqualTo(false)
         );
     }
 
@@ -318,7 +320,9 @@ class SteadyServiceTest {
                 () -> assertThat(response.isLeader()).isFalse(),
                 () -> assertThat(response.isSubmittedUser()).isFalse(),
                 () -> assertThat(response.promotionCount()).isEqualTo(steady.getPromotionCount()),
-                () -> assertThat(response.createdAt()).isEqualTo(steady.getCreatedAt())
+                () -> assertThat(response.createdAt()).isEqualTo(steady.getCreatedAt()),
+                () -> assertThat(response.finishedAt()).isEqualTo(steady.getFinishedAt()),
+                () -> assertThat(response.isReviewEnabled()).isEqualTo(false)
         );
     }
 
@@ -365,7 +369,9 @@ class SteadyServiceTest {
                 () -> assertThat(response.isLeader()).isFalse(),
                 () -> assertThat(response.isSubmittedUser()).isFalse(),
                 () -> assertThat(response.promotionCount()).isEqualTo(steady.getPromotionCount()),
-                () -> assertThat(response.createdAt()).isEqualTo(steady.getCreatedAt())
+                () -> assertThat(response.createdAt()).isEqualTo(steady.getCreatedAt()),
+                () -> assertThat(response.finishedAt()).isEqualTo(steady.getFinishedAt()),
+                () -> assertThat(response.isReviewEnabled()).isEqualTo(false)
         );
     }
 
