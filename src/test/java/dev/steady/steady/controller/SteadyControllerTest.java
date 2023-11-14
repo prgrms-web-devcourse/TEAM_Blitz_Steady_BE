@@ -25,13 +25,7 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.docume
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.steady.domain.SteadyStatus.RECRUITING;
-import static dev.steady.steady.fixture.SteadyFixtures.createMySteadyResponse;
-import static dev.steady.steady.fixture.SteadyFixtures.createParticipantsResponse;
-import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
-import static dev.steady.steady.fixture.SteadyFixtures.createSteadyPageResponse;
-import static dev.steady.steady.fixture.SteadyFixtures.createSteadyPosition;
-import static dev.steady.steady.fixture.SteadyFixtures.createSteadyRequest;
-import static dev.steady.steady.fixture.SteadyFixtures.createSteadyUpdateRequest;
+import static dev.steady.steady.fixture.SteadyFixtures.*;
 import static dev.steady.user.fixture.UserFixtures.createPosition;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -344,7 +338,7 @@ class SteadyControllerTest extends ControllerTestConfig {
 
         given(steadyService.getSteadyQuestions(steadyId)).willReturn(steadyQuestionsResponse);
 
-        mockMvc.perform(get("/api/v1/steadies/{steadyId}/steadyQuestions", steadyId))
+        mockMvc.perform(get("/api/v1/steadies/{steadyId}/questions", steadyId))
                 .andDo(document("steady-get-steadyQuestions",
                         resourceDetails().tag("스테디").description("스테디 질문 조회")
                                 .responseSchema(Schema.schema("SteadyQuestionsResponse")),
@@ -437,7 +431,7 @@ class SteadyControllerTest extends ControllerTestConfig {
         willDoNothing().given(steadyService).updateSteadyQuestions(steadyId, steadyQuestionUpdateRequest, userInfo);
 
         //when & then
-        mockMvc.perform(patch("/api/v1/steadies/{steadyId}/steadyQuestions", steadyId)
+        mockMvc.perform(patch("/api/v1/steadies/{steadyId}/questions", steadyId)
                         .header(AUTHORIZATION, TOKEN)
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(steadyQuestionUpdateRequest)))
