@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
-import static dev.steady.review.fixture.ReviewFixtures.createCard;
-import static dev.steady.review.fixture.ReviewFixtures.createReviewCreateRequest;
+import static dev.steady.review.fixture.ReviewFixture.createCard;
+import static dev.steady.review.fixture.ReviewFixture.createReviewCreateRequest;
 import static dev.steady.steady.domain.Participant.createMember;
 import static dev.steady.steady.fixture.SteadyFixtures.createFinishedSteady;
 import static dev.steady.user.fixture.UserFixtures.*;
