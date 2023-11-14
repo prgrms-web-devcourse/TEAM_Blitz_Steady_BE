@@ -26,6 +26,7 @@ import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadyPositionResponse;
+import dev.steady.steady.dto.response.SteadyQuestionsResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.steady.dto.response.SteadyStackResponse;
 import dev.steady.user.domain.User;
@@ -366,6 +367,27 @@ class SteadyServiceTest {
                 () -> assertThat(response.promotionCount()).isEqualTo(steady.getPromotionCount()),
                 () -> assertThat(response.createdAt()).isEqualTo(steady.getCreatedAt())
         );
+    }
+
+    @Test
+    @DisplayName("스테디 식별자를 통해 스테디 질문을 조회할 수 있다.")
+    void getSteadyQuestionsTest() {
+        // given
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = new UserInfo(leader.getId());
+
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
+        var steadyId = steadyService.create(steadyRequest, userInfo);
+        entityManager.flush();
+        entityManager.clear();
+
+        // when
+        SteadyQuestionsResponse response = steadyService.getSteadyQuestions(steadyId);
+
+        // then
+        assertThat(response.steadyQuestions()).hasSameSizeAs(steadyRequest.questions());
     }
 
     @Test
