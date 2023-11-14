@@ -2,7 +2,6 @@ package dev.steady.steady.fixture;
 
 
 import dev.steady.application.dto.response.SliceResponse;
-import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.ScheduledPeriod;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyMode;
@@ -12,11 +11,7 @@ import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.SteadyType;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
-import dev.steady.steady.dto.response.MySteadyResponse;
-import dev.steady.steady.dto.response.PageResponse;
-import dev.steady.steady.dto.response.ParticipantResponse;
-import dev.steady.steady.dto.response.ParticipantsResponse;
-import dev.steady.steady.dto.response.SteadySearchResponse;
+import dev.steady.steady.dto.response.*;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
