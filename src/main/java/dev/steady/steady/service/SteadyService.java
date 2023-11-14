@@ -17,6 +17,8 @@ import dev.steady.steady.dto.request.SteadyUpdateRequest;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
+import dev.steady.steady.dto.response.SteadyQuestionResponse;
+import dev.steady.steady.dto.response.SteadyQuestionsResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
@@ -97,6 +99,12 @@ public class SteadyService {
         }
 
         return SteadyDetailResponse.of(steady, positions, isLeader, isWaitingApplication);
+    }
+
+    @Transactional(readOnly = true)
+    public SteadyQuestionsResponse getSteadyQuestions(Long steadyId, UserInfo userInfo) {
+        List<SteadyQuestion> steadyQuestions = steadyQuestionRepository.findBySteadyId(steadyId);
+        return SteadyQuestionsResponse.from(steadyQuestions);
     }
 
     @Transactional(readOnly = true)
