@@ -4,7 +4,6 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
-import dev.steady.steady.domain.Steady;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -12,6 +11,8 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+
+import static dev.steady.steady.infrastructure.util.StringConverterUtils.lowercaseFirstLetter;
 
 public class DynamicQueryUtils {
 
@@ -31,11 +32,13 @@ public class DynamicQueryUtils {
                 .orElse(null);
     }
 
-    public static OrderSpecifier orderBySort(Sort sort) {
+    public static <T> OrderSpecifier orderBySort(Sort sort, Class<T> clazz) {
         for (Sort.Order order : sort) {
             Order direction = order.isAscending() ? Order.ASC : Order.DESC;
             String property = order.getProperty();
-            PathBuilder<Steady> target = new PathBuilder<>(Steady.class, "steady");
+
+            String className = lowercaseFirstLetter(clazz.getSimpleName());
+            PathBuilder<T> target = new PathBuilder<>(clazz, className);
             return new OrderSpecifier(direction, target.get(property));
         }
         return null;

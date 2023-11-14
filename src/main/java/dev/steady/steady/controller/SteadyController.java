@@ -1,13 +1,16 @@
 package dev.steady.steady.controller;
 
+import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
+import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.dto.request.SteadyQuestionUpdateRequest;
 import dev.steady.steady.dto.request.SteadySearchRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
+import dev.steady.steady.dto.response.MySteadyResponse;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -45,6 +49,18 @@ public class SteadyController {
     public ResponseEntity<PageResponse<SteadySearchResponse>> getSteadiesPage(SteadyPageRequest request) {
         Pageable pageable = request.toPageable();
         PageResponse<SteadySearchResponse> response = steadyService.getSteadies(pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<SliceResponse<MySteadyResponse>> findMySteadies(@RequestParam String status,
+                                                                          @Auth UserInfo userInfo,
+                                                                          SteadyPageRequest request
+    ) {
+        SteadyStatus steadyStatus = SteadyStatus.from(status);
+        Pageable pageable = request.toPageable();
+
+        SliceResponse<MySteadyResponse> response = steadyService.findMySteadies(steadyStatus, userInfo, pageable);
         return ResponseEntity.ok(response);
     }
 

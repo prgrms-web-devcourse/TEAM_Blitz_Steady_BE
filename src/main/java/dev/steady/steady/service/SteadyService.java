@@ -1,12 +1,14 @@
 package dev.steady.steady.service;
 
 import dev.steady.application.domain.repository.ApplicationRepository;
+import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.global.exception.InvalidStateException;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyPosition;
 import dev.steady.steady.domain.SteadyQuestion;
+import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
@@ -14,6 +16,8 @@ import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyQuestionUpdateRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
+import dev.steady.steady.dto.response.MySteadyQueryResponse;
+import dev.steady.steady.dto.response.MySteadyResponse;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
@@ -27,6 +31,7 @@ import dev.steady.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -163,6 +168,14 @@ public class SteadyService {
         throw new InvalidStateException(STEADY_IS_NOT_EMPTY);
     }
 
+    @Transactional(readOnly = true)
+    public SliceResponse<MySteadyResponse> findMySteadies(SteadyStatus status, UserInfo userInfo, Pageable pageable) {
+        User user = userRepository.getUserBy(userInfo.userId());
+
+        Slice<MySteadyQueryResponse> mySteadies = steadyRepository.findMySteadies(status, user, pageable);
+        Slice<MySteadyResponse> response = mySteadies.map(MySteadyResponse::from);
+        return SliceResponse.from(response);
+    }
     private boolean isWaitingApplication(User user, Steady steady) {
         return applicationRepository.findBySteadyIdAndUserIdAndStatus(steady.getId(), user.getId(), WAITING)
                 .stream()
