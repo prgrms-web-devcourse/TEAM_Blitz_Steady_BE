@@ -5,7 +5,7 @@ import dev.steady.review.dto.ReviewCreateRequest;
 
 import java.util.List;
 
-public class ReviewFixtures {
+public class ReviewFixture {
 
     public static ReviewCreateRequest createReviewCreateRequest(Long revieweeId, List<Long> cardIds) {
         return new ReviewCreateRequest(

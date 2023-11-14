@@ -1,5 +1,8 @@
 package dev.steady.user.service;
 
+import dev.steady.auth.domain.Platform;
+import dev.steady.auth.domain.repository.AccountRepository;
+import dev.steady.global.auth.UserInfo;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
@@ -9,6 +12,8 @@ import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
 import dev.steady.user.domain.repository.UserStackRepository;
 import dev.steady.user.dto.request.UserCreateRequest;
+import dev.steady.user.dto.request.UserUpdateRequest;
+import dev.steady.user.dto.response.UserMyDetailResponse;
 import dev.steady.user.dto.response.UserNicknameExistResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +29,15 @@ public class UserService {
     private final StackRepository stackRepository;
     private final PositionRepository positionRepository;
     private final UserStackRepository userStackRepository;
+    private final AccountRepository accountRepository;
+
+    @Transactional(readOnly = true)
+    public UserMyDetailResponse getMyUserDetail(UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        List<UserStack> userStacks = userStackRepository.findAllByUser(user);
+        Platform platform = accountRepository.findByUser(user).getPlatform();
+        return UserMyDetailResponse.of(platform, user, userStacks);
+    }
 
     @Transactional
     public Long createUser(UserCreateRequest request) {
@@ -36,6 +50,21 @@ public class UserService {
         userStackRepository.saveAll(userStacks);
 
         return savedUser.getId();
+    }
+
+    @Transactional
+    public void updateUser(UserUpdateRequest request, UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        Position updatedPosition = positionRepository.getById(request.positionId());
+        user.update(request.profileImage(),
+                request.nickname(),
+                request.bio(),
+                updatedPosition
+        );
+
+        userStackRepository.deleteAllByUser(user);
+        List<UserStack> userStacks = createUserStacks(request.stackIds(), user);
+        userStackRepository.saveAll(userStacks);
     }
 
     @Transactional(readOnly = true)
