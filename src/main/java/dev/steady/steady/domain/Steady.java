@@ -2,19 +2,10 @@ package dev.steady.steady.domain;
 
 import dev.steady.global.entity.BaseEntity;
 import dev.steady.global.exception.ForbiddenException;
+import dev.steady.global.exception.InvalidStateException;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static dev.steady.steady.exception.SteadyErrorCode.ALREADY_FINISHED;
 import static dev.steady.steady.exception.SteadyErrorCode.LEADER_PERMISSION_NEEDED;
 
 @Entity
@@ -32,6 +24,8 @@ import static dev.steady.steady.exception.SteadyErrorCode.LEADER_PERMISSION_NEED
 @Table(name = "steadies")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Steady extends BaseEntity {
+
+    private static final long REVIEW_POLICY = 2L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -81,6 +75,9 @@ public class Steady extends BaseEntity {
 
     @OneToMany(mappedBy = "steady", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SteadyStack> steadyStacks = new ArrayList<>();
+
+    @Column(nullable = true)
+    LocalDate finishedAt;
 
     @Builder
     private Steady(String name,
@@ -161,7 +158,18 @@ public class Steady extends BaseEntity {
 
     public void finish(User user) {
         validateLeader(user);
+        if (finishedAt != null) {
+            throw new InvalidStateException(ALREADY_FINISHED);
+        }
         this.status = SteadyStatus.FINISHED;
+        this.finishedAt = LocalDate.now();
+    }
+
+    public boolean isReviewEnabled() {
+        if (finishedAt == null) {
+            return false;
+        }
+        return finishedAt.plusMonths(REVIEW_POLICY).isBefore(LocalDate.now());
     }
 
     public int getPromotionCount() {

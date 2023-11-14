@@ -30,7 +30,9 @@ public record SteadyDetailResponse(
         boolean isLeader,
         boolean isSubmittedUser,
         int promotionCount,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        LocalDate finishedAt,
+        boolean isReviewEnabled
 ) {
 
     public static SteadyDetailResponse of(Steady steady, List<SteadyPosition> positions, boolean isLeader, boolean isSubmittedUser) {
@@ -57,7 +59,9 @@ public record SteadyDetailResponse(
                 isLeader,
                 isSubmittedUser,
                 steady.getPromotionCount(),
-                steady.getCreatedAt()
+                steady.getCreatedAt(),
+                steady.getFinishedAt(),
+                steady.isReviewEnabled()
         );
     }
 
