@@ -54,14 +54,13 @@ public class SteadyController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity<SliceResponse<MySteadyResponse>> findMySteadies(@RequestParam String status,
+    public ResponseEntity<SliceResponse<MySteadyResponse>> findMySteadies(@RequestParam(required = false) SteadyStatus status,
                                                                           @Auth UserInfo userInfo,
                                                                           SteadyPageRequest request
     ) {
-        SteadyStatus steadyStatus = SteadyStatus.from(status);
         Pageable pageable = request.toPageable();
 
-        SliceResponse<MySteadyResponse> response = steadyService.findMySteadies(steadyStatus, userInfo, pageable);
+        SliceResponse<MySteadyResponse> response = steadyService.findMySteadies(status, userInfo, pageable);
         return ResponseEntity.ok(response);
     }
 
