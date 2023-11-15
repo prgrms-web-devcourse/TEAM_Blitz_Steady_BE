@@ -223,7 +223,6 @@ class UserServiceTest {
                 () -> assertThat(response.user().stacks()).hasSameSizeAs(userStacks),
                 () -> assertThat(response.reviews()).hasSameSizeAs(reviews),
                 () -> assertThat(response.userCards()).hasSameSizeAs(userCards)
-
         );
     }
 
