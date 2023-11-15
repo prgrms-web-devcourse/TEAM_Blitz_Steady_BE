@@ -193,6 +193,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("다른 사용자의 정보와 카드, 리뷰 코멘트를 조회할 수 있다. ")
     void getOtherUserDetail() {
         // given
         var reviewerUser = userRepository.save(createFirstUser(position));
