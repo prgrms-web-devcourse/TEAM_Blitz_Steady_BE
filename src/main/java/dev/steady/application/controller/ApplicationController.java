@@ -58,7 +58,7 @@ public class ApplicationController {
     public void updateApplicationStatus(@PathVariable Long applicationId,
                                         @RequestBody ApplicationStatusUpdateRequest request,
                                         @Auth UserInfo userInfo) {
-        applicationService.updateApplicationStatus(applicationId, request, userInfo);
+        applicationService.updateStatusOfApplication(applicationId, request, userInfo);
     }
 
 }

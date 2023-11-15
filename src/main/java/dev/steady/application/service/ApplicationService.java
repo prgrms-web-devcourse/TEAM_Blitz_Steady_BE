@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static dev.steady.application.domain.ApplicationStatus.ACCEPTED;
 import static dev.steady.application.domain.ApplicationStatus.WAITING;
 
 @Service
@@ -67,12 +68,21 @@ public class ApplicationService {
     }
 
     @Transactional
-    public void updateApplicationStatus(Long applicationId,
-                                        ApplicationStatusUpdateRequest request,
-                                        UserInfo userInfo) {
-        User user = userRepository.getUserBy(userInfo.userId());
+    public void updateStatusOfApplication(Long applicationId,
+                                          ApplicationStatusUpdateRequest request,
+                                          UserInfo userInfo) {
+        User leader = userRepository.getUserBy(userInfo.userId());
         Application application = applicationRepository.getById(applicationId);
-        application.updateStatus(request.status(), user);
+        application.updateStatus(request.status(), leader);
+        if (request.status() == ACCEPTED) {
+            addParticipant(application, leader);
+        }
+    }
+
+    private void addParticipant(Application application, User leader) {
+        Steady steady = application.getSteady();
+        User user = application.getUser();
+        steady.addParticipantByLeader(leader, user);
     }
 
     private List<SurveyResult> createSurveyResult(Application application, List<SurveyResultRequest> surveys) {
