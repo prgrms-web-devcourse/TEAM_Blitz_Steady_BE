@@ -3,6 +3,9 @@ package dev.steady.user.service;
 import dev.steady.auth.domain.Platform;
 import dev.steady.auth.domain.repository.AccountRepository;
 import dev.steady.global.auth.UserInfo;
+import dev.steady.review.dto.response.UserCardResponse;
+import dev.steady.review.infrastructure.ReviewQueryRepository;
+import dev.steady.review.infrastructure.UserCardQueryRepository;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
@@ -13,8 +16,10 @@ import dev.steady.user.domain.repository.UserRepository;
 import dev.steady.user.domain.repository.UserStackRepository;
 import dev.steady.user.dto.request.UserCreateRequest;
 import dev.steady.user.dto.request.UserUpdateRequest;
+import dev.steady.user.dto.response.UserDetailResponse;
 import dev.steady.user.dto.response.UserMyDetailResponse;
 import dev.steady.user.dto.response.UserNicknameExistResponse;
+import dev.steady.user.dto.response.UserOtherDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +35,8 @@ public class UserService {
     private final PositionRepository positionRepository;
     private final UserStackRepository userStackRepository;
     private final AccountRepository accountRepository;
+    private final UserCardQueryRepository userCardQueryRepository;
+    private final ReviewQueryRepository reviewQueryRepository;
 
     @Transactional(readOnly = true)
     public UserMyDetailResponse getMyUserDetail(UserInfo userInfo) {
@@ -65,6 +72,21 @@ public class UserService {
         userStackRepository.deleteAllByUser(user);
         List<UserStack> userStacks = createUserStacks(request.stacksId(), user);
         userStackRepository.saveAll(userStacks);
+    }
+
+    @Transactional(readOnly = true)
+    public UserOtherDetailResponse getOtherUserDetail(Long userId) {
+        User user = userRepository.getUserBy(userId);
+        List<UserStack> userStacks = userStackRepository.findAllByUser(user);
+        UserDetailResponse userDetailResponse = UserDetailResponse.of(user, userStacks);
+        List<UserCardResponse> userCardResponses = userCardQueryRepository.findCardCountByUser(user);
+        List<String> reviews = reviewQueryRepository.findPublicCommentsByRevieweeUser(user);
+
+        return UserOtherDetailResponse.of(
+                userDetailResponse,
+                userCardResponses,
+                reviews
+        );
     }
 
     @Transactional(readOnly = true)
