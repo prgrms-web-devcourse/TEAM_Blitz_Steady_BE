@@ -21,7 +21,6 @@ import dev.steady.steady.dto.response.MySteadyResponse;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
-import dev.steady.steady.dto.response.SteadyQuestionResponse;
 import dev.steady.steady.dto.response.SteadyQuestionsResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.user.domain.Position;
@@ -184,6 +183,7 @@ public class SteadyService {
         Slice<MySteadyResponse> response = mySteadies.map(MySteadyResponse::from);
         return SliceResponse.from(response);
     }
+
     private boolean isWaitingApplication(User user, Steady steady) {
         return applicationRepository.findBySteadyIdAndUserIdAndStatus(steady.getId(), user.getId(), WAITING)
                 .stream()
