@@ -24,8 +24,7 @@ import java.util.Objects;
 
 import static dev.steady.review.exception.ReviewErrorCode.REVIEWEE_EQUALS_REVIEWER;
 import static dev.steady.review.exception.ReviewErrorCode.REVIEW_DUPLICATE;
-import static dev.steady.review.exception.ReviewErrorCode.REVIEW_NOT_ENABLED_PERIOD;
-import static dev.steady.review.exception.ReviewErrorCode.STEADY_NOT_FINISHED;
+import static dev.steady.review.exception.ReviewErrorCode.REVIEW_NOT_ENABLED;
 
 @Service
 @RequiredArgsConstructor
@@ -48,12 +47,8 @@ public class ReviewService {
         Steady steady = getSteady(steadyId);
         Participants participants = steady.getParticipants();
 
-        if (!steady.isFinished()) {
-            throw new InvalidStateException(STEADY_NOT_FINISHED);
-        }
-
         if (!steady.isReviewEnabled()) {
-            throw new InvalidStateException(REVIEW_NOT_ENABLED_PERIOD);
+            throw new InvalidStateException(REVIEW_NOT_ENABLED);
         }
 
         Participant reviewer = participants.getParticipantByUserId(reviewerId);
@@ -80,6 +75,14 @@ public class ReviewService {
         userCardRepository.saveAll(userCards);
     }
 
+    public boolean isAlreadyReviewed(Participant reviewer, Participant reviewee, Steady steady) {
+        return reviewRepository.existsByReviewerAndRevieweeAndSteady(
+                reviewer,
+                reviewee,
+                steady
+        );
+    }
+
     private List<Card> getCards(List<Long> cardIds) {
         return cardIds.stream()
                 .map(this::getCard)
@@ -92,14 +95,6 @@ public class ReviewService {
 
     private Steady getSteady(Long steadyId) {
         return steadyRepository.getSteady(steadyId);
-    }
-
-    private boolean isAlreadyReviewed(Participant reviewer, Participant reviewee, Steady steady) {
-        return reviewRepository.existsByReviewerAndRevieweeAndSteady(
-                reviewer,
-                reviewee,
-                steady
-        );
     }
 
 }
