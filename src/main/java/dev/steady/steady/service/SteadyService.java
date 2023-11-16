@@ -107,8 +107,9 @@ public class SteadyService {
 
     @Transactional(readOnly = true)
     public SteadyQuestionsResponse getSteadyQuestions(Long steadyId) {
+        Steady steady = steadyRepository.getSteady(steadyId);
         List<SteadyQuestion> steadyQuestions = steadyQuestionRepository.findBySteadyId(steadyId);
-        return SteadyQuestionsResponse.from(steadyQuestions);
+        return SteadyQuestionsResponse.of(steady, steadyQuestions);
     }
 
     @Transactional(readOnly = true)
