@@ -55,6 +55,7 @@ import static dev.steady.steady.domain.SteadyStatus.FINISHED;
 import static dev.steady.steady.domain.SteadyStatus.RECRUITING;
 import static dev.steady.steady.fixture.SteadyFixtures.createAnotherSteadyRequest;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyQuestion;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyRequest;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteadyUpdateRequest;
 import static dev.steady.user.fixture.UserFixtures.createAnotherPosition;
@@ -388,18 +389,21 @@ class SteadyServiceTest {
         var position = positionRepository.save(createPosition());
         var leader = userRepository.save(createFirstUser(position));
         var stack = stackRepository.save(createStack());
-        var userInfo = new UserInfo(leader.getId());
 
-        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
-        var steadyId = steadyService.create(steadyRequest, userInfo);
+        Steady steady = steadyRepository.save(createSteady(leader, stack));
+        List<String> questions = List.of("질문1", "질문2");
+        steadyQuestionRepository.saveAll(createSteadyQuestion(steady, questions));
         entityManager.flush();
         entityManager.clear();
 
         // when
-        SteadyQuestionsResponse response = steadyService.getSteadyQuestions(steadyId);
+        SteadyQuestionsResponse response = steadyService.getSteadyQuestions(steady.getId());
 
         // then
-        assertThat(response.steadyQuestions()).hasSameSizeAs(steadyRequest.questions());
+        Assertions.assertAll(
+                () -> assertThat(response.steadyQuestions()).hasSameSizeAs(questions),
+                () -> assertThat(response.steadyName()).isEqualTo(steady.getName())
+        );
     }
 
     @Test

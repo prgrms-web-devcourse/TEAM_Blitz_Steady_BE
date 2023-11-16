@@ -350,6 +350,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                         resourceDetails().tag("스테디").description("스테디 질문 조회")
                                 .responseSchema(Schema.schema("SteadyQuestionsResponse")),
                         responseFields(
+                                fieldWithPath("steadyName").type(STRING).description("스테디 제목"),
                                 fieldWithPath("steadyQuestions[].id").type(NUMBER).description("스테디 질문 식별자"),
                                 fieldWithPath("steadyQuestions[].content").type(STRING).description("질문 내용"),
                                 fieldWithPath("steadyQuestions[].sequence").type(NUMBER).description("질문 순서")
