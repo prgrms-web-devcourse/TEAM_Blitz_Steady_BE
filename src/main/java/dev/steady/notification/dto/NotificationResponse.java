@@ -1,6 +1,6 @@
 package dev.steady.notification.dto;
 
-import dev.steady.notification.domain.NotificationEntity;
+import dev.steady.notification.domain.Notification;
 import dev.steady.notification.domain.NotificationType;
 
 public record NotificationResponse(
@@ -11,7 +11,7 @@ public record NotificationResponse(
         boolean isRead
 ) {
 
-    public static NotificationResponse from(NotificationEntity entity) {
+    public static NotificationResponse from(Notification entity) {
         return new NotificationResponse(entity.getId(),
                 entity.getType(),
                 entity.getContent(),

@@ -1,6 +1,6 @@
 package dev.steady.notification.fixture;
 
-import dev.steady.notification.domain.NotificationEntity;
+import dev.steady.notification.domain.Notification;
 import dev.steady.notification.domain.NotificationType;
 import dev.steady.notification.dto.NotificationResponse;
 import dev.steady.notification.dto.NotificationsResponse;
@@ -10,8 +10,8 @@ import java.util.List;
 
 public class NotificationFixture {
 
-    public static NotificationEntity createFreshApplicationNoti(User receiver) {
-        return NotificationEntity.builder()
+    public static Notification createFreshApplicationNoti(User receiver) {
+        return Notification.builder()
                 .type(NotificationType.FRESH_APPLICATION)
                 .content("알림 내용")
                 .redirectUri("리다이렉트 uri")
@@ -19,8 +19,8 @@ public class NotificationFixture {
                 .build();
     }
 
-    public static NotificationEntity createApplicationResultNoti(User receiver) {
-        return NotificationEntity.builder()
+    public static Notification createApplicationResultNoti(User receiver) {
+        return Notification.builder()
                 .type(NotificationType.APPLICATION_RESULT)
                 .content("알림 내용")
                 .redirectUri("리다이렉트 uri")

@@ -5,8 +5,9 @@ import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
 import dev.steady.application.service.ApplicationService;
 import dev.steady.global.exception.NotFoundException;
+import dev.steady.notification.domain.ApplicationResultNotificationStrategy;
+import dev.steady.notification.domain.FreshApplicationNotificationStrategy;
 import dev.steady.notification.domain.Notification;
-import dev.steady.notification.domain.NotificationEntity;
 import dev.steady.notification.domain.repository.NotificationRepository;
 import dev.steady.notification.dto.NotificationsResponse;
 import dev.steady.steady.domain.repository.SteadyRepository;
@@ -95,13 +96,13 @@ class NotificationServiceTest {
     void createNewApplicationNotificationTest() {
         // given
         var steady = steadyRepository.save(createSteady(leader, stack));
-        var freshApplicationNoti = Notification.createFreshApplicationNoti(steady);
+        var freshApplicationNoti = new FreshApplicationNotificationStrategy(steady);
 
         // when
         notificationService.create(freshApplicationNoti);
 
         // then
-        NotificationEntity notification = notificationRepository.findByReceiverId(leader.getId()).get(0);
+        Notification notification = notificationRepository.findByReceiverId(leader.getId()).get(0);
         assertAll(
                 () -> assertThat(notification.getContent()).isEqualTo(getFreshApplicationMessage(steady.getName())),
                 () -> assertThat(notification.getRedirectUri()).isEqualTo(freshApplicationNoti.getRedirectUri())
@@ -116,13 +117,13 @@ class NotificationServiceTest {
         var user = userRepository.save(createSecondUser(position));
         var application = createApplication(user, steady);
         application.updateStatus(ApplicationStatus.ACCEPTED, leader);
-        var applicationResultNoti = Notification.createApplicationResultNoti(application);
+        var applicationResultNoti = new ApplicationResultNotificationStrategy(application);
 
         // when
         notificationService.create(applicationResultNoti);
 
         // then
-        NotificationEntity notification = notificationRepository.findByReceiverId(user.getId()).get(0);
+        Notification notification = notificationRepository.findByReceiverId(user.getId()).get(0);
         assertAll(
                 () -> assertThat(notification.getContent()).isEqualTo(getApplicationResultMessage(steady.getName(), application.getStatus())),
                 () -> assertThat(notification.getRedirectUri()).isEqualTo(applicationResultNoti.getRedirectUri())
@@ -142,7 +143,7 @@ class NotificationServiceTest {
         applicationService.createApplication(steady.getId(), surveyResultRequests, userInfo);
 
         //then
-        NotificationEntity notification = notificationRepository.findByReceiverId(leader.getId()).get(0);
+        Notification notification = notificationRepository.findByReceiverId(leader.getId()).get(0);
         assertAll(
                 () -> assertThat(notification).isNotNull(),
                 () -> assertThat(notification.getReceiver().getId()).isEqualTo(leader.getId())
@@ -163,7 +164,7 @@ class NotificationServiceTest {
         applicationService.updateStatusOfApplication(application.getId(), request, userInfo);
 
         //then
-        NotificationEntity notification = notificationRepository.findByReceiverId(user.getId()).get(0);
+        Notification notification = notificationRepository.findByReceiverId(user.getId()).get(0);
         assertAll(
                 () -> assertThat(notification).isNotNull(),
                 () -> assertThat(notification.getReceiver().getId()).isEqualTo(user.getId())
@@ -199,7 +200,7 @@ class NotificationServiceTest {
         notificationService.readNotification(notification.getId(), userInfo);
 
         // then
-        NotificationEntity readNotification = notificationRepository.getById(notification.getId());
+        Notification readNotification = notificationRepository.getById(notification.getId());
         assertThat(readNotification.isRead()).isTrue();
     }
 
@@ -216,7 +217,7 @@ class NotificationServiceTest {
         notificationService.readNotifications(userInfo);
 
         // then
-        List<NotificationEntity> notifications = notificationRepository.findByReceiverId(user.getId());
+        List<Notification> notifications = notificationRepository.findByReceiverId(user.getId());
         assertThat(notifications).extracting("isRead").containsOnly(true);
     }
 
@@ -226,7 +227,7 @@ class NotificationServiceTest {
         // given
         var user = userRepository.save(createSecondUser(position));
         var userInfo = createUserInfo(user.getId());
-        NotificationEntity notification = notificationRepository.save(createFreshApplicationNoti(user));
+        Notification notification = notificationRepository.save(createFreshApplicationNoti(user));
 
         // when
         notificationService.deleteNotification(notification.getId(), userInfo);

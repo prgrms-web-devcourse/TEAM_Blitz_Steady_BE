@@ -2,7 +2,7 @@ package dev.steady.notification.service;
 
 import dev.steady.global.auth.UserInfo;
 import dev.steady.notification.domain.Notification;
-import dev.steady.notification.domain.NotificationEntity;
+import dev.steady.notification.domain.NotificationStrategy;
 import dev.steady.notification.domain.repository.NotificationRepository;
 import dev.steady.notification.dto.NotificationsResponse;
 import dev.steady.user.domain.User;
@@ -22,29 +22,29 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void create(Notification notification) {
-        NotificationEntity entity = notification.toEntity();
-        notificationRepository.save(entity);
+    public void create(NotificationStrategy notificationStrategy) {
+        Notification notification = notificationStrategy.toEntity();
+        notificationRepository.save(notification);
     }
 
     @Transactional(readOnly = true)
     public NotificationsResponse getNotifications(UserInfo userInfo) {
         User receiver = userRepository.getUserBy(userInfo.userId());
-        List<NotificationEntity> notifications = notificationRepository.findByReceiverId(receiver.getId());
+        List<Notification> notifications = notificationRepository.findByReceiverId(receiver.getId());
         return NotificationsResponse.from(notifications);
     }
 
     @Transactional
     public void readNotification(Long notificationId, UserInfo userInfo) {
         userRepository.getUserBy(userInfo.userId());
-        NotificationEntity notification = notificationRepository.getById(notificationId);
+        Notification notification = notificationRepository.getById(notificationId);
         notification.read();
     }
 
     @Transactional
     public void readNotifications(UserInfo userInfo) {
         User receiver = userRepository.getUserBy(userInfo.userId());
-        List<NotificationEntity> notifications = notificationRepository.findByReceiverId(receiver.getId());
+        List<Notification> notifications = notificationRepository.findByReceiverId(receiver.getId());
         notifications.forEach(v -> v.read());
     }
 

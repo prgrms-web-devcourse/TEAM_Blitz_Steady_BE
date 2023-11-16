@@ -1,36 +1,58 @@
 package dev.steady.notification.domain;
 
-import dev.steady.application.domain.Application;
-import dev.steady.steady.domain.Steady;
+import dev.steady.global.entity.BaseEntity;
 import dev.steady.user.domain.User;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class Notification {
+@Entity
+@Getter
+@Table(name = "notifications")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Notification extends BaseEntity {
 
-    private final User receiver;
-    private final NotificationType type;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public static Notification createFreshApplicationNoti(Steady steady) {
-        return new FreshApplicationNotification(steady.getLeader(), steady);
+    @Column(nullable = false)
+    private NotificationType type;
+
+    @Column(nullable = false)
+    private String content;
+
+    @Column(nullable = false)
+    private String redirectUri;
+
+    @Column(nullable = false)
+    private boolean isRead;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User receiver;
+
+    @Builder
+    private Notification(NotificationType type, String content, String redirectUri, User receiver) {
+        this.type = type;
+        this.content = content;
+        this.redirectUri = redirectUri;
+        this.isRead = false;
+        this.receiver = receiver;
     }
 
-    public static Notification createApplicationResultNoti(Application application) {
-        return new ApplicationResultNotification(application.getUser(), application.getSteady(), application.getStatus());
-    }
-
-    public abstract String getMessage();
-
-    public abstract String getRedirectUri();
-
-    public NotificationEntity toEntity() {
-        return NotificationEntity.builder()
-                .type(type)
-                .content(getMessage())
-                .redirectUri(getRedirectUri())
-                .receiver(receiver)
-                .build();
+    public void read() {
+        this.isRead = true;
     }
 
 }

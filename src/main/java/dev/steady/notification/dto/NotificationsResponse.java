@@ -1,6 +1,6 @@
 package dev.steady.notification.dto;
 
-import dev.steady.notification.domain.NotificationEntity;
+import dev.steady.notification.domain.Notification;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ public record NotificationsResponse(
         long freshCount
 ) {
 
-    public static NotificationsResponse from(List<NotificationEntity> notifications) {
+    public static NotificationsResponse from(List<Notification> notifications) {
         List<NotificationResponse> response = notifications.stream()
                 .map(NotificationResponse::from)
                 .toList();
