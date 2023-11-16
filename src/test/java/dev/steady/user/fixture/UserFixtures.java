@@ -1,5 +1,6 @@
 package dev.steady.user.fixture;
 
+import dev.steady.auth.domain.Platform;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
@@ -9,6 +10,7 @@ import dev.steady.user.dto.response.PositionResponse;
 import dev.steady.user.dto.response.PositionsResponse;
 import dev.steady.user.dto.response.StackResponse;
 import dev.steady.user.dto.response.StacksResponse;
+import dev.steady.user.dto.response.UserMyDetailResponse;
 
 import java.util.List;
 
@@ -100,6 +102,20 @@ public class UserFixtures {
                 positionId,
                 stacksId
         );
+    }
+
+    public static UserMyDetailResponse createUserMyDetailResponse(Platform platform) {
+        return UserMyDetailResponse.builder()
+                .platform(platform)
+                .userId(1L)
+                .nickname("꼬부기")
+                .profileImage("profile.png")
+                .bio("안녕하세요")
+                .position(new PositionResponse(1L, "백엔드"))
+                .stacks(List.of(
+                        new StackResponse(1L, "Java", "java.jpg"),
+                        new StackResponse(2L, "JavaScript", "javascript.jpeg")))
+                .build();
     }
 
 }

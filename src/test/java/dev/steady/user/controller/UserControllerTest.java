@@ -1,19 +1,26 @@
 package dev.steady.user.controller;
 
 import com.epages.restdocs.apispec.Schema;
+import dev.steady.auth.domain.Platform;
+import dev.steady.global.auth.Authentication;
 import dev.steady.global.config.ControllerTestConfig;
 import dev.steady.user.dto.response.UserNicknameExistResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static dev.steady.auth.domain.Platform.KAKAO;
 import static dev.steady.auth.fixture.OAuthFixture.createAuthCodeRequestUrl;
+import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.user.fixture.UserFixtures.createUserCreateRequest;
+import static dev.steady.user.fixture.UserFixtures.createUserMyDetailResponse;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -23,8 +30,10 @@ import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseBody;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -68,6 +77,7 @@ class UserControllerTest extends ControllerTestConfig {
         var nickname = "닉네임";
         var response = new UserNicknameExistResponse(true);
         given(userService.existsByNickname(nickname)).willReturn(response);
+
         // when, then
         mockMvc.perform(get("/api/v1/user/profile/exist")
                         .queryParam("nickname", nickname))
@@ -81,6 +91,41 @@ class UserControllerTest extends ControllerTestConfig {
                 ))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(objectMapper.writeValueAsString(response)));
+    }
+
+    @ParameterizedTest
+    @EnumSource(Platform.class)
+    @DisplayName("내 프로필을 조회할 수 있다.")
+    void getMyProfileDetail(Platform platform) throws Exception {
+        // given
+        var userId = 1L;
+        var userInfo = createUserInfo(userId);
+        var auth = new Authentication(userId);
+        var response = createUserMyDetailResponse(platform);
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
+
+        // when, then
+        when(userService.getMyUserDetail(userInfo)).thenReturn(response);
+        mockMvc.perform(get("/api/v1/user/profile")
+                        .header(AUTHORIZATION, TOKEN)
+                )
+                .andDo(document("user-v1-get-my",
+                        resourceDetails().tag("사용자").description("내 프로필 조회")
+                                .responseSchema(Schema.schema("UserMyDetailResponse")),
+                        responseFields(
+                                fieldWithPath("platform").type(STRING).description("소셜 계정 플랫폼"),
+                                fieldWithPath("userId").type(NUMBER).description("사용자 식별자"),
+                                fieldWithPath("profileImage").type(STRING).description("사용자 프로필 이미지 URL"),
+                                fieldWithPath("nickname").type(STRING).description("사용자 닉네임"),
+                                fieldWithPath("bio").type(STRING).description("사용자 한 줄 소개"),
+                                fieldWithPath("position.id").type(NUMBER).description("관심 포지션 식별자"),
+                                fieldWithPath("position.name").type(STRING).description("관심 포지션 이름"),
+                                fieldWithPath("stacks[].id").type(NUMBER).description("관심 스택 식별자"),
+                                fieldWithPath("stacks[].name").type(STRING).description("관심 스택 이름"),
+                                fieldWithPath("stacks[].imageUrl").type(STRING).description("관심 스택 이미지 URL")
+                        )
+                )).andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
     }
 
 }
