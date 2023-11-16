@@ -29,7 +29,11 @@ import static dev.steady.review.fixture.ReviewFixture.createCard;
 import static dev.steady.review.fixture.ReviewFixture.createReviewCreateRequest;
 import static dev.steady.steady.domain.Participant.createMember;
 import static dev.steady.steady.fixture.SteadyFixtures.createFinishedSteady;
-import static dev.steady.user.fixture.UserFixtures.*;
+import static dev.steady.user.fixture.UserFixtures.createFirstUser;
+import static dev.steady.user.fixture.UserFixtures.createPosition;
+import static dev.steady.user.fixture.UserFixtures.createSecondUser;
+import static dev.steady.user.fixture.UserFixtures.createStack;
+import static dev.steady.user.fixture.UserFixtures.createThirdUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 

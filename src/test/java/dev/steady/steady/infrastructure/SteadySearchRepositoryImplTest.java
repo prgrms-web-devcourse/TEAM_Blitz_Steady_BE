@@ -2,7 +2,6 @@ package dev.steady.steady.infrastructure;
 
 import dev.steady.global.config.JpaConfig;
 import dev.steady.global.config.QueryDslConfig;
-import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;

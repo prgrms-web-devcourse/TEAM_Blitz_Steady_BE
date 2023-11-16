@@ -25,7 +25,14 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.docume
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.steady.domain.SteadyStatus.RECRUITING;
-import static dev.steady.steady.fixture.SteadyFixtures.*;
+import static dev.steady.steady.fixture.SteadyFixtures.createMySteadyResponse;
+import static dev.steady.steady.fixture.SteadyFixtures.createParticipantsResponse;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyPageResponse;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyPosition;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyQuestionsResponse;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyRequest;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteadyUpdateRequest;
 import static dev.steady.user.fixture.UserFixtures.createPosition;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;

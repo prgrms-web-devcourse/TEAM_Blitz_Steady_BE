@@ -55,7 +55,7 @@ class UserControllerTest extends ControllerTestConfig {
                                 fieldWithPath("accountId").type(NUMBER).description("계정 id"),
                                 fieldWithPath("nickname").type(STRING).description("사용자 닉네임"),
                                 fieldWithPath("positionId").type(NUMBER).description("사용자 포지션"),
-                                fieldWithPath("stackIds").type(ARRAY).description("사용자 기술 스택")
+                                fieldWithPath("stacksId").type(ARRAY).description("사용자 기술 스택")
                         )
                 ))
                 .andExpect(header().string("Location", authCodeRequestUrl.toString()));

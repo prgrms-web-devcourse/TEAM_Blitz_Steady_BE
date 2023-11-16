@@ -7,6 +7,6 @@ public record UserUpdateRequest(
         String nickname,
         String bio,
         Long positionId,
-        List<Long> stackIds
+        List<Long> stacksId
 ) {
 }
