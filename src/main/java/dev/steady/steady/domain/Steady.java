@@ -179,7 +179,7 @@ public class Steady extends BaseEntity {
         if (finishedAt == null) {
             return false;
         }
-        return finishedAt.plusMonths(REVIEW_POLICY).isBefore(LocalDate.now());
+        return finishedAt.plusMonths(REVIEW_POLICY).isAfter(LocalDate.now());
     }
 
     public int getPromotionCount() {

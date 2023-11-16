@@ -52,7 +52,7 @@ public class ReviewService {
             throw new InvalidStateException(STEADY_NOT_FINISHED);
         }
 
-        if (steady.isReviewEnabled()) {
+        if (!steady.isReviewEnabled()) {
             throw new InvalidStateException(REVIEW_NOT_ENABLED_PERIOD);
         }
 
