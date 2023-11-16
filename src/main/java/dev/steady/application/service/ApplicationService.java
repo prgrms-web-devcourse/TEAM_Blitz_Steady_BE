@@ -11,7 +11,9 @@ import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.UserInfo;
-import dev.steady.notification.domain.Notification;
+import dev.steady.notification.domain.ApplicationResultNotificationStrategy;
+import dev.steady.notification.domain.FreshApplicationNotificationStrategy;
+import dev.steady.notification.domain.NotificationStrategy;
 import dev.steady.notification.service.NotificationService;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.repository.SteadyRepository;
@@ -49,7 +51,7 @@ public class ApplicationService {
         createSurveyResult(application, request);
 
         Application savedApplication = applicationRepository.save(application);
-        createNotificationEntity(Notification.createFreshApplicationNoti(steady));
+        createNotification(new FreshApplicationNotificationStrategy(steady));
         return CreateApplicationResponse.from(savedApplication);
     }
 
@@ -83,7 +85,7 @@ public class ApplicationService {
         if (request.status() == ACCEPTED) {
             addParticipant(application, leader);
         }
-        createNotificationEntity(Notification.createApplicationResultNoti(application));
+        createNotification(new ApplicationResultNotificationStrategy(application));
     }
 
     private void addParticipant(Application application, User leader) {
@@ -101,9 +103,9 @@ public class ApplicationService {
                 .toList();
     }
 
-    private void createNotificationEntity(Notification notification) {
+    private void createNotification(NotificationStrategy notificationStrategy) {
         try {
-            notificationService.create(notification);
+            notificationService.create(notificationStrategy);
         } catch (Exception exception) {
             log.warn("알림 생성 오류", exception);
         }

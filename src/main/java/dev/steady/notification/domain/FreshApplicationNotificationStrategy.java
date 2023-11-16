@@ -3,12 +3,12 @@ package dev.steady.notification.domain;
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
 
-public class FreshApplicationNotification extends Notification {
+public class FreshApplicationNotificationStrategy extends NotificationStrategy {
 
     private final Steady steady;
 
-    public FreshApplicationNotification(User receiver, Steady steady) {
-        super(receiver, NotificationType.FRESH_APPLICATION);
+    public FreshApplicationNotificationStrategy(Steady steady) {
+        super(steady.getLeader(), NotificationType.FRESH_APPLICATION);
         this.steady = steady;
     }
 

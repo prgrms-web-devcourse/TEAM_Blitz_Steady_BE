@@ -1,18 +1,19 @@
 package dev.steady.notification.domain;
 
+import dev.steady.application.domain.Application;
 import dev.steady.application.domain.ApplicationStatus;
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
 
-public class ApplicationResultNotification extends Notification {
+public class ApplicationResultNotificationStrategy extends NotificationStrategy {
 
     private final Steady steady;
     private final ApplicationStatus status;
 
-    public ApplicationResultNotification(User receiver, Steady steady, ApplicationStatus status) {
-        super(receiver, NotificationType.APPLICATION_RESULT);
-        this.steady = steady;
-        this.status = status;
+    public ApplicationResultNotificationStrategy(Application application) {
+        super(application.getUser(), NotificationType.APPLICATION_RESULT);
+        this.steady = application.getSteady();
+        this.status = application.getStatus();
     }
 
     @Override
