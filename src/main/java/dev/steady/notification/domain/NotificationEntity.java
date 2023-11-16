@@ -1,5 +1,6 @@
-package dev.steady.notification;
+package dev.steady.notification.domain;
 
+import dev.steady.global.entity.BaseEntity;
 import dev.steady.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,22 +8,19 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import static dev.steady.notification.NotificationType.APPLICATION;
-import static dev.steady.notification.NotificationType.CHAT;
-import static dev.steady.notification.NotificationType.COMMENT;
-import static dev.steady.notification.NotificationType.RECRUITMENT;
 
 @Entity
 @Getter
 @Table(name = "notifications")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notification {
+public class NotificationEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,20 +39,20 @@ public class Notification {
     private boolean isRead;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "user_id")
+    @JoinColumn(name = "user_id")
     private User receiver;
 
-    private Notification(User receiver, NotificationType type) {
-        this.receiver = receiver;
+    @Builder
+    private NotificationEntity(NotificationType type, String content, String redirectUri, User receiver) {
         this.type = type;
+        this.content = content;
+        this.redirectUri = redirectUri;
+        this.isRead = false;
+        this.receiver = receiver;
     }
 
-    public static Notification createRecruitNotification(User receiver) {
-        return new Notification(receiver, RECRUITMENT);
-    }
-
-    public static Notification createApplicationNotification(User receiver) {
-        return new Notification(receiver, APPLICATION);
+    public void read() {
+        this.isRead = true;
     }
 
 }
