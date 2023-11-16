@@ -20,6 +20,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,7 +31,8 @@ import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.review.fixture.ReviewFixture.createCard;
 import static dev.steady.review.fixture.ReviewFixture.createReviewCreateRequest;
 import static dev.steady.steady.domain.Participant.createMember;
-import static dev.steady.steady.fixture.SteadyFixtures.createFinishedSteady;
+import static dev.steady.steady.domain.SteadyStatus.FINISHED;
+import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
 import static dev.steady.user.fixture.UserFixtures.createFirstUser;
 import static dev.steady.user.fixture.UserFixtures.createPosition;
 import static dev.steady.user.fixture.UserFixtures.createSecondUser;
@@ -57,22 +60,28 @@ class ReviewServiceTest {
     @Autowired
     private UserCardRepository userCardRepository;
     @Autowired
+    private TransactionTemplate transactionTemplate;
+    @Autowired
     private PositionRepository positionRepository;
     @Autowired
     private StackRepository stackRepository;
 
-    private Stack stack;
     private User leader;
     private User reviewerUser;
     private User revieweeUser;
+    private List<Stack> stacks;
 
     @BeforeEach
     void setUp() {
         var position = positionRepository.save(createPosition());
-        this.stack = stackRepository.save(createStack());
         this.leader = userRepository.save(createFirstUser(position));
         this.reviewerUser = userRepository.save(createSecondUser(position));
         this.revieweeUser = userRepository.save(createThirdUser(position));
+        this.stacks = stackRepository.saveAll(
+                IntStream.range(0, 3)
+                        .mapToObj(i -> createStack())
+                        .toList()
+        );
     }
 
     @AfterEach
@@ -92,10 +101,13 @@ class ReviewServiceTest {
     void createReview() {
         // given
         var userInfo = createUserInfo(reviewerUser.getId());
-        var steady = steadyRepository.save(createFinishedSteady(leader, stack, LocalDate.now()));
 
-        var reviewer = participantRepository.save(createMember(reviewerUser, steady));
-        var reviewee = participantRepository.save(createMember(revieweeUser, steady));
+        var steady = createSteady(leader, stacks, FINISHED);
+        ReflectionTestUtils.setField(steady, "finishedAt", LocalDate.now());
+        var savedSteady = steadyRepository.save(steady);
+
+        var reviewer = participantRepository.save(createMember(reviewerUser, savedSteady));
+        var reviewee = participantRepository.save(createMember(revieweeUser, savedSteady));
 
         var request = createReviewCreateRequest(
                 reviewee.getUserId(),
@@ -119,10 +131,13 @@ class ReviewServiceTest {
     void createReviewAfterReviewEnabledPeriod() {
         // given
         var userInfo = createUserInfo(reviewerUser.getId());
+        var steady = createSteady(leader, stacks, FINISHED);
         var finishedAt = LocalDate.now().minusMonths(3);
-        var steady = steadyRepository.save(createFinishedSteady(leader, stack, finishedAt));
-        var reviewer = participantRepository.save(createMember(reviewerUser, steady));
-        var reviewee = participantRepository.save(createMember(revieweeUser, steady));
+        ReflectionTestUtils.setField(steady, "finishedAt", finishedAt);
+        var savedSteady = steadyRepository.save(steady);
+
+        participantRepository.save(createMember(reviewerUser, savedSteady));
+        var reviewee = participantRepository.save(createMember(revieweeUser, savedSteady));
         var request = createReviewCreateRequest(
                 reviewee.getUserId(),
                 List.of(1L, 2L)
@@ -143,7 +158,7 @@ class ReviewServiceTest {
                 .toList();
         cardRepository.saveAll(cards);
 
-        var steady = steadyRepository.save(createFinishedSteady(reviewerUser, stack, LocalDate.now()));
+        var steady = steadyRepository.save(createSteady(reviewerUser, stacks, FINISHED));
         var reviewee = participantRepository.save(createMember(revieweeUser, steady));
 
         // when
