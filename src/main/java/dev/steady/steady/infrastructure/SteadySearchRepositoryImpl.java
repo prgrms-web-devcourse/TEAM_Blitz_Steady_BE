@@ -51,6 +51,7 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
                 .orderBy(orderBySort(pageable.getSort(), Steady.class))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .distinct()
                 .fetch();
 
         JPAQuery<Long> count = jpaQueryFactory

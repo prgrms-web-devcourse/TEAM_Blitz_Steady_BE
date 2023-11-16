@@ -11,11 +11,16 @@ import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.UserInfo;
+import dev.steady.notification.domain.ApplicationResultNotificationStrategy;
+import dev.steady.notification.domain.FreshApplicationNotificationStrategy;
+import dev.steady.notification.domain.NotificationStrategy;
+import dev.steady.notification.service.NotificationService;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -27,6 +32,7 @@ import java.util.stream.IntStream;
 import static dev.steady.application.domain.ApplicationStatus.ACCEPTED;
 import static dev.steady.application.domain.ApplicationStatus.WAITING;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ApplicationService {
@@ -34,6 +40,7 @@ public class ApplicationService {
     private final UserRepository userRepository;
     private final SteadyRepository steadyRepository;
     private final ApplicationRepository applicationRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public CreateApplicationResponse createApplication(Long steadyId, List<SurveyResultRequest> request, UserInfo userInfo) {
@@ -44,6 +51,7 @@ public class ApplicationService {
         createSurveyResult(application, request);
 
         Application savedApplication = applicationRepository.save(application);
+        createNotification(new FreshApplicationNotificationStrategy(steady));
         return CreateApplicationResponse.from(savedApplication);
     }
 
@@ -77,6 +85,7 @@ public class ApplicationService {
         if (request.status() == ACCEPTED) {
             addParticipant(application, leader);
         }
+        createNotification(new ApplicationResultNotificationStrategy(application));
     }
 
     private void addParticipant(Application application, User leader) {
@@ -92,6 +101,14 @@ public class ApplicationService {
                         surveys.get(index).answer(),
                         index))
                 .toList();
+    }
+
+    private void createNotification(NotificationStrategy notificationStrategy) {
+        try {
+            notificationService.create(notificationStrategy);
+        } catch (Exception exception) {
+            log.warn("알림 생성 오류", exception);
+        }
     }
 
 }

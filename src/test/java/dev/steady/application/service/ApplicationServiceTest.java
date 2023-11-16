@@ -9,6 +9,7 @@ import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.exception.ForbiddenException;
+import dev.steady.notification.domain.repository.NotificationRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
@@ -64,6 +65,9 @@ class ApplicationServiceTest {
     @Autowired
     private ApplicationRepository applicationRepository;
 
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     private Position position;
     private User leader;
     private Stack stack;
@@ -77,6 +81,7 @@ class ApplicationServiceTest {
 
     @AfterEach
     void tearDown() {
+        notificationRepository.deleteAll();
         applicationRepository.deleteAll();
         steadyRepository.deleteAll();
         userRepository.deleteAll();
