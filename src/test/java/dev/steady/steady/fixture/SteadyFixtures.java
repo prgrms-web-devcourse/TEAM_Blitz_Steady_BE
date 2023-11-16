@@ -181,7 +181,9 @@ public class SteadyFixtures {
     }
 
     public static SteadyQuestionsResponse createSteadyQuestionsResponse() {
-        return new SteadyQuestionsResponse(List.of(
+        return new SteadyQuestionsResponse(
+                "스터디 제목",
+                List.of(
                 new SteadyQuestionResponse(1L, "누구세요?", 1),
                 new SteadyQuestionResponse(2L, "뭐세요?", 2)
         ));
