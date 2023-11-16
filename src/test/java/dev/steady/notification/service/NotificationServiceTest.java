@@ -31,7 +31,8 @@ import static dev.steady.application.fixture.SurveyResultFixture.createSurveyRes
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.notification.domain.NotificationMessage.getApplicationResultMessage;
 import static dev.steady.notification.domain.NotificationMessage.getFreshApplicationMessage;
-import static dev.steady.notification.fixture.NotificationFixture.*;
+import static dev.steady.notification.fixture.NotificationFixture.createApplicationResultNoti;
+import static dev.steady.notification.fixture.NotificationFixture.createFreshApplicationNoti;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
 import static dev.steady.user.fixture.UserFixtures.createFirstUser;
 import static dev.steady.user.fixture.UserFixtures.createPosition;
