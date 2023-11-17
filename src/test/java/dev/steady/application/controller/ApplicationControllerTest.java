@@ -102,7 +102,8 @@ class ApplicationControllerTest extends ControllerTestConfig {
                                 ),
                                 responseFields(
                                         fieldWithPath("content").description("신청서 목록"),
-                                        fieldWithPath("content[].id").description("신청서 식별자"),
+                                        fieldWithPath("content[].applicationId").description("신청서 식별자"),
+                                        fieldWithPath("content[].userId").description("유저 식별자"),
                                         fieldWithPath("content[].nickname").description("신청자 닉네임"),
                                         fieldWithPath("content[].profileImage").description("신청자 프로필 사진"),
                                         fieldWithPath("numberOfElements").description("목록의 갯수"),
