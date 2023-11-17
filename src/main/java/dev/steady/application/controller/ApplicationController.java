@@ -55,10 +55,11 @@ public class ApplicationController {
     }
 
     @PatchMapping("/applications/{applicationId}/status")
-    public void updateApplicationStatus(@PathVariable Long applicationId,
+    public ResponseEntity<Void> updateApplicationStatus(@PathVariable Long applicationId,
                                         @RequestBody ApplicationStatusUpdateRequest request,
                                         @Auth UserInfo userInfo) {
         applicationService.updateStatusOfApplication(applicationId, request, userInfo);
+        return ResponseEntity.noContent().build();
     }
 
 }

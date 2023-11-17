@@ -156,14 +156,14 @@ class ApplicationControllerTest extends ControllerTestConfig {
 
         when(jwtResolver.getAuthentication(TOKEN)).thenReturn(auth);
 
-        mockMvc.perform(patch("/applications/{applicationId}/status", applicationId)
+        mockMvc.perform(patch("/api/v1/applications/{applicationId}/status", applicationId)
                         .contentType(APPLICATION_JSON)
                         .header(AUTHORIZATION, TOKEN)
                         .content(objectMapper.writeValueAsString(request))
                 )
                 .andDo(document("application-status-change",
                                 resourceDetails().tag("신청서").description("신청서 상태 변경")
-                                        .requestSchema(Schema.schema("/applications/{applicationId}/status")),
+                                        .requestSchema(Schema.schema("ApplicationStatusUpdateRequest")),
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION).description("토큰")
                                 ),
@@ -171,7 +171,7 @@ class ApplicationControllerTest extends ControllerTestConfig {
                                         fieldWithPath("status").type(STRING).description("신청서의 상태")
                                 )
                         )
-                );
+                ).andExpect(status().isNoContent());
     }
 
 }
