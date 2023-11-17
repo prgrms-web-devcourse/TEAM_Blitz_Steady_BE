@@ -54,12 +54,15 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
                 .distinct()
                 .fetch();
 
-        JPAQuery<Long> count = jpaQueryFactory
-                .select(steady.count())
-                .from(steady)
-                .where(searchCondition(condition));
+        JPAQuery<Steady> count = jpaQueryFactory
+                .selectFrom(steady)
+                .innerJoin(steady.steadyStacks, steadyStack)
+                .innerJoin(steadyPosition)
+                .on(steady.id.eq(steadyPosition.steady.id))
+                .where(searchCondition(condition))
+                .distinct();
         // TODO: 2023-11-04 좋아요 (북마크) 구현된다면 where 조건 추가
-        return PageableExecutionUtils.getPage(steadies, pageable, count::fetchOne);
+        return PageableExecutionUtils.getPage(steadies, pageable, count::fetchCount);
     }
 
     @Override
