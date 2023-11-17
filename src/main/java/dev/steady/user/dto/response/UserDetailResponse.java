@@ -2,9 +2,11 @@ package dev.steady.user.dto.response;
 
 import dev.steady.user.domain.User;
 import dev.steady.user.domain.UserStack;
+import lombok.Builder;
 
 import java.util.List;
 
+@Builder
 public record UserDetailResponse(
         Long userId,
         String profileImage,
@@ -20,14 +22,14 @@ public record UserDetailResponse(
                 .map(userStack -> StackResponse.from(userStack.getStack()))
                 .toList();
 
-        return new UserDetailResponse(
-                user.getId(),
-                user.getProfileImage(),
-                user.getNickname(),
-                user.getBio(),
-                position,
-                stacks
-        );
+        return UserDetailResponse.builder()
+                .userId(user.getId())
+                .profileImage(user.getProfileImage())
+                .nickname(user.getNickname())
+                .bio(user.getBio())
+                .position(position)
+                .stacks(stacks)
+                .build();
     }
 
 }
