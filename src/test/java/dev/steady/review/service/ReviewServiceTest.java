@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -59,8 +58,6 @@ class ReviewServiceTest {
     private CardRepository cardRepository;
     @Autowired
     private UserCardRepository userCardRepository;
-    @Autowired
-    private TransactionTemplate transactionTemplate;
     @Autowired
     private PositionRepository positionRepository;
     @Autowired
@@ -162,10 +159,10 @@ class ReviewServiceTest {
         var reviewee = participantRepository.save(createMember(revieweeUser, steady));
 
         // when
-        List<Long> cardIds = List.of(1L, 2L);
+        List<Long> cardsId = List.of(1L, 2L);
         var request = createReviewCreateRequest(
                 reviewee.getUserId(),
-                cardIds
+                cardsId
         );
 
         reviewService.createUserCards(request);
@@ -173,7 +170,7 @@ class ReviewServiceTest {
 
         // then
         assertAll(
-                () -> assertThat(userCards).hasSameSizeAs(cardIds)
+                () -> assertThat(userCards).hasSameSizeAs(cardsId)
         );
     }
 

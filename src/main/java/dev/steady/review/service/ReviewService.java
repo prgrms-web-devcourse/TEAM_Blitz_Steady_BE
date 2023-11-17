@@ -67,7 +67,7 @@ public class ReviewService {
     @Transactional
     public void createUserCards(ReviewCreateRequest request) {
         User reviewee = userRepository.getUserBy(request.revieweeId());
-        List<Card> cards = getCards(request.cardIds());
+        List<Card> cards = getCards(request.cardsId());
         List<UserCard> userCards = cards.stream()
                 .map(card -> new UserCard(reviewee, card))
                 .toList();
@@ -83,8 +83,8 @@ public class ReviewService {
         );
     }
 
-    private List<Card> getCards(List<Long> cardIds) {
-        return cardIds.stream()
+    private List<Card> getCards(List<Long> cardsId) {
+        return cardsId.stream()
                 .map(this::getCard)
                 .toList();
     }
