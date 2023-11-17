@@ -75,7 +75,7 @@ public class ReviewService {
         userCardRepository.saveAll(userCards);
     }
 
-    public boolean isAlreadyReviewed(Participant reviewer, Participant reviewee, Steady steady) {
+    private boolean isAlreadyReviewed(Participant reviewer, Participant reviewee, Steady steady) {
         return reviewRepository.existsByReviewerAndRevieweeAndSteady(
                 reviewer,
                 reviewee,
