@@ -18,6 +18,8 @@ import static dev.steady.auth.fixture.OAuthFixture.createAuthCodeRequestUrl;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.user.fixture.UserFixtures.createUserCreateRequest;
 import static dev.steady.user.fixture.UserFixtures.createUserMyDetailResponse;
+import static dev.steady.user.fixture.UserFixtures.createUserOtherDetailResponse;
+import static dev.steady.user.fixture.UserFixtures.createUserUpdateRequest;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -123,6 +125,40 @@ class UserControllerTest extends ControllerTestConfig {
                                 fieldWithPath("stacks[].id").type(NUMBER).description("관심 스택 식별자"),
                                 fieldWithPath("stacks[].name").type(STRING).description("관심 스택 이름"),
                                 fieldWithPath("stacks[].imageUrl").type(STRING).description("관심 스택 이미지 URL")
+                        )
+                )).andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
+    }
+
+    @Test
+    @DisplayName("타인의 프로필을 조회할 수 있다.")
+    void getOtherUserDetail() throws Exception {
+        // given
+        var userId = 2L;
+        var response = createUserOtherDetailResponse();
+        given(userService.getOtherUserDetail(userId)).willReturn(response);
+
+        // when, then
+        mockMvc.perform(get("/api/v1/user/{userId}/profile", userId)
+                        .contentType(APPLICATION_JSON)
+                )
+                .andDo(document("user-v1-get-otherProfile",
+                        resourceDetails().tag("사용자").description("타인의 프로필 조회")
+                                .responseSchema(Schema.schema("UserOtherDetailResponse")),
+                        responseFields(
+                                fieldWithPath("user.userId").type(NUMBER).description("사용자 식별자"),
+                                fieldWithPath("user.profileImage").type(STRING).description("사용자 프로필 이미지 URL"),
+                                fieldWithPath("user.nickname").type(STRING).description("사용자 닉네임"),
+                                fieldWithPath("user.bio").type(STRING).description("사용자 한 줄 소개"),
+                                fieldWithPath("user.position.id").type(NUMBER).description("관심 포지션 식별자"),
+                                fieldWithPath("user.position.name").type(STRING).description("관심 포지션 이름"),
+                                fieldWithPath("user.stacks[].id").type(NUMBER).description("관심 스택 식별자"),
+                                fieldWithPath("user.stacks[].name").type(STRING).description("관심 스택 이름"),
+                                fieldWithPath("user.stacks[].imageUrl").type(STRING).description("관심 스택 이미지 URL"),
+                                fieldWithPath("userCards[].cardId").type(NUMBER).description("카드 식별자"),
+                                fieldWithPath("userCards[].content").type(STRING).description("카드 내용"),
+                                fieldWithPath("userCards[].count").type(NUMBER).description("사용자가 받은 카드 개수"),
+                                fieldWithPath("reviews").type(ARRAY).description("사용자가 받은 리뷰 코멘트")
                         )
                 )).andExpect(status().isOk())
                 .andExpect(content().string(objectMapper.writeValueAsString(response)));
