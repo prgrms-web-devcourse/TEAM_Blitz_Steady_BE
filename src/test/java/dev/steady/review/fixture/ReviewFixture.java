@@ -12,10 +12,10 @@ import java.util.List;
 
 public class ReviewFixture {
 
-    public static ReviewCreateRequest createReviewCreateRequest(Long revieweeId, List<Long> cardIds) {
+    public static ReviewCreateRequest createReviewCreateRequest(Long revieweeId, List<Long> cardsId) {
         return new ReviewCreateRequest(
                 revieweeId,
-                cardIds,
+                cardsId,
                 "리뷰 한 줄 코멘트"
         );
     }

@@ -24,7 +24,7 @@ import java.util.Objects;
 
 import static dev.steady.review.exception.ReviewErrorCode.REVIEWEE_EQUALS_REVIEWER;
 import static dev.steady.review.exception.ReviewErrorCode.REVIEW_DUPLICATE;
-import static dev.steady.review.exception.ReviewErrorCode.STEADY_NOT_FINISHED;
+import static dev.steady.review.exception.ReviewErrorCode.REVIEW_NOT_ENABLED;
 
 @Service
 @RequiredArgsConstructor
@@ -47,8 +47,8 @@ public class ReviewService {
         Steady steady = getSteady(steadyId);
         Participants participants = steady.getParticipants();
 
-        if (!steady.isFinished()) {
-            throw new InvalidStateException(STEADY_NOT_FINISHED);
+        if (!steady.isReviewEnabled()) {
+            throw new InvalidStateException(REVIEW_NOT_ENABLED);
         }
 
         Participant reviewer = participants.getParticipantByUserId(reviewerId);
@@ -67,7 +67,7 @@ public class ReviewService {
     @Transactional
     public void createUserCards(ReviewCreateRequest request) {
         User reviewee = userRepository.getUserBy(request.revieweeId());
-        List<Card> cards = getCards(request.cardIds());
+        List<Card> cards = getCards(request.cardsId());
         List<UserCard> userCards = cards.stream()
                 .map(card -> new UserCard(reviewee, card))
                 .toList();
@@ -75,8 +75,16 @@ public class ReviewService {
         userCardRepository.saveAll(userCards);
     }
 
-    private List<Card> getCards(List<Long> cardIds) {
-        return cardIds.stream()
+    private boolean isAlreadyReviewed(Participant reviewer, Participant reviewee, Steady steady) {
+        return reviewRepository.existsByReviewerAndRevieweeAndSteady(
+                reviewer,
+                reviewee,
+                steady
+        );
+    }
+
+    private List<Card> getCards(List<Long> cardsId) {
+        return cardsId.stream()
                 .map(this::getCard)
                 .toList();
     }
@@ -87,14 +95,6 @@ public class ReviewService {
 
     private Steady getSteady(Long steadyId) {
         return steadyRepository.getSteady(steadyId);
-    }
-
-    private boolean isAlreadyReviewed(Participant reviewer, Participant reviewee, Steady steady) {
-        return reviewRepository.existsByReviewerAndRevieweeAndSteady(
-                reviewer,
-                reviewee,
-                steady
-        );
     }
 
 }

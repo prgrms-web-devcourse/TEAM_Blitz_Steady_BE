@@ -8,7 +8,7 @@ import java.util.List;
 
 public record ReviewCreateRequest(
         Long revieweeId,
-        List<Long> cardIds,
+        List<Long> cardsId,
         String comment
 ) {
 

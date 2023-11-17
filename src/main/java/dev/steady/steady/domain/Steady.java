@@ -176,10 +176,10 @@ public class Steady extends BaseEntity {
     }
 
     public boolean isReviewEnabled() {
-        if (finishedAt == null) {
+        if (finishedAt == null || status != SteadyStatus.FINISHED) {
             return false;
         }
-        return finishedAt.plusMonths(REVIEW_POLICY).isBefore(LocalDate.now());
+        return finishedAt.plusMonths(REVIEW_POLICY).isAfter(LocalDate.now());
     }
 
     public int getPromotionCount() {
@@ -193,10 +193,6 @@ public class Steady extends BaseEntity {
 
     public User getLeader() {
         return participants.getLeader();
-    }
-
-    public boolean isFinished() {
-        return this.status == SteadyStatus.FINISHED;
     }
 
     private Participants createParticipants(User user) {
