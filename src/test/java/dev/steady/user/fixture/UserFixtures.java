@@ -147,4 +147,14 @@ public class UserFixtures {
         );
     }
 
+    public static UserUpdateRequest createUserUpdateRequest() {
+        return new UserUpdateRequest(
+                "new_image.jpeg",
+                "새로운 꼬부기",
+                "프로필 수정했어요.",
+                1L,
+                List.of(1L, 2L)
+        );
+    }
+
 }

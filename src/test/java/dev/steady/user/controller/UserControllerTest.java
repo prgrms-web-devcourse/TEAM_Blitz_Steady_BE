@@ -21,10 +21,12 @@ import static dev.steady.user.fixture.UserFixtures.createUserMyDetailResponse;
 import static dev.steady.user.fixture.UserFixtures.createUserOtherDetailResponse;
 import static dev.steady.user.fixture.UserFixtures.createUserUpdateRequest;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
@@ -162,6 +164,38 @@ class UserControllerTest extends ControllerTestConfig {
                         )
                 )).andExpect(status().isOk())
                 .andExpect(content().string(objectMapper.writeValueAsString(response)));
+    }
+
+    @Test
+    @DisplayName("내 프로필 정보를 수정할 수 있다.")
+    void updateUserDetail() throws Exception {
+        // given
+        var userId = 1L;
+        var userInfo = createUserInfo(userId);
+        var auth = new Authentication(userId);
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
+
+        var request = createUserUpdateRequest();
+        willDoNothing().given(userService).updateUser(request, userInfo);
+
+        // when, then
+        mockMvc.perform(patch("/api/v1/user/profile")
+                        .contentType(APPLICATION_JSON)
+                        .header(AUTHORIZATION, TOKEN)
+                        .content(objectMapper.writeValueAsString(request))
+                )
+                .andDo(document("user-v1-update",
+                        resourceDetails().tag("사용자").description("유저 프로필 수정")
+                                .requestSchema(Schema.schema("UserUpdateRequest")),
+                        requestFields(
+                                fieldWithPath("profileImage").type(STRING).description("사용자 프로필 이미지 URL"),
+                                fieldWithPath("nickname").type(STRING).description("사용자 닉네임"),
+                                fieldWithPath("bio").type(STRING).description("사용자 한 줄 소개"),
+                                fieldWithPath("positionId").type(NUMBER).description("사용자 포지션"),
+                                fieldWithPath("stacksId").type(ARRAY).description("사용자 기술 스택")
+                        )
+                ))
+                .andExpect(status().isOk());
     }
 
 }
