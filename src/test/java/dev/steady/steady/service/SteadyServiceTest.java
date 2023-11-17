@@ -16,6 +16,7 @@ import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.domain.repository.SteadyStackRepository;
+import dev.steady.steady.domain.repository.ViewCountLogRepository;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyPageRequest;
@@ -332,6 +333,51 @@ class SteadyServiceTest {
                 () -> assertThat(response.finishedAt()).isEqualTo(steady.getFinishedAt()),
                 () -> assertThat(response.isReviewEnabled()).isEqualTo(false)
         );
+    }
+
+    @Test
+    @DisplayName("리더가 아닌 사용자가 게시물을 조회하면 조회수가 상승한다.")
+    void getDetailSteadyViewCountIncreaseTest() {
+        // given
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var otherUser = userRepository.save(createSecondUser(position));
+        var userInfo = createUserInfo(otherUser.getId());
+
+        var steady = steadyRepository.save(createSteady(leader, stack));
+        var steadyId = steady.getId();
+        entityManager.flush();
+        entityManager.clear();
+
+        // when
+        SteadyDetailResponse response = steadyService.getDetailSteady(steadyId, userInfo);
+
+        // then
+        assertThat(response.viewCount()).isOne();
+    }
+
+    @Test
+    @DisplayName("게시물을 조회한지 3시간이 지나지 않았을때 재조회하면 조회수가 상승하지 않는다.")
+    void getDetailSteadyViewCountNotIncreaseTest() {
+        // given
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var stack = stackRepository.save(createStack());
+        var otherUser = userRepository.save(createSecondUser(position));
+        var userInfo = createUserInfo(otherUser.getId());
+
+        var steady = steadyRepository.save(createSteady(leader, stack));
+        var steadyId = steady.getId();
+        entityManager.flush();
+        entityManager.clear();
+
+        // when
+        steadyService.getDetailSteady(steadyId, userInfo);
+        SteadyDetailResponse response = steadyService.getDetailSteady(steadyId, userInfo);
+
+        // then
+        assertThat(response.viewCount()).isOne();
     }
 
     @Test
