@@ -63,7 +63,7 @@ class UserControllerTest extends ControllerTestConfig {
                 .andExpect(status().isCreated())
                 .andDo(document("user-v1-create",
                         resourceDetails().tag("사용자").description("유저 프로필 생성")
-                                .responseSchema(Schema.schema("UserCreateResponse")),
+                                .requestSchema(Schema.schema("UserCreateResponse")),
                         requestFields(
                                 fieldWithPath("accountId").type(NUMBER).description("계정 id"),
                                 fieldWithPath("nickname").type(STRING).description("사용자 닉네임"),
@@ -100,20 +100,20 @@ class UserControllerTest extends ControllerTestConfig {
     @ParameterizedTest
     @EnumSource(Platform.class)
     @DisplayName("내 프로필을 조회할 수 있다.")
-    void getMyProfileDetail(Platform platform) throws Exception {
+    void getMyUserDetail(Platform platform) throws Exception {
         // given
         var userId = 1L;
         var userInfo = createUserInfo(userId);
         var auth = new Authentication(userId);
         var response = createUserMyDetailResponse(platform);
         given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
+        given(userService.getMyUserDetail(userInfo)).willReturn(response);
 
         // when, then
-        when(userService.getMyUserDetail(userInfo)).thenReturn(response);
         mockMvc.perform(get("/api/v1/user/profile")
                         .header(AUTHORIZATION, TOKEN)
                 )
-                .andDo(document("user-v1-get-my",
+                .andDo(document("user-v1-get-myProfile",
                         resourceDetails().tag("사용자").description("내 프로필 조회")
                                 .responseSchema(Schema.schema("UserMyDetailResponse")),
                         responseFields(
