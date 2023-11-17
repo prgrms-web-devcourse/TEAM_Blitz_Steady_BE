@@ -21,9 +21,9 @@ public class ApplicationFixture {
 
     public static SliceResponse<ApplicationSummaryResponse> createApplicationSummaryResponse() {
         return new SliceResponse<>(
-                List.of(new ApplicationSummaryResponse(1L, "닉네임", "profile.url"),
-                        new ApplicationSummaryResponse(2L, "닉네임2", "profile.url"),
-                        new ApplicationSummaryResponse(3L, "닉네임3", "profile.url")),
+                List.of(new ApplicationSummaryResponse(1L, 10L, "닉네임", "profile.url"),
+                        new ApplicationSummaryResponse(2L, 11L, "닉네임2", "profile.url"),
+                        new ApplicationSummaryResponse(3L, 12L, "닉네임3", "profile.url")),
                 3,
                 false);
     }
