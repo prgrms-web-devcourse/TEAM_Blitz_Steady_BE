@@ -36,6 +36,7 @@ import static dev.steady.steady.exception.SteadyErrorCode.LEADER_PERMISSION_NEED
 public class Steady extends BaseEntity {
 
     private static final long REVIEW_POLICY = 2L;
+    private static final int DEFAULT_VIEW_COUNT = 0;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -77,6 +78,8 @@ public class Steady extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    private int viewCount;
+
     @Embedded
     private Promotion promotion;
 
@@ -114,6 +117,7 @@ public class Steady extends BaseEntity {
         this.deadline = deadline;
         this.title = title;
         this.content = content;
+        this.viewCount = DEFAULT_VIEW_COUNT;
         this.steadyStacks = createSteadyStack(stacks);
     }
 
@@ -176,7 +180,7 @@ public class Steady extends BaseEntity {
     }
 
     public boolean isReviewEnabled() {
-        if (finishedAt == null || status != SteadyStatus.FINISHED) {
+        if (finishedAt == null || !isFinished()) {
             return false;
         }
         return finishedAt.plusMonths(REVIEW_POLICY).isAfter(LocalDate.now());
@@ -193,6 +197,14 @@ public class Steady extends BaseEntity {
 
     public User getLeader() {
         return participants.getLeader();
+    }
+
+    public boolean isFinished() {
+        return this.status == SteadyStatus.FINISHED;
+    }
+
+    public void increaseViewCount() {
+        this.viewCount++;
     }
 
     private Participants createParticipants(User user) {

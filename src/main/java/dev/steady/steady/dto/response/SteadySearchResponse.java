@@ -20,6 +20,7 @@ public record SteadySearchResponse(
         LocalDateTime createdAt,
         int participantLimit,
         int numberOfParticipants,
+        int viewCount,
         List<SteadyStackResponse> stacks
         // TODO: 2023-10-25  해쉬태그, 조회수, 댓글 수
 ) {
@@ -39,6 +40,7 @@ public record SteadySearchResponse(
                 steady.getCreatedAt(),
                 steady.getParticipantLimit(),
                 steady.getNumberOfParticipants(),
+                steady.getViewCount(),
                 stacks);
     }
 
