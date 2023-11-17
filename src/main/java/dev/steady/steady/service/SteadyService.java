@@ -110,21 +110,6 @@ public class SteadyService {
         return SteadyDetailResponse.of(steady, positions, isLeader, isWaitingApplication);
     }
 
-    private void processViewCountLog(User user, Steady steady) {
-        Optional<SteadyViewLog> viewLog =
-                viewCountLogRepository.findFirstByUserIdAndSteadyIdOrderByCreatedAtDesc(user.getId(), steady.getId());
-
-        if (shouldIncreaseViewCount(viewLog)) {
-            steady.increaseViewCount();
-            viewCountLogRepository.save(new SteadyViewLog(user.getId(), steady.getId()));
-        }
-    }
-
-    private boolean shouldIncreaseViewCount(Optional<SteadyViewLog> viewLogOptional) {
-        return !viewLogOptional.isPresent() || viewLogOptional.get().checkThreeHoursPassed();
-    }
-
-
     @Transactional(readOnly = true)
     public SteadyQuestionsResponse getSteadyQuestions(Long steadyId) {
         Steady steady = steadyRepository.getSteady(steadyId);
@@ -203,6 +188,20 @@ public class SteadyService {
         Slice<MySteadyQueryResponse> mySteadies = steadyRepository.findMySteadies(status, user, pageable);
         Slice<MySteadyResponse> response = mySteadies.map(MySteadyResponse::from);
         return SliceResponse.from(response);
+    }
+
+    private void processViewCountLog(User user, Steady steady) {
+        Optional<SteadyViewLog> viewLog =
+                viewCountLogRepository.findFirstByUserIdAndSteadyIdOrderByCreatedAtDesc(user.getId(), steady.getId());
+
+        if (shouldIncreaseViewCount(viewLog)) {
+            steady.increaseViewCount();
+            viewCountLogRepository.save(new SteadyViewLog(user.getId(), steady.getId()));
+        }
+    }
+
+    private boolean shouldIncreaseViewCount(Optional<SteadyViewLog> viewLogOptional) {
+        return !viewLogOptional.isPresent() || viewLogOptional.get().checkThreeHoursPassed();
     }
 
     private boolean isWaitingApplication(User user, Steady steady) {
