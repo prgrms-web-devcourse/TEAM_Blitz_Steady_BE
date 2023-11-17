@@ -25,6 +25,7 @@ public record SteadyDetailResponse(
         LocalDate deadline,
         String title,
         String content,
+        int viewCount,
         List<SteadyPositionResponse> positions,
         List<SteadyStackResponse> stacks,
         boolean isLeader,
@@ -50,6 +51,7 @@ public record SteadyDetailResponse(
                 steady.getDeadline(),
                 steady.getTitle(),
                 steady.getContent(),
+                steady.getViewCount(),
                 positions.stream()
                         .map(SteadyPositionResponse::from)
                         .toList(),

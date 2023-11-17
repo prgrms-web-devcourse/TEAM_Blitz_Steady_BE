@@ -9,9 +9,11 @@ import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyPosition;
 import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.domain.SteadyStatus;
+import dev.steady.steady.domain.SteadyViewLog;
 import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
+import dev.steady.steady.domain.repository.ViewCountLogRepository;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyQuestionUpdateRequest;
@@ -37,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static dev.steady.application.domain.ApplicationStatus.WAITING;
@@ -51,6 +54,7 @@ public class SteadyService {
     private final SteadyRepository steadyRepository;
     private final PositionRepository positionRepository;
     private final ApplicationRepository applicationRepository;
+    private final ViewCountLogRepository viewCountLogRepository;
     private final SteadyQuestionRepository steadyQuestionRepository;
     private final SteadyPositionRepository steadyPositionRepository;
 
@@ -85,7 +89,7 @@ public class SteadyService {
         return PageResponse.from(searchResponses);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public SteadyDetailResponse getDetailSteady(Long steadyId, UserInfo userInfo) {
         Steady steady = steadyRepository.getSteady(steadyId);
         List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steady.getId());
@@ -99,11 +103,27 @@ public class SteadyService {
 
             if (!isLeader) {
                 isWaitingApplication = isWaitingApplication(user, steady);
+                processViewCountLog(user, steady);
             }
         }
 
         return SteadyDetailResponse.of(steady, positions, isLeader, isWaitingApplication);
     }
+
+    private void processViewCountLog(User user, Steady steady) {
+        Optional<SteadyViewLog> viewLog =
+                viewCountLogRepository.findFirstByUserIdAndSteadyIdOrderByCreatedAtDesc(user.getId(), steady.getId());
+
+        if (shouldIncreaseViewCount(viewLog)) {
+            steady.increaseViewCount();
+            viewCountLogRepository.save(new SteadyViewLog(user.getId(), steady.getId()));
+        }
+    }
+
+    private boolean shouldIncreaseViewCount(Optional<SteadyViewLog> viewLogOptional) {
+        return !viewLogOptional.isPresent() || viewLogOptional.get().checkThreeHoursPassed();
+    }
+
 
     @Transactional(readOnly = true)
     public SteadyQuestionsResponse getSteadyQuestions(Long steadyId) {
