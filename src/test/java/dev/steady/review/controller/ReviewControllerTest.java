@@ -10,6 +10,7 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.docume
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.review.fixture.ReviewFixture.createReviewCreateRequest;
+import static dev.steady.review.fixture.ReviewFixture.createReviewMyResponse;
 import static dev.steady.review.fixture.ReviewFixture.createReviewUpdateRequest;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -17,6 +18,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
@@ -25,6 +27,8 @@ import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -91,6 +95,39 @@ class ReviewControllerTest extends ControllerTestConfig {
                         )
                 ))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("내가 받은 카드 및 리뷰 목록을 조회할 수 있다.")
+    void getOtherUserDetail() throws Exception {
+        // given
+        var userId = 1L;
+        var userInfo = createUserInfo(userId);
+        var auth = new Authentication(userId);
+        var response = createReviewMyResponse();
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
+        given(reviewService.getMyCardsAndReviews(userInfo)).willReturn(response);
+
+        // when, then
+        mockMvc.perform(get("/api/v1/reviews/my")
+                        .header(AUTHORIZATION, TOKEN)
+                )
+                .andDo(document("review-v1-get-myAll",
+                        resourceDetails().tag("리뷰").description("내가 받은 카드와 리뷰 조회")
+                                .responseSchema(Schema.schema("ReviewMyResponse")),
+                        responseFields(
+                                fieldWithPath("userCards[].cardId").type(NUMBER).description("카드 식별자"),
+                                fieldWithPath("userCards[].content").type(STRING).description("카드 내용"),
+                                fieldWithPath("userCards[].count").type(NUMBER).description("사용자가 받은 카드 개수"),
+                                fieldWithPath("reviews[].steadyId").type(NUMBER).description("스테디 식별자"),
+                                fieldWithPath("reviews[].steadyName").type(STRING).description("스테디 이름"),
+                                fieldWithPath("reviews[].reviews[].reviewId").type(NUMBER).description("리뷰 식별자"),
+                                fieldWithPath("reviews[].reviews[].comment").type(STRING).description("리뷰 코멘트"),
+                                fieldWithPath("reviews[].reviews[].isPublic").type(BOOLEAN).description("리뷰 공개 여부"),
+                                fieldWithPath("reviews[].reviews[].createdAt").type(STRING).description("리뷰 생성일")
+                        )
+                )).andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
     }
 
 }

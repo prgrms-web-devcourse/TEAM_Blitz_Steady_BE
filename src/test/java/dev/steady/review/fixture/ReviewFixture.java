@@ -5,11 +5,15 @@ import dev.steady.review.domain.Review;
 import dev.steady.review.domain.UserCard;
 import dev.steady.review.dto.request.ReviewCreateRequest;
 import dev.steady.review.dto.request.ReviewUpdateRequest;
+import dev.steady.review.dto.response.ReviewDetailResponse;
+import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.dto.response.ReviewsBySteadyResponse;
 import dev.steady.review.dto.response.UserCardResponse;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ReviewFixture {
@@ -62,5 +66,23 @@ public class ReviewFixture {
     public static ReviewUpdateRequest createReviewUpdateRequest(boolean isPublic) {
         return new ReviewUpdateRequest(isPublic);
     }
-    
+
+    public static ReviewMyResponse createReviewMyResponse() {
+        ReviewDetailResponse reviewDetailResponse = new ReviewDetailResponse(
+                1L,
+                "열심히 하는 모습 보기 좋습니다.",
+                true,
+                LocalDateTime.now()
+        );
+        ReviewsBySteadyResponse reviewsBySteadyResponse = new ReviewsBySteadyResponse(
+                1L,
+                "블리츠",
+                List.of(reviewDetailResponse)
+        );
+        return new ReviewMyResponse(
+                createUserCardResponses(),
+                List.of(reviewsBySteadyResponse)
+        );
+    }
+
 }
