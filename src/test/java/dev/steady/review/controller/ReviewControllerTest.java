@@ -10,13 +10,17 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.docume
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.review.fixture.ReviewFixture.createReviewCreateRequest;
+import static dev.steady.review.fixture.ReviewFixture.createReviewUpdateRequest;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
+import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -28,7 +32,7 @@ class ReviewControllerTest extends ControllerTestConfig {
 
     @Test
     @DisplayName("리뷰이 ID와 스테디 ID를 통해 리뷰를 생성할 수 있다.")
-    void createReview() throws Exception {
+    void createReviewTest() throws Exception {
         // given
         var userId = 1L;
         var userInfo = createUserInfo(userId);
@@ -58,6 +62,35 @@ class ReviewControllerTest extends ControllerTestConfig {
                 ))
                 .andExpect(status().isCreated())
                 .andExpect(redirectedUrl(String.format("/api/v1/reviews/%d", steadyId, 1L)));
+    }
+
+    @Test
+    @DisplayName("리뷰이는 자신이 받은 리뷰의 공개 여부를 설정할 수 있다.")
+    void updateReviewIsPublicTest() throws Exception {
+        // given
+        var userId = 1L;
+        var userInfo = createUserInfo(userId);
+        var auth = new Authentication(userId);
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
+
+        var request = createReviewUpdateRequest(false);
+        var reviewId = 1L;
+        willDoNothing().given(reviewService).updateReviewIsPublic(reviewId, request, userInfo);
+
+        // when, then
+        mockMvc.perform(patch("/api/v1/reviews/{reviewId}", reviewId)
+                        .contentType(APPLICATION_JSON)
+                        .header(AUTHORIZATION, TOKEN)
+                        .content(objectMapper.writeValueAsString(request))
+                )
+                .andDo(document("review-v1-update",
+                        resourceDetails().tag("리뷰").description("리뷰 공개 여부 수정")
+                                .requestSchema(Schema.schema("ReviewUpdateRequest")),
+                        requestFields(
+                                fieldWithPath("isPublic").type(BOOLEAN).description("수정할 리뷰 공개 상태")
+                        )
+                ))
+                .andExpect(status().isOk());
     }
 
 }
