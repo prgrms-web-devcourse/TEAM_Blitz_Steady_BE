@@ -31,7 +31,7 @@ public class ReviewController {
         reviewService.createUserCards(request);
 
         return ResponseEntity.created(
-                        URI.create(String.format("/api/v1/steadies/%d/review/%d", steadyId, reviewId)))
+                        URI.create(String.format("/api/v1/reviews/%d", reviewId)))
                 .build();
     }
 

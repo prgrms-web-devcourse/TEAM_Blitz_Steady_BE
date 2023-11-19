@@ -57,7 +57,7 @@ class ReviewControllerTest extends ControllerTestConfig {
                         )
                 ))
                 .andExpect(status().isCreated())
-                .andExpect(redirectedUrl(String.format("/api/v1/steadies/%d/review/%d", steadyId, 1L)));
+                .andExpect(redirectedUrl(String.format("/api/v1/reviews/%d", steadyId, 1L)));
     }
 
 }
