@@ -36,9 +36,9 @@ public class ReviewController {
     }
 
     @PatchMapping("/reviews/{reviewId}")
-    public ResponseEntity<Void> updateReviewIsPulic(@PathVariable Long reviewId,
-                                                    @RequestBody ReviewUpdateRequest request,
-                                                    @Auth UserInfo userInfo) {
+    public ResponseEntity<Void> updateReviewIsPublic(@PathVariable Long reviewId,
+                                                     @RequestBody ReviewUpdateRequest request,
+                                                     @Auth UserInfo userInfo) {
         reviewService.updateReviewIsPublic(reviewId, request, userInfo);
 
         return ResponseEntity.ok().build();
