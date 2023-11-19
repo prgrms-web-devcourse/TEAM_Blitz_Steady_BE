@@ -11,7 +11,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,8 +32,7 @@ public class SteadyLike extends BaseEntity {
     @JoinColumn(name = "steady_id")
     private Steady steady;
 
-    @Builder
-    private SteadyLike(User user, Steady steady) {
+    public SteadyLike(User user, Steady steady) {
         this.user = user;
         this.steady = steady;
     }

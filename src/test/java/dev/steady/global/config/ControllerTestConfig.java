@@ -12,6 +12,8 @@ import dev.steady.global.auth.AuthContext;
 import dev.steady.notification.controller.NotificationController;
 import dev.steady.notification.service.NotificationService;
 import dev.steady.steady.controller.SteadyController;
+import dev.steady.steady.controller.SteadyLikeController;
+import dev.steady.steady.service.SteadyLikeService;
 import dev.steady.steady.service.SteadyService;
 import dev.steady.template.controller.TemplateController;
 import dev.steady.template.service.TemplateService;
@@ -40,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         OAuthController.class,
         UserController.class,
         SteadyController.class,
+        SteadyLikeController.class,
         TemplateController.class,
         ApplicationController.class,
         StackController.class,
@@ -71,6 +74,8 @@ public abstract class ControllerTestConfig {
     protected PositionService positionService;
     @MockBean
     protected SteadyService steadyService;
+    @MockBean
+    protected SteadyLikeService steadyLikeService;
     @MockBean
     protected TemplateService templateService;
     @MockBean
