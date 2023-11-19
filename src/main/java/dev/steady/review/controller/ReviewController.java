@@ -4,9 +4,11 @@ import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.review.dto.request.ReviewCreateRequest;
 import dev.steady.review.dto.request.ReviewUpdateRequest;
+import dev.steady.review.dto.response.ReviewMyResponse;
 import dev.steady.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,4 +45,11 @@ public class ReviewController {
 
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/reviews/my")
+    public ResponseEntity<ReviewMyResponse> getMyCardsAndReviews(@Auth UserInfo userInfo) {
+        ReviewMyResponse response = reviewService.getMyCardsAndReviews(userInfo);
+        return ResponseEntity.ok(response);
+    }
+    
 }
