@@ -7,6 +7,7 @@ import dev.steady.review.domain.UserCard;
 import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
+import dev.steady.review.dto.request.ReviewUpdateRequest;
 import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.Stack;
@@ -28,6 +29,7 @@ import java.util.stream.IntStream;
 
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.review.fixture.ReviewFixture.createCard;
+import static dev.steady.review.fixture.ReviewFixture.createReview;
 import static dev.steady.review.fixture.ReviewFixture.createReviewCreateRequest;
 import static dev.steady.steady.domain.Participant.createMember;
 import static dev.steady.steady.domain.SteadyStatus.FINISHED;
@@ -95,7 +97,7 @@ class ReviewServiceTest {
 
     @DisplayName("종료된 스테디에 대하여 리뷰를 생성한다.")
     @Test
-    void createReview() {
+    void createReviewTest() {
         // given
         var userInfo = createUserInfo(reviewerUser.getId());
 
@@ -125,7 +127,7 @@ class ReviewServiceTest {
 
     @Test
     @DisplayName("리뷰 가능 기간이 지나면 리뷰를 생성할 수 없다.")
-    void createReviewAfterReviewEnabledPeriod() {
+    void createReviewAfterReviewEnabledPeriodTest() {
         // given
         var userInfo = createUserInfo(reviewerUser.getId());
         var steady = createSteady(leader, stacks, FINISHED);
@@ -148,7 +150,7 @@ class ReviewServiceTest {
 
     @Test
     @DisplayName("사용자의 리뷰 카드를 생성할 수 있다.")
-    void createUserCards() {
+    void createUserCardsTest() {
         // given
         List<Card> cards = IntStream.range(0, 3)
                 .mapToObj(i -> createCard())
@@ -172,6 +174,27 @@ class ReviewServiceTest {
         assertAll(
                 () -> assertThat(userCards).hasSameSizeAs(cardsId)
         );
+    }
+
+
+    @Test
+    @DisplayName("리뷰이는 본인의 리뷰 코멘트를 비공개로 설정할 수 있다.")
+    void updateReviewIsPublicTest() {
+        // given
+        var userInfo = createUserInfo(revieweeUser.getId());
+        var steady = steadyRepository.save(createSteady(leader, stacks, FINISHED));
+        var reviewer = participantRepository.save(createMember(reviewerUser, steady));
+        var reviewee = participantRepository.save(createMember(revieweeUser, steady));
+        var review = reviewRepository.save(createReview(reviewer, reviewee, steady));
+
+        var request = new ReviewUpdateRequest(false);
+
+        // when
+        reviewService.updateReviewIsPublic(review.getId(), request, userInfo);
+
+        // then
+        Review foundReview = reviewRepository.getById(review.getId());
+        assertThat(foundReview.isPublic()).isEqualTo(request.isPublic());
     }
 
 }
