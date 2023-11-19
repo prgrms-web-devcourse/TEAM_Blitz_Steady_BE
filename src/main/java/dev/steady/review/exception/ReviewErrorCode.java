@@ -8,7 +8,8 @@ public enum ReviewErrorCode implements ErrorCode {
     CARD_NOT_FOUND("R002", "카드를 찾을 수 없습니다."),
     REVIEW_NOT_ENABLED("R003", "리뷰할 수 있는 상태가 아닙니다"),
     REVIEWEE_EQUALS_REVIEWER("R004", "리뷰이와 리뷰어가 동일합니다."),
-    REVIEW_DUPLICATE("R005", "리뷰를 중복 제출할 수 없습니다.");
+    REVIEW_DUPLICATE("R005", "리뷰를 중복 제출할 수 없습니다."),
+    REVIEW_AUTH_FAILURE("R006", "리뷰에 접근 권한이 없습니다.");
 
     private final String code;
     private final String message;

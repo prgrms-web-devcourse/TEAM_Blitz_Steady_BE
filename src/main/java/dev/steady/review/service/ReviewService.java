@@ -1,6 +1,7 @@
 package dev.steady.review.service;
 
 import dev.steady.global.auth.UserInfo;
+import dev.steady.global.exception.ForbiddenException;
 import dev.steady.global.exception.InvalidStateException;
 import dev.steady.review.domain.Card;
 import dev.steady.review.domain.Review;
@@ -9,6 +10,7 @@ import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
 import dev.steady.review.dto.request.ReviewCreateRequest;
+import dev.steady.review.dto.request.ReviewUpdateRequest;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Participants;
 import dev.steady.steady.domain.Steady;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static dev.steady.review.exception.ReviewErrorCode.REVIEWEE_EQUALS_REVIEWER;
+import static dev.steady.review.exception.ReviewErrorCode.REVIEW_AUTH_FAILURE;
 import static dev.steady.review.exception.ReviewErrorCode.REVIEW_DUPLICATE;
 import static dev.steady.review.exception.ReviewErrorCode.REVIEW_NOT_ENABLED;
 
@@ -74,6 +77,17 @@ public class ReviewService {
 
         userCardRepository.saveAll(userCards);
     }
+
+    @Transactional
+    public void updateReviewIsPublic(Long reviewId, ReviewUpdateRequest request, UserInfo userInfo) {
+        Review review = reviewRepository.getById(reviewId);
+        Long revieweeUserId = review.getReviewee().getUser().getId();
+        if (!Objects.equals(revieweeUserId, userInfo.userId())) {
+            throw new ForbiddenException(REVIEW_AUTH_FAILURE);
+        }
+        review.updateIsPublic(request.isPublic());
+    }
+
 
     private boolean isAlreadyReviewed(Participant reviewer, Participant reviewee, Steady steady) {
         return reviewRepository.existsByReviewerAndRevieweeAndSteady(
