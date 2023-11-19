@@ -59,5 +59,5 @@ public class Review extends BaseEntity {
     public void updateIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
-    
+
 }

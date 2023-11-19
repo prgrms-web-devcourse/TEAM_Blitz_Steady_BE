@@ -1,7 +1,6 @@
 package dev.steady.notification.domain;
 
 import dev.steady.steady.domain.Steady;
-import dev.steady.user.domain.User;
 
 public class FreshApplicationNotificationStrategy extends NotificationStrategy {
 

@@ -51,5 +51,5 @@ public class ReviewController {
         ReviewMyResponse response = reviewService.getMyCardsAndReviews(userInfo);
         return ResponseEntity.ok(response);
     }
-    
+
 }
