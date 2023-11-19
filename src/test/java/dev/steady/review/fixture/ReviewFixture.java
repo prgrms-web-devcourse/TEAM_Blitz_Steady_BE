@@ -3,7 +3,7 @@ package dev.steady.review.fixture;
 import dev.steady.review.domain.Card;
 import dev.steady.review.domain.Review;
 import dev.steady.review.domain.UserCard;
-import dev.steady.review.dto.ReviewCreateRequest;
+import dev.steady.review.dto.request.ReviewCreateRequest;
 import dev.steady.review.dto.response.UserCardResponse;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
@@ -50,4 +50,12 @@ public class ReviewFixture {
         );
     }
 
+    public static ReviewCreateRequest createReviewCreateRequest() {
+        return new ReviewCreateRequest(
+                2L,
+                List.of(1L, 2L),
+                "열심히 하는 모습 보기 좋습니다."
+        );
+    }
+    
 }
