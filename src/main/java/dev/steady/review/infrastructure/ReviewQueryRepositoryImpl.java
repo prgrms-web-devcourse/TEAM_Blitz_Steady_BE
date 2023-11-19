@@ -19,7 +19,7 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<String> findPublicCommentsByRevieweeUser(User user) {
+    public List<String> getPublicCommentsByRevieweeUser(User user) {
         return jpaQueryFactory.select(review.comment)
                 .from(review)
                 .where(revieweeEqualsUser(user),

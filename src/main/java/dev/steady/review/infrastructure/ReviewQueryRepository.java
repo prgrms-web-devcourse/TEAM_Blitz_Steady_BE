@@ -7,5 +7,6 @@ import java.util.List;
 public interface ReviewQueryRepository {
 
     List<String> findPublicCommentsByRevieweeUser(User user);
+    List<String> getPublicCommentsByRevieweeUser(User user);
 
 }

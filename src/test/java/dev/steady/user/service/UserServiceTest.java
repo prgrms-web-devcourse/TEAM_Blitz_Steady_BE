@@ -208,8 +208,8 @@ class UserServiceTest {
         userCardRepository.save(createUserCard(revieweeUser, savedCard));
 
         var userStacks = userStackRepository.findAllByUser(revieweeUser);
-        var reviews = reviewQueryRepository.findPublicCommentsByRevieweeUser(revieweeUser);
-        var userCards = userCardQueryRepository.findCardCountByUser(revieweeUser);
+        var reviews = reviewQueryRepository.getPublicCommentsByRevieweeUser(revieweeUser);
+        var userCards = userCardQueryRepository.getCardCountByUser(revieweeUser);
 
         // when
         UserOtherDetailResponse response = userService.getOtherUserDetail(revieweeUser.getId());
