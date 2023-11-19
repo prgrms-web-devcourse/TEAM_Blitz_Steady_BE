@@ -7,6 +7,9 @@ import dev.steady.review.domain.UserCard;
 import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
+import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.infrastructure.ReviewQueryRepository;
+import dev.steady.review.infrastructure.UserCardQueryRepository;
 import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.Stack;
@@ -31,6 +34,7 @@ import static dev.steady.review.fixture.ReviewFixture.createCard;
 import static dev.steady.review.fixture.ReviewFixture.createReview;
 import static dev.steady.review.fixture.ReviewFixture.createReviewCreateRequest;
 import static dev.steady.review.fixture.ReviewFixture.createReviewUpdateRequest;
+import static dev.steady.review.fixture.ReviewFixture.createUserCard;
 import static dev.steady.steady.domain.Participant.createMember;
 import static dev.steady.steady.domain.SteadyStatus.FINISHED;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
@@ -51,6 +55,8 @@ class ReviewServiceTest {
     @Autowired
     private ReviewRepository reviewRepository;
     @Autowired
+    private ReviewQueryRepository reviewQueryRepository;
+    @Autowired
     private SteadyRepository steadyRepository;
     @Autowired
     private ParticipantRepository participantRepository;
@@ -60,6 +66,8 @@ class ReviewServiceTest {
     private CardRepository cardRepository;
     @Autowired
     private UserCardRepository userCardRepository;
+    @Autowired
+    private UserCardQueryRepository userCardQueryRepository;
     @Autowired
     private PositionRepository positionRepository;
     @Autowired
@@ -195,6 +203,32 @@ class ReviewServiceTest {
         // then
         Review foundReview = reviewRepository.getById(review.getId());
         assertThat(foundReview.isPublic()).isEqualTo(request.isPublic());
+    }
+
+    @Test
+    @DisplayName("인증된 사용자는 본인이 받은 카드 수와 리뷰 코멘트를 조회할 수 있다.")
+    void getMyReviewsTest() {
+        // given
+        var userInfo = createUserInfo(revieweeUser.getId());
+        var steady = steadyRepository.save(createSteady(leader, stacks, FINISHED));
+        var reviewer = participantRepository.save(createMember(reviewerUser, steady));
+        var reviewee = participantRepository.save(createMember(revieweeUser, steady));
+        var review = reviewRepository.save(createReview(reviewer, reviewee, steady));
+        var savedCard = cardRepository.save(createCard());
+        reviewRepository.save(review);
+        userCardRepository.save(createUserCard(revieweeUser, savedCard));
+
+        var allReviews = reviewQueryRepository.getAllReviewsByRevieweeUser(revieweeUser);
+        var cardsCount = userCardQueryRepository.getCardCountByUser(revieweeUser);
+        // when
+        ReviewMyResponse response = reviewService.getMyCardsAndReviews(userInfo);
+
+        // then
+        assertAll(
+                () -> assertThat(response.reviews()).hasSameSizeAs(allReviews),
+                () -> assertThat(response.cards()).hasSameSizeAs(cardsCount)
+        );
+
     }
 
 }
