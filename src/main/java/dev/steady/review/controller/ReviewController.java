@@ -3,9 +3,11 @@ package dev.steady.review.controller;
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.review.dto.request.ReviewCreateRequest;
+import dev.steady.review.dto.request.ReviewUpdateRequest;
 import dev.steady.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,4 +35,12 @@ public class ReviewController {
                 .build();
     }
 
+    @PatchMapping("/reviews/{reviewId}")
+    public ResponseEntity<Void> updateReviewIsPulic(@PathVariable Long reviewId,
+                                                    @RequestBody ReviewUpdateRequest request,
+                                                    @Auth UserInfo userInfo) {
+        reviewService.updateReviewIsPublic(reviewId, request, userInfo);
+
+        return ResponseEntity.ok().build();
+    }
 }
