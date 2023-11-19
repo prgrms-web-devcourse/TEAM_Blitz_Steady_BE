@@ -98,9 +98,9 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public ReviewMyResponse getMyCardsAndReviews(UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
-        List<UserCardResponse> cards = userCardQueryRepository.getCardCountByUser(user);
+        List<UserCardResponse> userCards = userCardQueryRepository.getCardCountByUser(user);
         List<ReviewsBySteadyResponse> reviews = reviewQueryRepository.getAllReviewsByRevieweeUser(user);
-        return ReviewMyResponse.of(cards, reviews);
+        return ReviewMyResponse.of(userCards, reviews);
     }
 
     private boolean isAlreadyReviewed(Participant reviewer, Participant reviewee, Steady steady) {

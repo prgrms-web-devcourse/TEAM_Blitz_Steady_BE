@@ -3,13 +3,13 @@ package dev.steady.review.dto.response;
 import java.util.List;
 
 public record ReviewMyResponse(
-        List<UserCardResponse> cards,
+        List<UserCardResponse> userCards,
         List<ReviewsBySteadyResponse> reviews
 ) {
-    
-    public static ReviewMyResponse of(List<UserCardResponse> cards,
+
+    public static ReviewMyResponse of(List<UserCardResponse> userCards,
                                       List<ReviewsBySteadyResponse> reviews) {
-        return new ReviewMyResponse(cards, reviews);
+        return new ReviewMyResponse(userCards, reviews);
     }
 
 }

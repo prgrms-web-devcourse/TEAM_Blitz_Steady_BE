@@ -163,13 +163,13 @@ class ReviewServiceTest {
         List<Card> cards = IntStream.range(0, 3)
                 .mapToObj(i -> createCard())
                 .toList();
-        cardRepository.saveAll(cards);
+        List<Card> savedCards = cardRepository.saveAll(cards);
 
         var steady = steadyRepository.save(createSteady(reviewerUser, stacks, FINISHED));
         var reviewee = participantRepository.save(createMember(revieweeUser, steady));
 
         // when
-        List<Long> cardsId = List.of(1L, 2L);
+        List<Long> cardsId = List.of(savedCards.get(0).getId(), savedCards.get(1).getId());
         var request = createReviewCreateRequest(
                 reviewee.getUserId(),
                 cardsId
@@ -226,7 +226,7 @@ class ReviewServiceTest {
         // then
         assertAll(
                 () -> assertThat(response.reviews()).hasSameSizeAs(allReviews),
-                () -> assertThat(response.cards()).hasSameSizeAs(cardsCount)
+                () -> assertThat(response.userCards()).hasSameSizeAs(cardsCount)
         );
 
     }
