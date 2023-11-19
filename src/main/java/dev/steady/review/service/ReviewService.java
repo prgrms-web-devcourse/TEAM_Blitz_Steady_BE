@@ -11,6 +11,11 @@ import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
 import dev.steady.review.dto.request.ReviewCreateRequest;
 import dev.steady.review.dto.request.ReviewUpdateRequest;
+import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.dto.response.ReviewsBySteadyResponse;
+import dev.steady.review.dto.response.UserCardResponse;
+import dev.steady.review.infrastructure.ReviewQueryRepository;
+import dev.steady.review.infrastructure.UserCardQueryRepository;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Participants;
 import dev.steady.steady.domain.Steady;
@@ -38,6 +43,8 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
     private final UserCardRepository userCardRepository;
+    private final UserCardQueryRepository userCardQueryRepository;
+    private final ReviewQueryRepository reviewQueryRepository;
 
     @Transactional
     public Long createReview(Long steadyId, ReviewCreateRequest request, UserInfo userInfo) {
@@ -88,6 +95,13 @@ public class ReviewService {
         review.updateIsPublic(request.isPublic());
     }
 
+    @Transactional(readOnly = true)
+    public ReviewMyResponse getMyCardsAndReviews(UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        List<UserCardResponse> cards = userCardQueryRepository.getCardCountByUser(user);
+        List<ReviewsBySteadyResponse> reviews = reviewQueryRepository.getAllReviewsByRevieweeUser(user);
+        return ReviewMyResponse.of(cards, reviews);
+    }
 
     private boolean isAlreadyReviewed(Participant reviewer, Participant reviewee, Steady steady) {
         return reviewRepository.existsByReviewerAndRevieweeAndSteady(
