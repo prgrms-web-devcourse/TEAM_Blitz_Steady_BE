@@ -2,7 +2,7 @@ package dev.steady.review.controller;
 
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
-import dev.steady.review.dto.ReviewCreateRequest;
+import dev.steady.review.dto.request.ReviewCreateRequest;
 import dev.steady.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

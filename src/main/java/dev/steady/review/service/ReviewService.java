@@ -8,7 +8,7 @@ import dev.steady.review.domain.UserCard;
 import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
-import dev.steady.review.dto.ReviewCreateRequest;
+import dev.steady.review.dto.request.ReviewCreateRequest;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Participants;
 import dev.steady.steady.domain.Steady;
