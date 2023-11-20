@@ -22,7 +22,7 @@ public class ApplicationResultNotificationStrategy extends NotificationStrategy 
 
     @Override
     public String getRedirectUri() {
-        return String.format("/steady/detail/%d", steady.getId());
+        return String.format("/mypage/application");
     }
 
 }
