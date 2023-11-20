@@ -5,10 +5,8 @@ import dev.steady.global.exception.ErrorCode;
 
 public class OAuthPlatformException extends BusinessException {
 
-    private final ErrorCode errorCode;
-
     public OAuthPlatformException(ErrorCode errorCode) {
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 
 }
