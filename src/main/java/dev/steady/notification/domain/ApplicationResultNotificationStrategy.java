@@ -3,7 +3,6 @@ package dev.steady.notification.domain;
 import dev.steady.application.domain.Application;
 import dev.steady.application.domain.ApplicationStatus;
 import dev.steady.steady.domain.Steady;
-import dev.steady.user.domain.User;
 
 public class ApplicationResultNotificationStrategy extends NotificationStrategy {
 

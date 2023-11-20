@@ -11,6 +11,8 @@ import dev.steady.auth.service.AccountService;
 import dev.steady.global.auth.AuthContext;
 import dev.steady.notification.controller.NotificationController;
 import dev.steady.notification.service.NotificationService;
+import dev.steady.review.controller.ReviewController;
+import dev.steady.review.service.ReviewService;
 import dev.steady.steady.controller.SteadyController;
 import dev.steady.steady.controller.SteadyLikeController;
 import dev.steady.steady.service.SteadyLikeService;
@@ -48,6 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         StackController.class,
         PositionController.class,
         NotificationController.class,
+        ReviewController.class,
         AuthContext.class,
         JwtResolver.class,
         JwtProperties.class,
@@ -82,6 +85,8 @@ public abstract class ControllerTestConfig {
     protected ApplicationService applicationService;
     @MockBean
     protected NotificationService notificationService;
+    @MockBean
+    protected ReviewService reviewService;
     @MockBean
     protected JwtResolver jwtResolver;
 

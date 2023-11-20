@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import static dev.steady.review.exception.ReviewErrorCode.REVIEW_NOT_FOUND;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    
+
     default Review getById(Long reviewId) {
         return findById(reviewId)
                 .orElseThrow(() -> new NotFoundException(REVIEW_NOT_FOUND));

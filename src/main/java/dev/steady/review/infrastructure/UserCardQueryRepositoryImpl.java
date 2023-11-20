@@ -21,7 +21,7 @@ public class UserCardQueryRepositoryImpl implements UserCardQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<UserCardResponse> findCardCountByUser(User user) {
+    public List<UserCardResponse> getCardCountByUser(User user) {
         return jpaQueryFactory.select(Projections.constructor(UserCardResponse.class,
                         card.id,
                         card.content,

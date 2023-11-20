@@ -8,7 +8,8 @@ public enum NotificationMessage {
 
     FRESH_APPLICATION("[%s] 스테디에 새로운 신청서가 도착했어요."),
     APPLICATION_ACCEPTED("[%s] 스터디에 제출한 신청서가 수락됐어요."),
-    APPLICATION_REJECTED("[%s] 스터디에 제출한 신청서가 거절됐어요."),;
+    APPLICATION_REJECTED("[%s] 스터디에 제출한 신청서가 거절됐어요."),
+    ;
 
     private final String message;
 

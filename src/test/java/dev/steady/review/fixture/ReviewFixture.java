@@ -3,12 +3,17 @@ package dev.steady.review.fixture;
 import dev.steady.review.domain.Card;
 import dev.steady.review.domain.Review;
 import dev.steady.review.domain.UserCard;
-import dev.steady.review.dto.ReviewCreateRequest;
+import dev.steady.review.dto.request.ReviewCreateRequest;
+import dev.steady.review.dto.response.ReviewDetailResponse;
+import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.dto.response.ReviewSwitchResponse;
+import dev.steady.review.dto.response.ReviewsBySteadyResponse;
 import dev.steady.review.dto.response.UserCardResponse;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ReviewFixture {
@@ -47,6 +52,36 @@ public class ReviewFixture {
                 new UserCardResponse(3L, "이 팀원은 지식 공유에 적극적이었어요!", 0L),
                 new UserCardResponse(4L, "이 팀원과 의사소통이 잘돼요!", 0L),
                 new UserCardResponse(5L, "이 팀원이랑 나중에도 같이 스테디 하고 싶어요!", 1L)
+        );
+    }
+
+    public static ReviewCreateRequest createReviewCreateRequest() {
+        return new ReviewCreateRequest(
+                2L,
+                List.of(1L, 2L),
+                "열심히 하는 모습 보기 좋습니다."
+        );
+    }
+
+    public static ReviewSwitchResponse createReviewSwitchResponse(boolean isPublic) {
+        return new ReviewSwitchResponse(isPublic);
+    }
+
+    public static ReviewMyResponse createReviewMyResponse() {
+        ReviewDetailResponse reviewDetailResponse = new ReviewDetailResponse(
+                1L,
+                "열심히 하는 모습 보기 좋습니다.",
+                true,
+                LocalDateTime.now()
+        );
+        ReviewsBySteadyResponse reviewsBySteadyResponse = new ReviewsBySteadyResponse(
+                1L,
+                "블리츠",
+                List.of(reviewDetailResponse)
+        );
+        return new ReviewMyResponse(
+                createUserCardResponses(),
+                List.of(reviewsBySteadyResponse)
         );
     }
 

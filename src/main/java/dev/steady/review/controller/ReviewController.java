@@ -2,10 +2,14 @@ package dev.steady.review.controller;
 
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
-import dev.steady.review.dto.ReviewCreateRequest;
+import dev.steady.review.dto.request.ReviewCreateRequest;
+import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.dto.response.ReviewSwitchResponse;
 import dev.steady.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,8 +33,22 @@ public class ReviewController {
         reviewService.createUserCards(request);
 
         return ResponseEntity.created(
-                        URI.create(String.format("/api/v1/steadies/%d/review/%d", steadyId, reviewId)))
+                        URI.create(String.format("/api/v1/reviews/%d", reviewId)))
                 .build();
+    }
+
+    @PatchMapping("/reviews/{reviewId}")
+    public ResponseEntity<ReviewSwitchResponse> updateReviewIsPublic(@PathVariable Long reviewId,
+                                                                     @Auth UserInfo userInfo) {
+        ReviewSwitchResponse response = reviewService.switchReviewIsPublic(reviewId, userInfo);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/reviews/my")
+    public ResponseEntity<ReviewMyResponse> getMyCardsAndReviews(@Auth UserInfo userInfo) {
+        ReviewMyResponse response = reviewService.getMyCardsAndReviews(userInfo);
+        return ResponseEntity.ok(response);
     }
 
 }

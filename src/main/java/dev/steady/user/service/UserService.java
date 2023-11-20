@@ -79,8 +79,8 @@ public class UserService {
         User user = userRepository.getUserBy(userId);
         List<UserStack> userStacks = userStackRepository.findAllByUser(user);
         UserDetailResponse userDetailResponse = UserDetailResponse.of(user, userStacks);
-        List<UserCardResponse> userCardResponses = userCardQueryRepository.findCardCountByUser(user);
-        List<String> reviews = reviewQueryRepository.findPublicCommentsByRevieweeUser(user);
+        List<UserCardResponse> userCardResponses = userCardQueryRepository.getCardCountByUser(user);
+        List<String> reviews = reviewQueryRepository.getPublicCommentsByRevieweeUser(user);
 
         return UserOtherDetailResponse.of(
                 userDetailResponse,

@@ -1,6 +1,7 @@
 package dev.steady.review.service;
 
 import dev.steady.global.auth.UserInfo;
+import dev.steady.global.exception.ForbiddenException;
 import dev.steady.global.exception.InvalidStateException;
 import dev.steady.review.domain.Card;
 import dev.steady.review.domain.Review;
@@ -8,7 +9,13 @@ import dev.steady.review.domain.UserCard;
 import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
-import dev.steady.review.dto.ReviewCreateRequest;
+import dev.steady.review.dto.request.ReviewCreateRequest;
+import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.dto.response.ReviewSwitchResponse;
+import dev.steady.review.dto.response.ReviewsBySteadyResponse;
+import dev.steady.review.dto.response.UserCardResponse;
+import dev.steady.review.infrastructure.ReviewQueryRepository;
+import dev.steady.review.infrastructure.UserCardQueryRepository;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Participants;
 import dev.steady.steady.domain.Steady;
@@ -23,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static dev.steady.review.exception.ReviewErrorCode.REVIEWEE_EQUALS_REVIEWER;
+import static dev.steady.review.exception.ReviewErrorCode.REVIEW_AUTH_FAILURE;
 import static dev.steady.review.exception.ReviewErrorCode.REVIEW_DUPLICATE;
 import static dev.steady.review.exception.ReviewErrorCode.REVIEW_NOT_ENABLED;
 
@@ -35,6 +43,8 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
     private final UserCardRepository userCardRepository;
+    private final UserCardQueryRepository userCardQueryRepository;
+    private final ReviewQueryRepository reviewQueryRepository;
 
     @Transactional
     public Long createReview(Long steadyId, ReviewCreateRequest request, UserInfo userInfo) {
@@ -73,6 +83,32 @@ public class ReviewService {
                 .toList();
 
         userCardRepository.saveAll(userCards);
+    }
+
+    /**
+     * 리뷰의 공개 여부(isPublic)을 변경하고 그 결과를 반환한다.
+     *
+     * @param reviewId 리뷰 식별자
+     * @param userInfo 사용자 정보
+     * @return 리뷰 공개 여부 변경된 결과
+     */
+    @Transactional
+    public ReviewSwitchResponse switchReviewIsPublic(Long reviewId, UserInfo userInfo) {
+        Review review = reviewRepository.getById(reviewId);
+        Participant reviewee = review.getReviewee();
+        if (!Objects.equals(reviewee.getUserId(), userInfo.userId())) {
+            throw new ForbiddenException(REVIEW_AUTH_FAILURE);
+        }
+        review.switchIsPublic();
+        return ReviewSwitchResponse.from(review);
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewMyResponse getMyCardsAndReviews(UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        List<UserCardResponse> userCards = userCardQueryRepository.getCardCountByUser(user);
+        List<ReviewsBySteadyResponse> reviews = reviewQueryRepository.getAllReviewsByRevieweeUser(user);
+        return ReviewMyResponse.of(userCards, reviews);
     }
 
     private boolean isAlreadyReviewed(Participant reviewer, Participant reviewee, Steady steady) {

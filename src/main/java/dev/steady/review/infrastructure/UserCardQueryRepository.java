@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface UserCardQueryRepository {
 
-    List<UserCardResponse> findCardCountByUser(User user);
+    List<UserCardResponse> getCardCountByUser(User user);
 
 }

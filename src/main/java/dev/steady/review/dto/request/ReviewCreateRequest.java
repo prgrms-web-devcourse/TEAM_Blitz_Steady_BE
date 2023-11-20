@@ -1,4 +1,4 @@
-package dev.steady.review.dto;
+package dev.steady.review.dto.request;
 
 import dev.steady.review.domain.Review;
 import dev.steady.steady.domain.Participant;
