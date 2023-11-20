@@ -1,7 +1,6 @@
 package dev.steady.notification.domain;
 
 import dev.steady.steady.domain.Steady;
-import dev.steady.user.domain.User;
 
 public class FreshApplicationNotificationStrategy extends NotificationStrategy {
 
@@ -19,7 +18,7 @@ public class FreshApplicationNotificationStrategy extends NotificationStrategy {
 
     @Override
     public String getRedirectUri() {
-        return String.format("/steady/detail/%d", steady.getId());
+        return String.format("/mypage/application");
     }
 
 }
