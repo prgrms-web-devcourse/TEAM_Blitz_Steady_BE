@@ -18,7 +18,7 @@ public class FreshApplicationNotificationStrategy extends NotificationStrategy {
 
     @Override
     public String getRedirectUri() {
-        return String.format("/mypage/application");
+        return String.format("/steady/applicant/%d", steady.getId());
     }
 
 }
