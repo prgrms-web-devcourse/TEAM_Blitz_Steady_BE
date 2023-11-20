@@ -3,8 +3,8 @@ package dev.steady.review.controller;
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.review.dto.request.ReviewCreateRequest;
-import dev.steady.review.dto.request.ReviewUpdateRequest;
 import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.dto.response.ReviewSwitchResponse;
 import dev.steady.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,12 +38,11 @@ public class ReviewController {
     }
 
     @PatchMapping("/reviews/{reviewId}")
-    public ResponseEntity<Void> updateReviewIsPublic(@PathVariable Long reviewId,
-                                                     @RequestBody ReviewUpdateRequest request,
-                                                     @Auth UserInfo userInfo) {
-        reviewService.updateReviewIsPublic(reviewId, request, userInfo);
+    public ResponseEntity<ReviewSwitchResponse> updateReviewIsPublic(@PathVariable Long reviewId,
+                                                                     @Auth UserInfo userInfo) {
+        ReviewSwitchResponse response = reviewService.switchReviewIsPublic(reviewId, userInfo);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/reviews/my")

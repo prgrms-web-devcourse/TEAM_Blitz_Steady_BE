@@ -10,8 +10,8 @@ import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
 import dev.steady.review.dto.request.ReviewCreateRequest;
-import dev.steady.review.dto.request.ReviewUpdateRequest;
 import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.dto.response.ReviewSwitchResponse;
 import dev.steady.review.dto.response.ReviewsBySteadyResponse;
 import dev.steady.review.dto.response.UserCardResponse;
 import dev.steady.review.infrastructure.ReviewQueryRepository;
@@ -85,14 +85,22 @@ public class ReviewService {
         userCardRepository.saveAll(userCards);
     }
 
+    /**
+     * 리뷰의 공개 여부(isPublic)을 변경하고 그 결과를 반환한다.
+     *
+     * @param reviewId 리뷰 식별자
+     * @param userInfo 사용자 정보
+     * @return 리뷰 공개 여부 변경된 결과
+     */
     @Transactional
-    public void updateReviewIsPublic(Long reviewId, ReviewUpdateRequest request, UserInfo userInfo) {
+    public ReviewSwitchResponse switchReviewIsPublic(Long reviewId, UserInfo userInfo) {
         Review review = reviewRepository.getById(reviewId);
         Participant reviewee = review.getReviewee();
         if (!Objects.equals(reviewee.getUserId(), userInfo.userId())) {
             throw new ForbiddenException(REVIEW_AUTH_FAILURE);
         }
-        review.updateIsPublic(request.isPublic());
+        review.switchIsPublic();
+        return ReviewSwitchResponse.from(review);
     }
 
     @Transactional(readOnly = true)

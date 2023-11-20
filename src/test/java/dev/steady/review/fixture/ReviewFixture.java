@@ -4,9 +4,9 @@ import dev.steady.review.domain.Card;
 import dev.steady.review.domain.Review;
 import dev.steady.review.domain.UserCard;
 import dev.steady.review.dto.request.ReviewCreateRequest;
-import dev.steady.review.dto.request.ReviewUpdateRequest;
 import dev.steady.review.dto.response.ReviewDetailResponse;
 import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.dto.response.ReviewSwitchResponse;
 import dev.steady.review.dto.response.ReviewsBySteadyResponse;
 import dev.steady.review.dto.response.UserCardResponse;
 import dev.steady.steady.domain.Participant;
@@ -63,8 +63,8 @@ public class ReviewFixture {
         );
     }
 
-    public static ReviewUpdateRequest createReviewUpdateRequest(boolean isPublic) {
-        return new ReviewUpdateRequest(isPublic);
+    public static ReviewSwitchResponse createReviewSwitchResponse(boolean isPublic) {
+        return new ReviewSwitchResponse(isPublic);
     }
 
     public static ReviewMyResponse createReviewMyResponse() {

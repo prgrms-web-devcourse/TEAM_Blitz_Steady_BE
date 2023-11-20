@@ -8,6 +8,7 @@ import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
 import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.dto.response.ReviewSwitchResponse;
 import dev.steady.review.infrastructure.ReviewQueryRepository;
 import dev.steady.review.infrastructure.UserCardQueryRepository;
 import dev.steady.steady.domain.repository.ParticipantRepository;
@@ -33,7 +34,6 @@ import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.review.fixture.ReviewFixture.createCard;
 import static dev.steady.review.fixture.ReviewFixture.createReview;
 import static dev.steady.review.fixture.ReviewFixture.createReviewCreateRequest;
-import static dev.steady.review.fixture.ReviewFixture.createReviewUpdateRequest;
 import static dev.steady.review.fixture.ReviewFixture.createUserCard;
 import static dev.steady.steady.domain.Participant.createMember;
 import static dev.steady.steady.domain.SteadyStatus.FINISHED;
@@ -187,7 +187,7 @@ class ReviewServiceTest {
 
     @Test
     @DisplayName("리뷰이는 본인의 리뷰 코멘트를 비공개로 설정할 수 있다.")
-    void updateReviewIsPublicTest() {
+    void switchReviewIsPublicTest() {
         // given
         var userInfo = createUserInfo(revieweeUser.getId());
         var steady = steadyRepository.save(createSteady(leader, stacks, FINISHED));
@@ -195,14 +195,12 @@ class ReviewServiceTest {
         var reviewee = participantRepository.save(createMember(revieweeUser, steady));
         var review = reviewRepository.save(createReview(reviewer, reviewee, steady));
 
-        var request = createReviewUpdateRequest(false);
-
         // when
-        reviewService.updateReviewIsPublic(review.getId(), request, userInfo);
+        ReviewSwitchResponse response = reviewService.switchReviewIsPublic(review.getId(), userInfo);
 
         // then
         Review foundReview = reviewRepository.getById(review.getId());
-        assertThat(foundReview.isPublic()).isEqualTo(request.isPublic());
+        assertThat(foundReview.isPublic()).isEqualTo(response.isPublic());
     }
 
     @Test

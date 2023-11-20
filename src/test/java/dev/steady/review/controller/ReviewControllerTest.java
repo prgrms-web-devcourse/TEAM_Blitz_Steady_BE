@@ -11,9 +11,8 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resour
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.review.fixture.ReviewFixture.createReviewCreateRequest;
 import static dev.steady.review.fixture.ReviewFixture.createReviewMyResponse;
-import static dev.steady.review.fixture.ReviewFixture.createReviewUpdateRequest;
+import static dev.steady.review.fixture.ReviewFixture.createReviewSwitchResponse;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -77,24 +76,24 @@ class ReviewControllerTest extends ControllerTestConfig {
         var auth = new Authentication(userId);
         given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
 
-        var request = createReviewUpdateRequest(false);
         var reviewId = 1L;
-        willDoNothing().given(reviewService).updateReviewIsPublic(reviewId, request, userInfo);
+        var response = createReviewSwitchResponse(true);
+        given(reviewService.switchReviewIsPublic(reviewId, userInfo)).willReturn(response);
 
         // when, then
         mockMvc.perform(patch("/api/v1/reviews/{reviewId}", reviewId)
                         .contentType(APPLICATION_JSON)
                         .header(AUTHORIZATION, TOKEN)
-                        .content(objectMapper.writeValueAsString(request))
                 )
                 .andDo(document("review-v1-update",
                         resourceDetails().tag("리뷰").description("리뷰 공개 여부 수정")
-                                .requestSchema(Schema.schema("ReviewUpdateRequest")),
-                        requestFields(
-                                fieldWithPath("isPublic").type(BOOLEAN).description("수정할 리뷰 공개 상태")
+                                .responseSchema(Schema.schema("ReviewSwitchRepsonse")),
+                        responseFields(
+                                fieldWithPath("isPublic").type(BOOLEAN).description("수정된 리뷰 공개 여부 상태")
                         )
                 ))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
     }
 
     @Test
