@@ -5,8 +5,10 @@ import dev.steady.global.exception.*;
 import dev.steady.global.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -22,51 +24,65 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handlerException(AuthenticationException authenticationException) {
-        ErrorCode errorCode = authenticationException.getErrorCode();
+    public ResponseEntity<ErrorResponse> handlerException(AuthenticationException exception) {
+        ErrorCode errorCode = exception.getErrorCode();
         log.info("{}", errorCode.message());
         return ResponseEntity.status(UNAUTHORIZED)
-                .body(ErrorResponse.of(authenticationException.getErrorCode()));
+                .body(ErrorResponse.of(exception.getErrorCode()));
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handlerException(ForbiddenException forbiddenException) {
-        ErrorCode errorCode = forbiddenException.getErrorCode();
+    public ResponseEntity<ErrorResponse> handlerException(ForbiddenException exception) {
+        ErrorCode errorCode = exception.getErrorCode();
         log.info("{}", errorCode.message());
         return ResponseEntity.status(FORBIDDEN)
-                .body(ErrorResponse.of(forbiddenException.getErrorCode()));
+                .body(ErrorResponse.of(exception.getErrorCode()));
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handlerException(NotFoundException notFoundException) {
-        ErrorCode errorCode = notFoundException.getErrorCode();
+    public ResponseEntity<ErrorResponse> handlerException(NotFoundException exception) {
+        ErrorCode errorCode = exception.getErrorCode();
         log.info("{}", errorCode.message());
         return ResponseEntity.badRequest()
-                .body(ErrorResponse.of(notFoundException.getErrorCode()));
+                .body(ErrorResponse.of(exception.getErrorCode()));
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handlerException(InvalidStateException invalidStateException) {
-        ErrorCode errorCode = invalidStateException.getErrorCode();
+    public ResponseEntity<ErrorResponse> handlerException(InvalidStateException exception) {
+        ErrorCode errorCode = exception.getErrorCode();
         log.info("{}", errorCode.message());
         return ResponseEntity.badRequest()
-                .body(ErrorResponse.of(invalidStateException.getErrorCode()));
+                .body(ErrorResponse.of(exception.getErrorCode()));
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handlerException(InvalidValueException invalidValueException) {
-        ErrorCode errorCode = invalidValueException.getErrorCode();
+    public ResponseEntity<ErrorResponse> handlerException(InvalidValueException exception) {
+        ErrorCode errorCode = exception.getErrorCode();
         log.info("{}", errorCode.message());
         return ResponseEntity.badRequest()
-                .body(ErrorResponse.of(invalidValueException.getErrorCode()));
+                .body(ErrorResponse.of(exception.getErrorCode()));
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handlerException(OAuthPlatformException OAuthPlatformException) {
-        ErrorCode errorCode = OAuthPlatformException.getErrorCode();
+    public ResponseEntity<ErrorResponse> handlerException(OAuthPlatformException exception) {
+        ErrorCode errorCode = exception.getErrorCode();
         log.info("{}", errorCode.message());
         return ResponseEntity.badRequest()
-                .body(ErrorResponse.of(OAuthPlatformException.getErrorCode()));
+                .body(ErrorResponse.of(exception.getErrorCode()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handlerException(MethodArgumentNotValidException exception) {
+        log.info("{}", exception.getBindingResult());
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(GlobalErrorCode.INPUT_VALIDATION_ERROR, exception.getBindingResult()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handlerException(MethodArgumentTypeMismatchException exception) {
+        log.info("{}", exception.getMessage());
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(exception));
     }
 
 }
