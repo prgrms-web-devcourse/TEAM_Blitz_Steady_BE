@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
@@ -42,15 +43,10 @@ public class ErrorResponse {
         return new ErrorResponse(code);
     }
 
-    public static ErrorResponse of(final ErrorCode code, final List<FieldError> errors) {
-        return new ErrorResponse(code, errors);
-    }
-
-    public static ErrorResponse of(MethodArgumentTypeMismatchException e) {
-        final String value = e.getValue() == null ? "" : String.valueOf(e.getValue());
-        final List<ErrorResponse.FieldError> errors = ErrorResponse.FieldError.of(e.getName(), value, e.getErrorCode());
-        // TODO: 2023/11/07 예외 코드 미정의
-        return new ErrorResponse(GlobalErrorCode.INTERNAL_SERVER_ERROR, errors);
+    public static ErrorResponse of(MethodArgumentTypeMismatchException exception) {
+        final String value = exception.getValue() == null ? "" : String.valueOf(exception.getValue());
+        final List<ErrorResponse.FieldError> errors = ErrorResponse.FieldError.of(exception.getName(), value, exception.getErrorCode());
+        return new ErrorResponse(GlobalErrorCode.INPUT_VALIDATION_ERROR, errors);
     }
 
     @Getter
