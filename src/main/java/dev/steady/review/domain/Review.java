@@ -56,8 +56,8 @@ public class Review extends BaseEntity {
         this.isPublic = true;
     }
 
-    public void updateIsPublic(boolean isPublic) {
-        this.isPublic = isPublic;
+    public void switchIsPublic() {
+        this.isPublic = !isPublic;
     }
 
 }
