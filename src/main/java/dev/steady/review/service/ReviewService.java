@@ -88,8 +88,8 @@ public class ReviewService {
     @Transactional
     public void updateReviewIsPublic(Long reviewId, ReviewUpdateRequest request, UserInfo userInfo) {
         Review review = reviewRepository.getById(reviewId);
-        Long revieweeUserId = review.getReviewee().getUser().getId();
-        if (!Objects.equals(revieweeUserId, userInfo.userId())) {
+        Participant reviewee = review.getReviewee();
+        if (!Objects.equals(reviewee.getUserId(), userInfo.userId())) {
             throw new ForbiddenException(REVIEW_AUTH_FAILURE);
         }
         review.updateIsPublic(request.isPublic());
