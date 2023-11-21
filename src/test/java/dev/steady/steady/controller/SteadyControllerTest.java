@@ -213,6 +213,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("content[].stacks[].id").type(NUMBER).description("기술 스택 id"),
                                 fieldWithPath("content[].stacks[].name").type(STRING).description("기술 스택명"),
                                 fieldWithPath("content[].stacks[].imageUrl").type(STRING).description("기술 스택 이미지"),
+                                fieldWithPath("content[].likeCount").type(NUMBER).description("좋아요 수"),
                                 fieldWithPath("numberOfElements").type(NUMBER).description("현재 페이지 조회된 개수"),
                                 fieldWithPath("page").type(NUMBER).description("현재 페이지"),
                                 fieldWithPath("size").type(NUMBER).description("페이지 크기"),
@@ -240,7 +241,8 @@ class SteadyControllerTest extends ControllerTestConfig {
         var response = SteadyDetailResponse.of(steady,
                 List.of(steadyPosition),
                 true,
-                false);
+                false,
+                10);
 
         given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
         given(steadyService.getDetailSteady(steadyId, userInfo)).willReturn(response);
@@ -281,7 +283,8 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("promotionCount").type(NUMBER).description("끌어올리가 남은 횟수"),
                                 fieldWithPath("createdAt").type(STRING).description("스테디 생성일"),
                                 fieldWithPath("finishedAt").type(STRING).description("스테디 종료일").optional(),
-                                fieldWithPath("isReviewEnabled").type(BOOLEAN).description("리뷰 작성 가능 여부")
+                                fieldWithPath("isReviewEnabled").type(BOOLEAN).description("리뷰 작성 가능 여부"),
+                                fieldWithPath("likeCount").type(NUMBER).description("좋아요 수")
                         )
                 ))
                 .andExpect(status().isOk())

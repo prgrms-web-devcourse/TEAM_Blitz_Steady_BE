@@ -151,7 +151,7 @@ public class SteadyFixtures {
 
     public static PageResponse<SteadySearchResponse> createSteadyPageResponse(Steady steady, Pageable pageable) {
         Page<Steady> steadies = new PageImpl<>(List.of(steady), pageable, 1);
-        return PageResponse.from(steadies.map(SteadySearchResponse::from));
+        return PageResponse.from(steadies.map(v -> SteadySearchResponse.from(v, 0)));
     }
 
     public static ParticipantsResponse createParticipantsResponse() {
