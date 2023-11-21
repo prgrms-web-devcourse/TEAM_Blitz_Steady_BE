@@ -15,7 +15,6 @@ public class ApplicationFixture {
 
     public static Application createApplication(User user, Steady steady) {
         Application application = new Application(user, steady);
-        saveSurveyResults(application);
         return application;
     }
 
@@ -38,10 +37,10 @@ public class ApplicationFixture {
         );
     }
 
-    private static void saveSurveyResults(Application application) {
-        List.of(SurveyResult.create(application, "질문1", "질문1", 0),
-                SurveyResult.create(application, "질문2", "질문2", 1),
-                SurveyResult.create(application, "질문3", "질문3", 2)
+    public static List<SurveyResult> createSurveyResults(Application application) {
+        return List.of(SurveyResult.create(application, "질문1", "답변1", 0),
+                SurveyResult.create(application, "질문2", "답변2", 1),
+                SurveyResult.create(application, "질문3", "답변3", 2)
         );
     }
 

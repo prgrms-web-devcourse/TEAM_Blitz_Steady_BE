@@ -15,6 +15,7 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resour
 import static dev.steady.application.domain.ApplicationStatus.ACCEPTED;
 import static dev.steady.application.fixture.ApplicationFixture.createApplicationDetailResponse;
 import static dev.steady.application.fixture.ApplicationFixture.createApplicationSummaryResponse;
+import static dev.steady.application.fixture.SurveyResultFixture.createAnswers;
 import static dev.steady.application.fixture.SurveyResultFixture.createSurveyResultRequests;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -172,6 +173,32 @@ class ApplicationControllerTest extends ControllerTestConfig {
                                 )
                         )
                 ).andExpect(status().isNoContent());
+    }
+
+    @DisplayName("신청자는 본인이 제출한 신청서의 답변을 수정할 수 있다.")
+    @Test
+    void updateApplicationAnswersTest() throws Exception {
+        long userId = 1L;
+        long applicationId = 1L;
+        var request = createAnswers();
+        var auth = new Authentication(userId);
+
+        when(jwtResolver.getAuthentication(TOKEN)).thenReturn(auth);
+
+        mockMvc.perform(patch("/api/v1/applications/{applicationId}", applicationId)
+                .contentType(APPLICATION_JSON)
+                .header(AUTHORIZATION, TOKEN)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(document("application-answer-update",
+                resourceDetails().tag("신청서").description("신청서 답변 수정")
+                        .requestSchema(Schema.schema("ApplicationUpdateAnswerRequest")),
+                requestHeaders(
+                        headerWithName(AUTHORIZATION).description("토큰")
+                ),
+                requestFields(
+                        fieldWithPath("answers").type(ARRAY).description("답변 목록")
+                )
+        )).andExpect(status().isNoContent());
     }
 
 }
