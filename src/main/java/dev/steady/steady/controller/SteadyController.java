@@ -17,6 +17,7 @@ import dev.steady.steady.dto.response.SteadyDetailResponse;
 import dev.steady.steady.dto.response.SteadyQuestionsResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
 import dev.steady.steady.service.SteadyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class SteadyController {
     private final SteadyService steadyService;
 
     @PostMapping
-    public ResponseEntity<Void> createSteady(@RequestBody SteadyCreateRequest request,
+    public ResponseEntity<Void> createSteady(@RequestBody @Valid SteadyCreateRequest request,
                                              @Auth UserInfo userInfo) {
         Long steadyId = steadyService.create(request, userInfo);
         return ResponseEntity.created(URI.create(String.format("/api/v1/steadies/%d", steadyId))).build();
@@ -87,7 +88,7 @@ public class SteadyController {
 
     @PatchMapping("/{steadyId}")
     public ResponseEntity<Void> updateSteady(@PathVariable Long steadyId,
-                                             @RequestBody SteadyUpdateRequest request,
+                                             @RequestBody @Valid SteadyUpdateRequest request,
                                              @Auth UserInfo userInfo) {
         steadyService.updateSteady(steadyId, request, userInfo);
         return ResponseEntity.noContent().build();
@@ -101,7 +102,7 @@ public class SteadyController {
 
     @PatchMapping("/{steadyId}/questions")
     public ResponseEntity<Void> updateSteadyQuestions(@PathVariable Long steadyId,
-                                                      @RequestBody SteadyQuestionUpdateRequest request,
+                                                      @RequestBody @Valid SteadyQuestionUpdateRequest request,
                                                       @Auth UserInfo userInfo) {
         steadyService.updateSteadyQuestions(steadyId, request, userInfo);
         return ResponseEntity.noContent().build();
