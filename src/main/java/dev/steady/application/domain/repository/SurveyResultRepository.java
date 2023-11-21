@@ -10,4 +10,6 @@ public interface SurveyResultRepository extends JpaRepository<SurveyResult, Long
 
     List<SurveyResult> findByApplicationOrderBySequenceAsc(Application application);
 
+    void deleteAllByApplication(Application application);
+
 }

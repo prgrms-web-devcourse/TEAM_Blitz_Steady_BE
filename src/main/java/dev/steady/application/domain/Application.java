@@ -54,6 +54,12 @@ public class Application extends BaseEntity {
         }
     }
 
+    public void checkApplicant(User user) {
+        if (!isApplicant(user)) {
+            throw new ForbiddenException(APPLICATION_AUTH_FAILURE);
+        }
+    }
+
     public void updateStatus(ApplicationStatus status, User user) {
         if (steady.isLeader(user) && isWaitingStatus()) {
             this.status = status;
@@ -68,10 +74,6 @@ public class Application extends BaseEntity {
         }
     }
 
-    private boolean isWaitingStatus() {
-        return this.status == WAITING;
-    }
-
     private boolean hasAccess(User user) {
         return isApplicant(user) || isLeader(user);
     }
@@ -82,6 +84,10 @@ public class Application extends BaseEntity {
 
     private boolean isLeader(User user) {
         return steady.isLeader(user);
+    }
+
+    private boolean isWaitingStatus() {
+        return this.status == WAITING;
     }
 
 }

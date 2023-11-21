@@ -5,13 +5,13 @@ import dev.steady.application.domain.SurveyResult;
 import dev.steady.application.domain.SurveyResults;
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.application.domain.repository.SurveyResultRepository;
-import dev.steady.application.dto.response.MyApplicationSummaryResponse;
 import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
 import dev.steady.application.dto.request.ApplicationUpdateAnswerRequest;
 import dev.steady.application.dto.request.SurveyResultRequest;
 import dev.steady.application.dto.response.ApplicationDetailResponse;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
+import dev.steady.application.dto.response.MyApplicationSummaryResponse;
 import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.notification.domain.ApplicationResultNotificationStrategy;
@@ -111,6 +111,16 @@ public class ApplicationService {
         List<SurveyResult> surveyResult = surveyResultRepository.findByApplicationOrderBySequenceAsc(application);
         SurveyResults surveyResults = new SurveyResults(surveyResult);
         surveyResults.updateAnswers(request.answers());
+    }
+
+    @Transactional
+    public void deleteApplication(Long applicationId, UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        Application application = applicationRepository.getById(applicationId);
+        application.checkApplicant(user);
+
+        applicationRepository.delete(application);
+        surveyResultRepository.deleteAllByApplication(application);
     }
 
     private void addParticipant(Application application, User leader) {
