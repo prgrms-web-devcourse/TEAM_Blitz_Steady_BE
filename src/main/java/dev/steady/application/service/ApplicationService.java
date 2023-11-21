@@ -97,7 +97,7 @@ public class ApplicationService {
     public void updateApplicationAnswer(Long applicationId, ApplicationUpdateAnswerRequest request, UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
         Application application = applicationRepository.getById(applicationId);
-        application.validateApplicantOrThrow(user);
+        application.validateUpdateAnswer(user);
 
         List<SurveyResult> surveyResult = surveyResultRepository.findByApplicationOrderBySequenceAsc(application);
         SurveyResults surveyResults = new SurveyResults(surveyResult);

@@ -4,7 +4,6 @@ import dev.steady.global.entity.BaseEntity;
 import dev.steady.global.exception.ForbiddenException;
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -18,8 +17,6 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 import static dev.steady.application.domain.ApplicationStatus.WAITING;
 import static dev.steady.application.exception.ApplicationErrorCode.APPLICATION_AUTH_FAILURE;
@@ -58,17 +55,21 @@ public class Application extends BaseEntity {
     }
 
     public void updateStatus(ApplicationStatus status, User user) {
-        if (steady.isLeader(user) && this.status == WAITING) {
+        if (steady.isLeader(user) && isWaitingStatus()) {
             this.status = status;
             return;
         }
         throw new ForbiddenException(APPLICATION_AUTH_FAILURE);
     }
 
-    public void validateApplicantOrThrow(User user) {
-        if (!isApplicant(user)) {
+    public void validateUpdateAnswer(User user) {
+        if (!isApplicant(user) || !isWaitingStatus()) {
             throw new ForbiddenException(APPLICATION_AUTH_FAILURE);
         }
+    }
+
+    private boolean isWaitingStatus() {
+        return this.status == WAITING;
     }
 
     private boolean hasAccess(User user) {
