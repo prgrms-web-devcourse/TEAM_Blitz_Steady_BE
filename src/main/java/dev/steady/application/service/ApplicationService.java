@@ -71,6 +71,14 @@ public class ApplicationService {
     }
 
     @Transactional(readOnly = true)
+    public SliceResponse<MyApplicationSummaryResponse> getMyApplications(UserInfo userInfo, Pageable pageable) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        Slice<Application> applications = applicationRepository.findAllByUser(user, pageable);
+        Slice<MyApplicationSummaryResponse> responses = applications.map(MyApplicationSummaryResponse::from);
+        return SliceResponse.from(responses);
+    }
+
+    @Transactional(readOnly = true)
     public ApplicationDetailResponse getApplicationDetail(Long applicationId, UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
         Application application = applicationRepository.getById(applicationId);
