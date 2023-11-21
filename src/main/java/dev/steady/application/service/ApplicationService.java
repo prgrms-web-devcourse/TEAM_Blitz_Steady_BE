@@ -5,6 +5,7 @@ import dev.steady.application.domain.SurveyResult;
 import dev.steady.application.domain.SurveyResults;
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.application.domain.repository.SurveyResultRepository;
+import dev.steady.application.dto.response.MyApplicationSummaryResponse;
 import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
 import dev.steady.application.dto.request.ApplicationUpdateAnswerRequest;
 import dev.steady.application.dto.request.SurveyResultRequest;
