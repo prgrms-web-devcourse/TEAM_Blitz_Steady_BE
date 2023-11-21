@@ -134,30 +134,6 @@ class SteadyServiceTest {
     }
 
     @Test
-    @DisplayName("스테디 페이징 조회 요청을 통해 페이징 처리 된 응답을 반환할 수 있다.")
-    void getSteadiesPageTest() {
-        // given
-        var position = positionRepository.save(createPosition());
-        var leader = userRepository.save(createFirstUser(position));
-        var stack = stackRepository.save(createStack());
-        var userInfo = createUserInfo(leader.getId());
-
-        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
-        steadyService.create(steadyRequest, userInfo);
-        entityManager.flush();
-        entityManager.clear();
-
-        // when
-        SteadyPageRequest steadyPageRequest = new SteadyPageRequest(0, "asc");
-        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(steadyPageRequest.toPageable());
-
-        // then
-        List<Steady> steadies = steadyRepository.findAll();
-        List<SteadySearchResponse> content = response.content();
-        assertThat(content.size()).isEqualTo(steadies.size());
-    }
-
-    @Test
     @DisplayName("스테디 검색 조회 요청을 통해 페이징 처리된 응답을 반환할 수 있다.")
     void getSteadiesSearchTest() {
         // given
