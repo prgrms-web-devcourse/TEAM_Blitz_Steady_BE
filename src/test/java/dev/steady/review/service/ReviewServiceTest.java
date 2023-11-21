@@ -55,8 +55,6 @@ class ReviewServiceTest {
     @Autowired
     private ReviewRepository reviewRepository;
     @Autowired
-    private ReviewQueryRepository reviewQueryRepository;
-    @Autowired
     private SteadyRepository steadyRepository;
     @Autowired
     private ParticipantRepository participantRepository;
@@ -66,8 +64,6 @@ class ReviewServiceTest {
     private CardRepository cardRepository;
     @Autowired
     private UserCardRepository userCardRepository;
-    @Autowired
-    private UserCardQueryRepository userCardQueryRepository;
     @Autowired
     private PositionRepository positionRepository;
     @Autowired
@@ -216,8 +212,8 @@ class ReviewServiceTest {
         reviewRepository.save(review);
         userCardRepository.save(createUserCard(revieweeUser, savedCard));
 
-        var allReviews = reviewQueryRepository.getAllReviewsByRevieweeUser(revieweeUser);
-        var cardsCount = userCardQueryRepository.getCardCountByUser(revieweeUser);
+        var allReviews = reviewRepository.getAllReviewsByRevieweeUser(revieweeUser);
+        var cardsCount = userCardRepository.getCardCountByUser(revieweeUser);
         // when
         ReviewMyResponse response = reviewService.getMyCardsAndReviews(userInfo);
 
