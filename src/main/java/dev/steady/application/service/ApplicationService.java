@@ -93,6 +93,17 @@ public class ApplicationService {
         createNotification(new ApplicationResultNotificationStrategy(application));
     }
 
+    @Transactional
+    public void updateApplicationAnswer(Long applicationId, ApplicationUpdateAnswerRequest request, UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        Application application = applicationRepository.getById(applicationId);
+        application.validateApplicantOrThrow(user);
+
+        List<SurveyResult> surveyResult = surveyResultRepository.findByApplicationOrderBySequenceAsc(application);
+        SurveyResults surveyResults = new SurveyResults(surveyResult);
+        surveyResults.updateAnswers(request.answers());
+    }
+
     private void addParticipant(Application application, User leader) {
         Steady steady = application.getSteady();
         User user = application.getUser();
