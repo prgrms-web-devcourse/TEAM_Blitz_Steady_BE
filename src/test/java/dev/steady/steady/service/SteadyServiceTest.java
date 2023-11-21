@@ -257,7 +257,8 @@ class SteadyServiceTest {
                 () -> assertThat(response.promotionCount()).isEqualTo(steady.getPromotionCount()),
                 () -> assertThat(response.createdAt()).isEqualTo(steady.getCreatedAt()),
                 () -> assertThat(response.finishedAt()).isEqualTo(steady.getFinishedAt()),
-                () -> assertThat(response.isReviewEnabled()).isEqualTo(false)
+                () -> assertThat(response.isReviewEnabled()).isEqualTo(false),
+                () -> assertThat(response.likeCount()).isEqualTo(0)
         );
     }
 
