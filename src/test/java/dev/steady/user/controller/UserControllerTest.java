@@ -25,9 +25,9 @@ import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
@@ -116,6 +116,9 @@ class UserControllerTest extends ControllerTestConfig {
                 .andDo(document("user-v1-get-myProfile",
                         resourceDetails().tag("사용자").description("내 프로필 조회")
                                 .responseSchema(Schema.schema("UserMyDetailResponse")),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        ),
                         responseFields(
                                 fieldWithPath("platform").type(STRING).description("소셜 계정 플랫폼"),
                                 fieldWithPath("userId").type(NUMBER).description("사용자 식별자"),
@@ -187,6 +190,9 @@ class UserControllerTest extends ControllerTestConfig {
                 .andDo(document("user-v1-update",
                         resourceDetails().tag("사용자").description("유저 프로필 수정")
                                 .requestSchema(Schema.schema("UserUpdateRequest")),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        ),
                         requestFields(
                                 fieldWithPath("profileImage").type(STRING).description("사용자 프로필 이미지 URL"),
                                 fieldWithPath("nickname").type(STRING).description("사용자 닉네임"),
@@ -196,6 +202,28 @@ class UserControllerTest extends ControllerTestConfig {
                         )
                 ))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("회원탈퇴를 진행할 수 있다.")
+    void withdrawTest() throws Exception {
+        // given
+        var userId = 1L;
+        var userInfo = createUserInfo(userId);
+        var authentication = new Authentication(userId);
+
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
+        willDoNothing().given(userService).withdrawUser(userInfo);
+
+        // when, then
+        mockMvc.perform(delete("/api/v1/user")
+                        .header(AUTHORIZATION, TOKEN))
+                .andDo(document("user-v1-withdraw", resourceDetails().tag("사용자")
+                                .description("유저 탈퇴"),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        )
+                )).andExpect(status().isNoContent());
     }
 
 }
