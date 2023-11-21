@@ -252,6 +252,7 @@ class UserServiceTest {
                 () -> assertThat(withdrawUser.getNickname()).isEqualTo("탈퇴한 유저"),
                 () -> assertThat(withdrawUser.getBio()).isNull(),
                 () -> assertThat(withdrawUser.getPosition()).isNull(),
+                () -> assertThat(withdrawUser.isDeleted()).isTrue(),
                 () -> assertThat(userStacks).hasSize(expectedSize),
                 () -> assertThat(userCards).hasSize(expectedSize),
                 () -> assertThat(reviews).hasSize(expectedSize),

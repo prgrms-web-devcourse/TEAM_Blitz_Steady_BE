@@ -27,8 +27,12 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
+import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -163,7 +167,8 @@ class UserControllerTest extends ControllerTestConfig {
                                 fieldWithPath("userCards[].cardId").type(NUMBER).description("카드 식별자"),
                                 fieldWithPath("userCards[].content").type(STRING).description("카드 내용"),
                                 fieldWithPath("userCards[].count").type(NUMBER).description("사용자가 받은 카드 개수"),
-                                fieldWithPath("reviews").type(ARRAY).description("사용자가 받은 리뷰 코멘트")
+                                fieldWithPath("reviews").type(ARRAY).description("사용자가 받은 리뷰 코멘트"),
+                                fieldWithPath("isDeleted").type(BOOLEAN).description("탈퇴 유저 여부")
                         )
                 )).andExpect(status().isOk())
                 .andExpect(content().string(objectMapper.writeValueAsString(response)));

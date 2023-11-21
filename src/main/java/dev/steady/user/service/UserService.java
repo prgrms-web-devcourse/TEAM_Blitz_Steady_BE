@@ -80,6 +80,11 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserOtherDetailResponse getOtherUserDetail(Long userId) {
         User user = userRepository.getUserBy(userId);
+
+        if (user.isDeleted()) {
+            return UserOtherDetailResponse.deletedUser();
+        }
+
         List<UserStack> userStacks = userStackRepository.findAllByUser(user);
         UserDetailResponse userDetailResponse = UserDetailResponse.of(user, userStacks);
         List<UserCardResponse> userCardResponses = userCardRepository.getCardCountByUser(user);

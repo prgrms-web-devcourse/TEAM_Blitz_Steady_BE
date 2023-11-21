@@ -9,8 +9,6 @@ import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
 import dev.steady.review.dto.response.ReviewMyResponse;
 import dev.steady.review.dto.response.ReviewSwitchResponse;
-import dev.steady.review.infrastructure.ReviewQueryRepository;
-import dev.steady.review.infrastructure.UserCardQueryRepository;
 import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.Stack;
