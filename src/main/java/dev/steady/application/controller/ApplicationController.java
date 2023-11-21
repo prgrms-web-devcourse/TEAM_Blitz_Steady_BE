@@ -9,6 +9,7 @@ import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.application.service.ApplicationService;
+import dev.steady.application.service.MyApplicationSummaryResponse;
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,14 @@ public class ApplicationController {
                                                                                      ApplicationPageRequest request) {
         Pageable pageable = request.toPageable();
         SliceResponse<ApplicationSummaryResponse> response = applicationService.getApplications(steadyId, userInfo, pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/applications/my-list")
+    public ResponseEntity<SliceResponse<MyApplicationSummaryResponse>> getMyApplications(@Auth UserInfo userInfo,
+                                                                                         ApplicationPageRequest request) {
+        Pageable pageable = request.toPageable();
+        SliceResponse<MyApplicationSummaryResponse> response = applicationService.getMyApplications(userInfo, pageable);
         return ResponseEntity.ok(response);
     }
 
