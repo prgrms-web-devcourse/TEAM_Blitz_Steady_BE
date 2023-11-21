@@ -47,13 +47,6 @@ public class SteadyController {
         return ResponseEntity.created(URI.create(String.format("/api/v1/steadies/%d", steadyId))).build();
     }
 
-    @GetMapping
-    public ResponseEntity<PageResponse<SteadySearchResponse>> getSteadiesPage(SteadyPageRequest request) {
-        Pageable pageable = request.toPageable();
-        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(pageable);
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping("/my")
     public ResponseEntity<SliceResponse<MySteadyResponse>> findMySteadies(@RequestParam(required = false) SteadyStatus status,
                                                                           @Auth UserInfo userInfo,

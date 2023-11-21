@@ -33,12 +33,16 @@ public record SteadyDetailResponse(
         int promotionCount,
         LocalDateTime createdAt,
         LocalDate finishedAt,
-        boolean isReviewEnabled
+        boolean isReviewEnabled,
+        int likeCount
 ) {
 
-    public static SteadyDetailResponse of(Steady steady, List<SteadyPosition> positions, boolean isLeader, boolean isSubmittedUser) {
-        return new SteadyDetailResponse(
-                steady.getId(),
+    public static SteadyDetailResponse of(Steady steady,
+                                          List<SteadyPosition> positions,
+                                          boolean isLeader,
+                                          boolean isSubmittedUser,
+                                          int likeCount) {
+        return new SteadyDetailResponse(steady.getId(),
                 LeaderResponse.from(steady.getLeader()),
                 steady.getName(),
                 steady.getTitle(),
@@ -63,7 +67,8 @@ public record SteadyDetailResponse(
                 steady.getPromotionCount(),
                 steady.getCreatedAt(),
                 steady.getFinishedAt(),
-                steady.isReviewEnabled()
+                steady.isReviewEnabled(),
+                likeCount
         );
     }
 
