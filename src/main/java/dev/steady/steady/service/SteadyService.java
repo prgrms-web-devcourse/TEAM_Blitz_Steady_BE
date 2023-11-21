@@ -10,10 +10,7 @@ import dev.steady.steady.domain.SteadyPosition;
 import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.SteadyViewLog;
-import dev.steady.steady.domain.repository.SteadyPositionRepository;
-import dev.steady.steady.domain.repository.SteadyQuestionRepository;
-import dev.steady.steady.domain.repository.SteadyRepository;
-import dev.steady.steady.domain.repository.ViewCountLogRepository;
+import dev.steady.steady.domain.repository.*;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyQuestionUpdateRequest;
@@ -41,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static dev.steady.application.domain.ApplicationStatus.WAITING;
 import static dev.steady.steady.exception.SteadyErrorCode.STEADY_IS_NOT_EMPTY;
@@ -57,6 +55,7 @@ public class SteadyService {
     private final ViewCountLogRepository viewCountLogRepository;
     private final SteadyQuestionRepository steadyQuestionRepository;
     private final SteadyPositionRepository steadyPositionRepository;
+    private final SteadyLikeRepository steadyLikeRepository;
 
     @Transactional
     public Long create(SteadyCreateRequest request, UserInfo userinfo) {
@@ -76,16 +75,10 @@ public class SteadyService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<SteadySearchResponse> getSteadies(Pageable pageable) {
-        Page<Steady> steadies = steadyRepository.findAll(pageable);
-        Page<SteadySearchResponse> searchResponses = steadies.map(SteadySearchResponse::from);
-        return PageResponse.from(searchResponses);
-    }
-
-    @Transactional(readOnly = true)
     public PageResponse<SteadySearchResponse> getSteadies(SearchConditionDto conditionDto, Pageable pageable) {
         Page<Steady> steadies = steadyRepository.findAllBySearchCondition(conditionDto, pageable);
-        Page<SteadySearchResponse> searchResponses = steadies.map(SteadySearchResponse::from);
+        Page<SteadySearchResponse> searchResponses = steadies
+                .map(steady -> SteadySearchResponse.from(steady, steadyLikeRepository.countBySteady(steady)));
         return PageResponse.from(searchResponses);
     }
 
@@ -106,8 +99,9 @@ public class SteadyService {
                 processViewCountLog(user, steady);
             }
         }
+        int likeCount = steadyLikeRepository.countBySteady(steady);
 
-        return SteadyDetailResponse.of(steady, positions, isLeader, isWaitingApplication);
+        return SteadyDetailResponse.of(steady, positions, isLeader, isWaitingApplication, likeCount);
     }
 
     @Transactional(readOnly = true)

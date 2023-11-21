@@ -106,58 +106,6 @@ class SteadyControllerTest extends ControllerTestConfig {
 
     @Test
     @DisplayName("전체 스테디를 반환한다.")
-    void getSteadiesTest() throws Exception {
-        // given
-        var request = new SteadyPageRequest(0, "desc");
-        MultiValueMap params = new LinkedMultiValueMap<>() {{
-            add("page", "0");
-            add("direction", "desc");
-        }};
-
-        var pageable = request.toPageable();
-        var steady = createSteady();
-        var response = createSteadyPageResponse(steady, pageable);
-
-        given(steadyService.getSteadies(pageable)).willReturn(response);
-
-        // when & then
-        mockMvc.perform(get("/api/v1/steadies")
-                        .queryParams(params))
-                .andDo(document("steady-get-steadies",
-                        resourceDetails().tag("스테디").description("스테디 전체 조회")
-                                .responseSchema(Schema.schema("PageResponse")),
-                        queryParameters(
-                                parameterWithName("page").description("요청 페이지 번호"),
-                                parameterWithName("direction").description("내림/오름차순")
-                        ),
-                        responseFields(
-                                fieldWithPath("content[].id").type(NUMBER).description("스테디 id"),
-                                fieldWithPath("content[].nickname").type(STRING).description("스테디 리더 닉네임"),
-                                fieldWithPath("content[].profileImage").type(STRING).description("스테디 리더 프로필 이미지"),
-                                fieldWithPath("content[].title").type(STRING).description("모집글 제목"),
-                                fieldWithPath("content[].type").type(STRING).description("스테디 분류"),
-                                fieldWithPath("content[].status").type(STRING).description("스테디 상태"),
-                                fieldWithPath("content[].deadline").type(STRING).description("모집 마감일"),
-                                fieldWithPath("content[].createdAt").type(STRING).description("스테디 생성일"),
-                                fieldWithPath("content[].participantLimit").type(NUMBER).description("모집 정원"),
-                                fieldWithPath("content[].numberOfParticipants").type(NUMBER).description("스테디 참여 인원"),
-                                fieldWithPath("content[].viewCount").type(NUMBER).description("조회수"),
-                                fieldWithPath("content[].stacks[].id").type(NUMBER).description("기술 스택 id"),
-                                fieldWithPath("content[].stacks[].name").type(STRING).description("기술 스택명"),
-                                fieldWithPath("content[].stacks[].imageUrl").type(STRING).description("기술 스택 이미지"),
-                                fieldWithPath("numberOfElements").type(NUMBER).description("현재 페이지 조회된 개수"),
-                                fieldWithPath("page").type(NUMBER).description("현재 페이지"),
-                                fieldWithPath("size").type(NUMBER).description("페이지 크기"),
-                                fieldWithPath("totalPages").type(NUMBER).description("전체 페이지 개수"),
-                                fieldWithPath("totalElements").type(NUMBER).description("전체 개수")
-                        )
-                ))
-                .andExpect(status().isOk())
-                .andExpect(content().string(objectMapper.writeValueAsString(response)));
-    }
-
-    @Test
-    @DisplayName("전체 스테디를 반환한다.")
     void findMySteadiesTest() throws Exception {
         // given
         var userId = 1L;
@@ -265,6 +213,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("content[].stacks[].id").type(NUMBER).description("기술 스택 id"),
                                 fieldWithPath("content[].stacks[].name").type(STRING).description("기술 스택명"),
                                 fieldWithPath("content[].stacks[].imageUrl").type(STRING).description("기술 스택 이미지"),
+                                fieldWithPath("content[].likeCount").type(NUMBER).description("좋아요 수"),
                                 fieldWithPath("numberOfElements").type(NUMBER).description("현재 페이지 조회된 개수"),
                                 fieldWithPath("page").type(NUMBER).description("현재 페이지"),
                                 fieldWithPath("size").type(NUMBER).description("페이지 크기"),
@@ -292,7 +241,8 @@ class SteadyControllerTest extends ControllerTestConfig {
         var response = SteadyDetailResponse.of(steady,
                 List.of(steadyPosition),
                 true,
-                false);
+                false,
+                10);
 
         given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
         given(steadyService.getDetailSteady(steadyId, userInfo)).willReturn(response);
@@ -333,7 +283,8 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("promotionCount").type(NUMBER).description("끌어올리가 남은 횟수"),
                                 fieldWithPath("createdAt").type(STRING).description("스테디 생성일"),
                                 fieldWithPath("finishedAt").type(STRING).description("스테디 종료일").optional(),
-                                fieldWithPath("isReviewEnabled").type(BOOLEAN).description("리뷰 작성 가능 여부")
+                                fieldWithPath("isReviewEnabled").type(BOOLEAN).description("리뷰 작성 가능 여부"),
+                                fieldWithPath("likeCount").type(NUMBER).description("좋아요 수")
                         )
                 ))
                 .andExpect(status().isOk())
