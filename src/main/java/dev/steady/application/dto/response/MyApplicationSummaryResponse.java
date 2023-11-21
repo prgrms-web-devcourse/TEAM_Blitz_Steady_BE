@@ -1,4 +1,4 @@
-package dev.steady.application.service;
+package dev.steady.application.dto.response;
 
 import dev.steady.application.domain.Application;
 import dev.steady.application.domain.ApplicationStatus;
