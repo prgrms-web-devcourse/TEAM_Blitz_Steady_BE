@@ -43,8 +43,6 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
     private final UserCardRepository userCardRepository;
-    private final UserCardQueryRepository userCardQueryRepository;
-    private final ReviewQueryRepository reviewQueryRepository;
 
     @Transactional
     public Long createReview(Long steadyId, ReviewCreateRequest request, UserInfo userInfo) {
@@ -106,8 +104,8 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public ReviewMyResponse getMyCardsAndReviews(UserInfo userInfo) {
         User user = userRepository.getUserBy(userInfo.userId());
-        List<UserCardResponse> userCards = userCardQueryRepository.getCardCountByUser(user);
-        List<ReviewsBySteadyResponse> reviews = reviewQueryRepository.getAllReviewsByRevieweeUser(user);
+        List<UserCardResponse> userCards = userCardRepository.getCardCountByUser(user);
+        List<ReviewsBySteadyResponse> reviews = reviewRepository.getAllReviewsByRevieweeUser(user);
         return ReviewMyResponse.of(userCards, reviews);
     }
 

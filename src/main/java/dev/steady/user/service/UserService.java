@@ -3,9 +3,11 @@ package dev.steady.user.service;
 import dev.steady.auth.domain.Platform;
 import dev.steady.auth.domain.repository.AccountRepository;
 import dev.steady.global.auth.UserInfo;
+import dev.steady.review.domain.repository.ReviewRepository;
+import dev.steady.review.domain.repository.UserCardRepository;
 import dev.steady.review.dto.response.UserCardResponse;
-import dev.steady.review.infrastructure.ReviewQueryRepository;
-import dev.steady.review.infrastructure.UserCardQueryRepository;
+import dev.steady.steady.domain.Participant;
+import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
@@ -35,8 +37,9 @@ public class UserService {
     private final PositionRepository positionRepository;
     private final UserStackRepository userStackRepository;
     private final AccountRepository accountRepository;
-    private final UserCardQueryRepository userCardQueryRepository;
-    private final ReviewQueryRepository reviewQueryRepository;
+    private final UserCardRepository userCardRepository;
+    private final ReviewRepository reviewRepository;
+    private final ParticipantRepository participantRepository;
 
     @Transactional(readOnly = true)
     public UserMyDetailResponse getMyUserDetail(UserInfo userInfo) {
@@ -79,8 +82,8 @@ public class UserService {
         User user = userRepository.getUserBy(userId);
         List<UserStack> userStacks = userStackRepository.findAllByUser(user);
         UserDetailResponse userDetailResponse = UserDetailResponse.of(user, userStacks);
-        List<UserCardResponse> userCardResponses = userCardQueryRepository.getCardCountByUser(user);
-        List<String> reviews = reviewQueryRepository.getPublicCommentsByRevieweeUser(user);
+        List<UserCardResponse> userCardResponses = userCardRepository.getCardCountByUser(user);
+        List<String> reviews = reviewRepository.getPublicCommentsByRevieweeUser(user);
 
         return UserOtherDetailResponse.of(
                 userDetailResponse,
@@ -92,6 +95,17 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserNicknameExistResponse existsByNickname(String nickname) {
         return new UserNicknameExistResponse(userRepository.existsByNickname(nickname));
+    }
+
+    @Transactional
+    public void withdrawUser(UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        user.withdraw();
+        userStackRepository.deleteAllByUser(user);
+        userCardRepository.deleteAllByUser(user);
+        List<Participant> participants = participantRepository.findByUser(user);
+        participants.forEach(reviewRepository::deleteAllByReviewee);
+        accountRepository.deleteByUser(user);
     }
 
     private Stack getStack(Long stackId) {

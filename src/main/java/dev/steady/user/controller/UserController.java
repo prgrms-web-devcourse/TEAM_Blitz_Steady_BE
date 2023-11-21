@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -65,6 +66,12 @@ public class UserController {
     public ResponseEntity<UserOtherDetailResponse> getOtherUserDetail(@PathVariable Long userId) {
         UserOtherDetailResponse response = userService.getOtherUserDetail(userId);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> withdrawUser(@Auth UserInfo userInfo) {
+        userService.withdrawUser(userInfo);
+        return ResponseEntity.noContent().build();
     }
 
 }
