@@ -19,6 +19,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 import static dev.steady.application.domain.ApplicationStatus.WAITING;
 import static dev.steady.application.exception.ApplicationErrorCode.APPLICATION_AUTH_FAILURE;
 
@@ -40,9 +42,6 @@ public class Application extends BaseEntity {
     @JoinColumn(name = "steady_id")
     private Steady steady;
 
-    @Embedded
-    private final SurveyResults surveyResults = new SurveyResults();
-
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
@@ -58,10 +57,6 @@ public class Application extends BaseEntity {
         }
     }
 
-    public void addSurveyResult(SurveyResult surveyResult) {
-        this.surveyResults.addSurveyResult(surveyResult, this);
-    }
-
     public void updateStatus(ApplicationStatus status, User user) {
         if (steady.isLeader(user) && this.status == WAITING) {
             this.status = status;
@@ -70,11 +65,17 @@ public class Application extends BaseEntity {
         throw new ForbiddenException(APPLICATION_AUTH_FAILURE);
     }
 
-    private boolean hasAccess(User user) {
-        return isCurrentUser(user) || isLeader(user);
+    public void validateApplicantOrThrow(User user) {
+        if (!isApplicant(user)) {
+            throw new ForbiddenException(APPLICATION_AUTH_FAILURE);
+        }
     }
 
-    private boolean isCurrentUser(User user) {
+    private boolean hasAccess(User user) {
+        return isApplicant(user) || isLeader(user);
+    }
+
+    private boolean isApplicant(User user) {
         return this.user.equals(user);
     }
 
