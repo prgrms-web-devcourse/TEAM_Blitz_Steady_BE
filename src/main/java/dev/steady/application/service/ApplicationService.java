@@ -4,7 +4,9 @@ import dev.steady.application.domain.Application;
 import dev.steady.application.domain.SurveyResult;
 import dev.steady.application.domain.SurveyResults;
 import dev.steady.application.domain.repository.ApplicationRepository;
+import dev.steady.application.domain.repository.SurveyResultRepository;
 import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
+import dev.steady.application.dto.request.ApplicationUpdateAnswerRequest;
 import dev.steady.application.dto.request.SurveyResultRequest;
 import dev.steady.application.dto.response.ApplicationDetailResponse;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
@@ -40,6 +42,7 @@ public class ApplicationService {
     private final UserRepository userRepository;
     private final SteadyRepository steadyRepository;
     private final ApplicationRepository applicationRepository;
+    private final SurveyResultRepository surveyResultRepository;
     private final NotificationService notificationService;
 
     @Transactional
@@ -48,9 +51,11 @@ public class ApplicationService {
         Steady steady = steadyRepository.getSteady(steadyId);
 
         Application application = new Application(user, steady);
-        createSurveyResult(application, request);
-
         Application savedApplication = applicationRepository.save(application);
+
+        List<SurveyResult> surveyResult = createSurveyResult(application, request);
+        surveyResultRepository.saveAll(surveyResult);
+
         createNotification(new FreshApplicationNotificationStrategy(steady));
         return CreateApplicationResponse.from(savedApplication);
     }
@@ -71,7 +76,7 @@ public class ApplicationService {
         Application application = applicationRepository.getById(applicationId);
         application.checkAccessOrThrow(user);
 
-        SurveyResults surveyResults = application.getSurveyResults();
+        List<SurveyResult> surveyResults = surveyResultRepository.findByApplicationOrderBySequenceAsc(application);
         return ApplicationDetailResponse.from(surveyResults);
     }
 
@@ -86,6 +91,17 @@ public class ApplicationService {
             addParticipant(application, leader);
         }
         createNotification(new ApplicationResultNotificationStrategy(application));
+    }
+
+    @Transactional
+    public void updateApplicationAnswer(Long applicationId, ApplicationUpdateAnswerRequest request, UserInfo userInfo) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        Application application = applicationRepository.getById(applicationId);
+        application.validateUpdateAnswer(user);
+
+        List<SurveyResult> surveyResult = surveyResultRepository.findByApplicationOrderBySequenceAsc(application);
+        SurveyResults surveyResults = new SurveyResults(surveyResult);
+        surveyResults.updateAnswers(request.answers());
     }
 
     private void addParticipant(Application application, User leader) {

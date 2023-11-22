@@ -64,7 +64,6 @@ class TemplateServiceTest {
 
     @AfterEach
     void tearDown() {
-
         questionRepository.deleteAll();
         templateRepository.deleteAll();
         userRepository.deleteAll();

@@ -4,7 +4,6 @@ import dev.steady.global.entity.BaseEntity;
 import dev.steady.global.exception.ForbiddenException;
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -40,9 +39,6 @@ public class Application extends BaseEntity {
     @JoinColumn(name = "steady_id")
     private Steady steady;
 
-    @Embedded
-    private final SurveyResults surveyResults = new SurveyResults();
-
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
@@ -58,23 +54,29 @@ public class Application extends BaseEntity {
         }
     }
 
-    public void addSurveyResult(SurveyResult surveyResult) {
-        this.surveyResults.addSurveyResult(surveyResult, this);
-    }
-
     public void updateStatus(ApplicationStatus status, User user) {
-        if (steady.isLeader(user) && this.status == WAITING) {
+        if (steady.isLeader(user) && isWaitingStatus()) {
             this.status = status;
             return;
         }
         throw new ForbiddenException(APPLICATION_AUTH_FAILURE);
     }
 
-    private boolean hasAccess(User user) {
-        return isCurrentUser(user) || isLeader(user);
+    public void validateUpdateAnswer(User user) {
+        if (!isApplicant(user) || !isWaitingStatus()) {
+            throw new ForbiddenException(APPLICATION_AUTH_FAILURE);
+        }
     }
 
-    private boolean isCurrentUser(User user) {
+    private boolean isWaitingStatus() {
+        return this.status == WAITING;
+    }
+
+    private boolean hasAccess(User user) {
+        return isApplicant(user) || isLeader(user);
+    }
+
+    private boolean isApplicant(User user) {
         return this.user.equals(user);
     }
 

@@ -2,6 +2,7 @@ package dev.steady.application.controller;
 
 import dev.steady.application.dto.request.ApplicationPageRequest;
 import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
+import dev.steady.application.dto.request.ApplicationUpdateAnswerRequest;
 import dev.steady.application.dto.request.SurveyResultRequest;
 import dev.steady.application.dto.response.ApplicationDetailResponse;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
@@ -52,6 +53,14 @@ public class ApplicationController {
                                                                           @Auth UserInfo userInfo) {
         ApplicationDetailResponse applicationDetail = applicationService.getApplicationDetail(applicationId, userInfo);
         return ResponseEntity.ok(applicationDetail);
+    }
+
+    @PatchMapping("/applications/{applicationId}")
+    public ResponseEntity<Void> updateApplicationAnswers(@PathVariable Long applicationId,
+                                                         @RequestBody ApplicationUpdateAnswerRequest request,
+                                                         @Auth UserInfo userInfo) {
+        applicationService.updateApplicationAnswer(applicationId, request, userInfo);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/applications/{applicationId}/status")

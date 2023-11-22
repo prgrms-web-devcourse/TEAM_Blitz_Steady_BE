@@ -2,6 +2,7 @@ package dev.steady.notification.service;
 
 import dev.steady.application.domain.ApplicationStatus;
 import dev.steady.application.domain.repository.ApplicationRepository;
+import dev.steady.application.domain.repository.SurveyResultRepository;
 import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
 import dev.steady.application.service.ApplicationService;
 import dev.steady.global.exception.NotFoundException;
@@ -68,6 +69,9 @@ class NotificationServiceTest {
     private ApplicationRepository applicationRepository;
 
     @Autowired
+    private SurveyResultRepository surveyResultRepository;
+
+    @Autowired
     private SteadyRepository steadyRepository;
 
     private Position position;
@@ -83,6 +87,7 @@ class NotificationServiceTest {
 
     @AfterEach
     void tearDown() {
+        surveyResultRepository.deleteAll();
         applicationRepository.deleteAll();
         steadyRepository.deleteAll();
         notificationRepository.deleteAll();
