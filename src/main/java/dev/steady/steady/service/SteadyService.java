@@ -6,6 +6,7 @@ import dev.steady.global.auth.UserInfo;
 import dev.steady.global.exception.InvalidStateException;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
+import dev.steady.steady.domain.SteadyLike;
 import dev.steady.steady.domain.SteadyPosition;
 import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.domain.SteadyStatus;
@@ -87,20 +88,20 @@ public class SteadyService {
         List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steady.getId());
 
         boolean isLeader = false;
-        boolean isWaitingApplication = false;
+        Long applicationId = null;
 
         if (userInfo.isAuthenticated()) {
             User user = userRepository.getUserBy(userInfo.userId());
             isLeader = steady.isLeader(user);
 
             if (!isLeader) {
-                isWaitingApplication = isWaitingApplication(user, steady);
+                applicationId = findSubmittedApplication(user, steady);
                 processViewCountLog(user, steady);
             }
         }
         int likeCount = getLikeCount(steady);
 
-        return SteadyDetailResponse.of(steady, positions, isLeader, isWaitingApplication, likeCount);
+        return SteadyDetailResponse.of(steady, positions, isLeader, applicationId, likeCount);
     }
 
     @Transactional(readOnly = true)
@@ -198,11 +199,9 @@ public class SteadyService {
         return !viewLogOptional.isPresent() || viewLogOptional.get().checkThreeHoursPassed();
     }
 
-    private boolean isWaitingApplication(User user, Steady steady) {
+    private Long findSubmittedApplication(User user, Steady steady) {
         return applicationRepository.findBySteadyIdAndUserIdAndStatus(steady.getId(), user.getId(), WAITING)
-                .stream()
-                .findFirst()
-                .isPresent();
+                .getId();
     }
 
     private List<Stack> getStacks(List<Long> stacks) {
