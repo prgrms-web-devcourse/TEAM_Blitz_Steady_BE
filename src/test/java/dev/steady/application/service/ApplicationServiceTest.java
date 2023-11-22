@@ -13,6 +13,7 @@ import dev.steady.application.dto.response.MyApplicationSummaryResponse;
 import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.global.exception.ForbiddenException;
+import dev.steady.global.exception.NotFoundException;
 import dev.steady.notification.domain.repository.NotificationRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.Position;
@@ -285,6 +286,22 @@ class ApplicationServiceTest {
         List<MyApplicationSummaryResponse> actual = response.content();
         assertThat(actual).extracting("applicationId", "steadyName")
                 .contains(tuple(savedApplication.getId(), steady.getName()));
+    }
+
+    @DisplayName("본인의 신청서를 삭제할 수 있고 등록된 질답도 함께 삭제된다.")
+    @Test
+    void deleteApplication() {
+        var steady = steadyRepository.save(createSteady(leader, stack));
+        var secondUser = userRepository.save(createSecondUser(position));
+        var application = createApplication(secondUser, steady);
+        var savedApplication = applicationRepository.save(application);
+        var userInfo = new UserInfo(secondUser.getId());
+        //when
+        applicationService.deleteApplication(savedApplication.getId(), userInfo);
+
+        //then
+        assertThatThrownBy(() -> applicationRepository.getById(application.getId()))
+                .isInstanceOf(NotFoundException.class);
     }
 
 }
