@@ -74,6 +74,10 @@ public class ReviewService {
 
     @Transactional
     public void createUserCards(ReviewCreateRequest request) {
+        if (request.cardsId().isEmpty()) {
+            return;
+        }
+        
         User reviewee = userRepository.getUserBy(request.revieweeId());
         List<Card> cards = getCards(request.cardsId());
         List<UserCard> userCards = cards.stream()
