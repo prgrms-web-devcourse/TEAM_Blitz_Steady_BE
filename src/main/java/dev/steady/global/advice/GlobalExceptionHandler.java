@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handlerException(AuthenticationException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        log.info("{}", errorCode.message());
+        log.info(errorCode.message(), exception);
         return ResponseEntity.status(UNAUTHORIZED)
                 .body(ErrorResponse.of(exception.getErrorCode()));
     }
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handlerException(ForbiddenException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        log.info("{}", errorCode.message());
+        log.info(errorCode.message(), exception);
         return ResponseEntity.status(FORBIDDEN)
                 .body(ErrorResponse.of(exception.getErrorCode()));
     }
@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handlerException(NotFoundException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        log.info("{}", errorCode.message());
+        log.info(errorCode.message(), exception);
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(exception.getErrorCode()));
     }
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handlerException(InvalidStateException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        log.info("{}", errorCode.message());
+        log.info(errorCode.message(), exception);
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(exception.getErrorCode()));
     }
@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handlerException(InvalidValueException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        log.info("{}", errorCode.message());
+        log.info(errorCode.message(), exception);
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(exception.getErrorCode()));
     }
@@ -66,21 +66,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handlerException(OAuthPlatformException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        log.info("{}", errorCode.message());
+        log.info(errorCode.message(), exception);
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(exception.getErrorCode()));
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handlerException(MethodArgumentNotValidException exception) {
-        log.info("{}", exception.getBindingResult());
+        log.info(exception.getMessage(), exception.getBindingResult());
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(GlobalErrorCode.INPUT_VALIDATION_ERROR, exception.getBindingResult()));
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handlerException(MethodArgumentTypeMismatchException exception) {
-        log.info("{}", exception.getMessage());
+        log.info(exception.getMessage(), exception);
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(exception));
     }
