@@ -7,7 +7,8 @@ import java.util.List;
 public record UserOtherDetailResponse(
         UserDetailResponse user,
         List<UserCardResponse> userCards,
-        List<String> reviews
+        List<String> reviews,
+        boolean isDeleted
 ) {
 
     public static UserOtherDetailResponse of(UserDetailResponse user,
@@ -16,7 +17,17 @@ public record UserOtherDetailResponse(
         return new UserOtherDetailResponse(
                 user,
                 userCards,
-                reviews
+                reviews,
+                false
+        );
+    }
+
+    public static UserOtherDetailResponse deletedUser() {
+        return new UserOtherDetailResponse(
+                null,
+                null,
+                null,
+                true
         );
     }
 

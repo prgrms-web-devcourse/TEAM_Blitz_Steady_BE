@@ -1,16 +1,18 @@
 package dev.steady.user.service;
 
+import dev.steady.auth.domain.Account;
 import dev.steady.auth.domain.repository.AccountRepository;
+import dev.steady.review.domain.Review;
+import dev.steady.review.domain.UserCard;
 import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
-import dev.steady.review.infrastructure.ReviewQueryRepository;
-import dev.steady.review.infrastructure.UserCardQueryRepository;
 import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
+import dev.steady.user.domain.UserStack;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.domain.repository.UserRepository;
@@ -31,18 +33,12 @@ import java.util.stream.IntStream;
 
 import static dev.steady.auth.fixture.AccountFixture.createAccount;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
-import static dev.steady.review.fixture.ReviewFixture.createCard;
-import static dev.steady.review.fixture.ReviewFixture.createReview;
-import static dev.steady.review.fixture.ReviewFixture.createUserCard;
+import static dev.steady.review.fixture.ReviewFixture.*;
 import static dev.steady.steady.domain.Participant.createLeader;
 import static dev.steady.steady.domain.Participant.createMember;
 import static dev.steady.steady.domain.SteadyStatus.RECRUITING;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
-import static dev.steady.user.fixture.UserFixtures.createFirstUser;
-import static dev.steady.user.fixture.UserFixtures.createPosition;
-import static dev.steady.user.fixture.UserFixtures.createSecondUser;
-import static dev.steady.user.fixture.UserFixtures.createStack;
-import static dev.steady.user.fixture.UserFixtures.createUserUpdateRequest;
+import static dev.steady.user.fixture.UserFixtures.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -68,9 +64,6 @@ class UserServiceTest {
     private AccountRepository accountRepository;
 
     @Autowired
-    private ReviewQueryRepository reviewQueryRepository;
-
-    @Autowired
     private ReviewRepository reviewRepository;
 
     @Autowired
@@ -80,9 +73,6 @@ class UserServiceTest {
     private UserCardRepository userCardRepository;
 
     @Autowired
-    private UserCardQueryRepository userCardQueryRepository;
-
-    @Autowired
     private SteadyRepository steadyRepository;
 
     @Autowired
@@ -90,7 +80,6 @@ class UserServiceTest {
 
     @Autowired
     private TransactionTemplate transactionTemplate;
-
 
     private List<Stack> stacks;
     private Position position;
@@ -208,8 +197,8 @@ class UserServiceTest {
         userCardRepository.save(createUserCard(revieweeUser, savedCard));
 
         var userStacks = userStackRepository.findAllByUser(revieweeUser);
-        var reviews = reviewQueryRepository.getPublicCommentsByRevieweeUser(revieweeUser);
-        var userCards = userCardQueryRepository.getCardCountByUser(revieweeUser);
+        var reviews = reviewRepository.getPublicCommentsByRevieweeUser(revieweeUser);
+        var userCards = userCardRepository.getCardCountByUser(revieweeUser);
 
         // when
         UserOtherDetailResponse response = userService.getOtherUserDetail(revieweeUser.getId());
@@ -224,6 +213,50 @@ class UserServiceTest {
                 () -> assertThat(response.user().stacks()).hasSameSizeAs(userStacks),
                 () -> assertThat(response.reviews()).hasSameSizeAs(reviews),
                 () -> assertThat(response.userCards()).hasSameSizeAs(userCards)
+        );
+    }
+
+    @Test
+    @DisplayName("유저의 탈퇴 요청을 처리할 수 있다.")
+    void withdrawUserTesT() {
+        // given
+        var stacksId = stacks.stream().map(Stack::getId).toList();
+        var request = new UserCreateRequest(1L, "Nickname", position.getId(), stacksId);
+        var userId = userService.createUser(request);
+
+        var user = transactionTemplate.execute(status -> userRepository.getUserBy(userId));
+
+        var userInfo = createUserInfo(user.getId());
+
+        var leader = userRepository.save(createFirstUser(position));
+        var steady = steadyRepository.save(createSteady(leader, stacks, RECRUITING));
+        var reviewer = participantRepository.save(createLeader(leader, steady));
+        var reviewee = participantRepository.save(createMember(user, steady));
+
+        var review = createReview(reviewer, reviewee, steady);
+        var savedCard = cardRepository.save(createCard());
+        reviewRepository.save(review);
+        userCardRepository.save(createUserCard(user, savedCard));
+
+        // when
+        userService.withdrawUser(userInfo);
+
+        // then
+        int expectedSize = 0;
+        User withdrawUser = userRepository.getUserBy(userId);
+        List<UserStack> userStacks = userStackRepository.findAllByUser(user);
+        List<UserCard> userCards = userCardRepository.findAllByUser(user);
+        List<Review> reviews = reviewRepository.findAll();
+        Account account = accountRepository.findByUser(user);
+        assertAll(
+                () -> assertThat(withdrawUser.getNickname()).startsWith("탈퇴한 유저"),
+                () -> assertThat(withdrawUser.getBio()).isNull(),
+                () -> assertThat(withdrawUser.getPosition()).isNull(),
+                () -> assertThat(withdrawUser.isDeleted()).isTrue(),
+                () -> assertThat(userStacks).hasSize(expectedSize),
+                () -> assertThat(userCards).hasSize(expectedSize),
+                () -> assertThat(reviews).hasSize(expectedSize),
+                () -> assertThat(account).isNull()
         );
     }
 

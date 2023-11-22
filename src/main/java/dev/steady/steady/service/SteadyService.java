@@ -78,7 +78,7 @@ public class SteadyService {
     public PageResponse<SteadySearchResponse> getSteadies(SearchConditionDto conditionDto, Pageable pageable) {
         Page<Steady> steadies = steadyRepository.findAllBySearchCondition(conditionDto, pageable);
         Page<SteadySearchResponse> searchResponses = steadies
-                .map(steady -> SteadySearchResponse.from(steady, steadyLikeRepository.countBySteady(steady)));
+                .map(steady -> SteadySearchResponse.from(steady, getLikeCount(steady)));
         return PageResponse.from(searchResponses);
     }
 
@@ -99,7 +99,7 @@ public class SteadyService {
                 processViewCountLog(user, steady);
             }
         }
-        int likeCount = steadyLikeRepository.countBySteady(steady);
+        int likeCount = getLikeCount(steady);
 
         return SteadyDetailResponse.of(steady, positions, isLeader, isWaitingApplication, likeCount);
     }
@@ -238,6 +238,10 @@ public class SteadyService {
                         .steady(steady)
                         .build())
                 .toList();
+    }
+
+    private int getLikeCount(Steady steady) {
+        return steadyLikeRepository.countBySteady(steady);
     }
 
 }

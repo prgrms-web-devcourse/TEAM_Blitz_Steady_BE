@@ -42,18 +42,23 @@ public class User extends BaseEntity {
     @JoinColumn(name = "position_id")
     private Position position;
 
+    @Column(nullable = false)
+    private boolean isDeleted;
+
     @Builder
     private User(String profileImage, String nickname, String bio, Position position) {
         this.profileImage = profileImage;
         this.nickname = nickname;
         this.bio = bio;
         this.position = position;
+        this.isDeleted = false;
     }
 
     public User(String nickname, Position position) {
         this.nickname = nickname;
         this.position = position;
         this.profileImage = DEFAULT_PROFILE_IMAGE_URL;
+        this.isDeleted = false;
     }
 
     public void update(String profileImage,
@@ -64,6 +69,14 @@ public class User extends BaseEntity {
         this.nickname = nickname;
         this.bio = bio;
         this.position = position;
+    }
+
+    public void withdraw() {
+        this.profileImage = DEFAULT_PROFILE_IMAGE_URL;
+        this.nickname = WithdrawUserUtils.generateWithdrawName();
+        this.bio = null;
+        this.position = null;
+        this.isDeleted = true;
     }
 
 }
