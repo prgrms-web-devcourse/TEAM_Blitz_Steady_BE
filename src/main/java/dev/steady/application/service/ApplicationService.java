@@ -5,6 +5,7 @@ import dev.steady.application.domain.SurveyResult;
 import dev.steady.application.domain.SurveyResults;
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.application.domain.repository.SurveyResultRepository;
+import dev.steady.application.dto.response.MyApplicationSummaryResponse;
 import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
 import dev.steady.application.dto.request.ApplicationUpdateAnswerRequest;
 import dev.steady.application.dto.request.SurveyResultRequest;
@@ -67,6 +68,14 @@ public class ApplicationService {
         steady.validateLeader(user);
         Slice<Application> applications = applicationRepository.findAllBySteadyIdAndStatus(steadyId, WAITING, pageable);
         Slice<ApplicationSummaryResponse> responses = applications.map(ApplicationSummaryResponse::from);
+        return SliceResponse.from(responses);
+    }
+
+    @Transactional(readOnly = true)
+    public SliceResponse<MyApplicationSummaryResponse> getMyApplications(UserInfo userInfo, Pageable pageable) {
+        User user = userRepository.getUserBy(userInfo.userId());
+        Slice<Application> applications = applicationRepository.findAllByUser(user, pageable);
+        Slice<MyApplicationSummaryResponse> responses = applications.map(MyApplicationSummaryResponse::from);
         return SliceResponse.from(responses);
     }
 

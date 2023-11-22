@@ -15,6 +15,7 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resour
 import static dev.steady.application.domain.ApplicationStatus.ACCEPTED;
 import static dev.steady.application.fixture.ApplicationFixture.createApplicationDetailResponse;
 import static dev.steady.application.fixture.ApplicationFixture.createApplicationSummaryResponse;
+import static dev.steady.application.fixture.ApplicationFixture.createMyApplicationSummaryResponse;
 import static dev.steady.application.fixture.SurveyResultFixture.createAnswers;
 import static dev.steady.application.fixture.SurveyResultFixture.createSurveyResultRequests;
 import static org.mockito.Mockito.when;
@@ -26,11 +27,14 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.JsonFieldType.ARRAY;
+import static org.springframework.restdocs.payload.JsonFieldType.BOOLEAN;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -101,6 +105,10 @@ class ApplicationControllerTest extends ControllerTestConfig {
                                 requestHeaders(
                                         headerWithName(AUTHORIZATION).description("토큰")
                                 ),
+                                queryParameters(
+                                        parameterWithName("page").description("페이지 넘버").optional(),
+                                        parameterWithName("direction").description("내림/오름차순").optional()
+                                ),
                                 responseFields(
                                         fieldWithPath("content").description("신청서 목록"),
                                         fieldWithPath("content[].applicationId").description("신청서 식별자"),
@@ -109,6 +117,48 @@ class ApplicationControllerTest extends ControllerTestConfig {
                                         fieldWithPath("content[].profileImage").description("신청자 프로필 사진"),
                                         fieldWithPath("numberOfElements").description("목록의 갯수"),
                                         fieldWithPath("hasNext").description("다음 페이지의 유무")
+                                )
+                        )
+                ).andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
+    }
+
+    @DisplayName("사용자의 신청서 리스트를 반환한다.")
+    @Test
+    void getMyApplicationsTest() throws Exception {
+        long userId = 1L;
+        var auth = new Authentication(userId);
+        var userInfo = new UserInfo(userId);
+        var response = createMyApplicationSummaryResponse();
+        var page = new ApplicationPageRequest(0, "desc");
+        var pageable = page.toPageable();
+
+        when(jwtResolver.getAuthentication(TOKEN)).thenReturn(auth);
+        when(applicationService.getMyApplications(userInfo, pageable))
+                .thenReturn(response);
+
+        mockMvc.perform(get("/api/v1/applications/my-list")
+                        .param("page", "0")
+                        .param("direction", "desc")
+                        .header(AUTHORIZATION, TOKEN))
+                .andDo(document("MyApplication-Summary",
+                                resourceDetails().tag("신청서").description("내 신청서 목록 조회")
+                                        .responseSchema(Schema.schema("MyApplicationSummaryResponse")),
+                                requestHeaders(
+                                        headerWithName(AUTHORIZATION).description("토큰")
+                                ),
+                                queryParameters(
+                                        parameterWithName("page").description("페이지 넘버").optional(),
+                                        parameterWithName("direction").description("내림/오름차순").optional()
+                                ),
+                                responseFields(
+                                        fieldWithPath("content").type(ARRAY).description("신청서 목록"),
+                                        fieldWithPath("content[].applicationId").type(NUMBER).description("신청서 식별자"),
+                                        fieldWithPath("content[].steadyName").type(STRING).description("스테디 이름"),
+                                        fieldWithPath("content[].createdAt").type(STRING).description("신청서 제출일"),
+                                        fieldWithPath("content[].status").type(STRING).description("신청서 상태"),
+                                        fieldWithPath("numberOfElements").type(NUMBER).description("현재 페이지 갯수"),
+                                        fieldWithPath("hasNext").type(BOOLEAN).description("다음 페이지 유무")
                                 )
                         )
                 ).andExpect(status().isOk())

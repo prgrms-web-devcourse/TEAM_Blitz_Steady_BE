@@ -89,7 +89,6 @@ public class Steady extends BaseEntity {
     @OneToMany(mappedBy = "steady", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SteadyStack> steadyStacks = new ArrayList<>();
 
-    @Column(nullable = true)
     private LocalDate finishedAt;
 
     @Builder

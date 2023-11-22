@@ -9,6 +9,7 @@ import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
 import dev.steady.application.dto.response.ApplicationDetailResponse;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
+import dev.steady.application.dto.response.MyApplicationSummaryResponse;
 import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.global.exception.ForbiddenException;
@@ -266,6 +267,24 @@ class ApplicationServiceTest {
         //then
         assertThatThrownBy(() -> applicationService.updateApplicationAnswer(applicationId, answers, userInfo))
                 .isInstanceOf(ForbiddenException.class);
+    }
+
+    @DisplayName("신청자는 본인이 신청한 신청서 리스트를 조회할 수 있다.")
+    @Test
+    void getMyApplications() {
+        var steady = steadyRepository.save(createSteady(leader, stack));
+        var secondUser = userRepository.save(createSecondUser(position));
+        var application = createApplication(secondUser, steady);
+        var savedApplication = applicationRepository.save(application);
+        var userInfo = new UserInfo(secondUser.getId());
+        var pageRequest = PageRequest.of(0, 10);
+        //when
+        SliceResponse<MyApplicationSummaryResponse> response = applicationService.getMyApplications(userInfo, pageRequest);
+
+        //then
+        List<MyApplicationSummaryResponse> actual = response.content();
+        assertThat(actual).extracting("applicationId", "steadyName")
+                .contains(tuple(savedApplication.getId(), steady.getName()));
     }
 
 }
