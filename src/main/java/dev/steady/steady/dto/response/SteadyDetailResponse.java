@@ -45,7 +45,7 @@ public record SteadyDetailResponse(
         return new SteadyDetailResponse(steady.getId(),
                 LeaderResponse.from(steady.getLeader()),
                 steady.getName(),
-                steady.getTitle(),
+                steady.getBio(),
                 steady.getType(),
                 steady.getStatus(),
                 steady.getParticipantLimit(),
