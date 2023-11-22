@@ -76,7 +76,8 @@ class ApplicationControllerTest extends ControllerTestConfig {
                                         fieldWithPath("applicationId").type(NUMBER).description("신청서 식별자")
                                 )
                         )
-                );
+                ).andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
     }
 
     @DisplayName("인증된 사용자는 스테디에 제출된 신청서를 조회할 수 있다.")
