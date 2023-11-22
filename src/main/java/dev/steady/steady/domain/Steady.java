@@ -66,6 +66,7 @@ public class Steady extends BaseEntity {
     @Column(nullable = false)
     private SteadyMode steadyMode;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ScheduledPeriod scheduledPeriod;
 

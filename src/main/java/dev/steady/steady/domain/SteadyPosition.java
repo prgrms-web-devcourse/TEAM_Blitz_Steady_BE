@@ -39,6 +39,10 @@ public class SteadyPosition extends BaseEntity {
         this.steady = steady;
     }
 
+    public Long getPositionId() {
+        return position.getId();
+    }
+
     public String getPositionName() {
         return position.getName();
     }
