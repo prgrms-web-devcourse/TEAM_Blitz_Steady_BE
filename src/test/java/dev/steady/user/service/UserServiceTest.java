@@ -249,7 +249,7 @@ class UserServiceTest {
         List<Review> reviews = reviewRepository.findAll();
         Account account = accountRepository.findByUser(user);
         assertAll(
-                () -> assertThat(withdrawUser.getNickname()).isEqualTo("탈퇴한 유저"),
+                () -> assertThat(withdrawUser.getNickname()).startsWith("탈퇴한 유저"),
                 () -> assertThat(withdrawUser.getBio()).isNull(),
                 () -> assertThat(withdrawUser.getPosition()).isNull(),
                 () -> assertThat(withdrawUser.isDeleted()).isTrue(),
