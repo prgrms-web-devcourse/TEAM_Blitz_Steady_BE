@@ -29,6 +29,7 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
         return jpaQueryFactory.select(review.comment)
                 .from(review)
                 .where(revieweeEqualsUser(user),
+                        review.comment.isNotNull(),
                         isPublic())
                 .orderBy(review.createdAt.desc())
                 .fetch();
@@ -37,9 +38,10 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
     @Override
     public List<ReviewsBySteadyResponse> getAllReviewsByRevieweeUser(User user) {
         return jpaQueryFactory.selectFrom(steady)
-                .leftJoin(review)
+                .innerJoin(review)
                 .on(steady.id.eq(review.steady.id))
-                .where(revieweeEqualsUser(user))
+                .where(revieweeEqualsUser(user),
+                        review.comment.isNotNull())
                 .orderBy(steady.finishedAt.desc())
                 .transform(groupBy(steady.id)
                         .list(Projections.constructor(
