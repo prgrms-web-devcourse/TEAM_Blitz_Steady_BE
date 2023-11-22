@@ -480,6 +480,7 @@ class SteadyServiceTest {
         // then
         Steady updatedSteady = steadyRepository.findById(steadyId).get();
         List<SteadyStack> steadyStacks = steadyStackRepository.findBySteadyId(steadyId);
+        List<SteadyPosition> steadyPositions = steadyPositionRepository.findBySteadyId(steadyId);
         assertAll(
                 () -> assertThat(updatedSteady.getName()).isEqualTo(steadyUpdateRequest.name()),
                 () -> assertThat(updatedSteady.getBio()).isEqualTo(steadyUpdateRequest.bio()),
@@ -492,7 +493,9 @@ class SteadyServiceTest {
                 () -> assertThat(updatedSteady.getTitle()).isEqualTo(steadyUpdateRequest.title()),
                 () -> assertThat(updatedSteady.getContent()).isEqualTo(steadyUpdateRequest.content()),
                 () -> assertThat(updatedSteady.getSteadyStacks()).hasSameSizeAs(steadyStacks)
-                        .extracting("id").containsExactly(steadyStacks.get(0).getId())
+                        .extracting("id").containsExactly(steadyStacks.get(0).getId()),
+                () -> assertThat(steadyPositions).hasSameSizeAs(steadyUpdateRequest.positions())
+                        .extracting("position.id").containsAll(steadyUpdateRequest.positions())
         );
     }
 

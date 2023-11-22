@@ -38,7 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static dev.steady.application.domain.ApplicationStatus.WAITING;
 import static dev.steady.steady.exception.SteadyErrorCode.STEADY_IS_NOT_EMPTY;
@@ -135,6 +134,7 @@ public class SteadyService {
                 request.title(),
                 request.content(),
                 stacks);
+        updateSteadyPositions(steady, request.positions());
     }
 
     @Transactional
@@ -242,6 +242,12 @@ public class SteadyService {
 
     private int getLikeCount(Steady steady) {
         return steadyLikeRepository.countBySteady(steady);
+    }
+
+    private void updateSteadyPositions(Steady steady, List<Long> positions) {
+        steadyPositionRepository.deleteBySteadyId(steady.getId());
+        List<SteadyPosition> steadyPositions = createSteadyPositions(positions, steady);
+        steadyPositionRepository.saveAll(steadyPositions);
     }
 
 }
