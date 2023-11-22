@@ -2,12 +2,16 @@ package dev.steady.application.service;
 
 import dev.steady.application.domain.Application;
 import dev.steady.application.domain.ApplicationStatus;
+import dev.steady.application.domain.SurveyResult;
 import dev.steady.application.domain.repository.ApplicationRepository;
+import dev.steady.application.domain.repository.SurveyResultRepository;
 import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
 import dev.steady.application.dto.response.ApplicationDetailResponse;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
+import dev.steady.application.dto.response.MyApplicationSummaryResponse;
 import dev.steady.application.dto.response.SliceResponse;
+import dev.steady.global.auth.UserInfo;
 import dev.steady.global.exception.ForbiddenException;
 import dev.steady.notification.domain.repository.NotificationRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
@@ -31,6 +35,8 @@ import java.util.List;
 import static dev.steady.application.domain.ApplicationStatus.ACCEPTED;
 import static dev.steady.application.domain.ApplicationStatus.REJECTED;
 import static dev.steady.application.fixture.ApplicationFixture.createApplication;
+import static dev.steady.application.fixture.ApplicationFixture.createSurveyResults;
+import static dev.steady.application.fixture.SurveyResultFixture.createAnswers;
 import static dev.steady.application.fixture.SurveyResultFixture.createSurveyResultRequests;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
 import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
@@ -66,6 +72,9 @@ class ApplicationServiceTest {
     private ApplicationRepository applicationRepository;
 
     @Autowired
+    private SurveyResultRepository surveyResultRepository;
+
+    @Autowired
     private NotificationRepository notificationRepository;
 
     private Position position;
@@ -82,6 +91,7 @@ class ApplicationServiceTest {
     @AfterEach
     void tearDown() {
         notificationRepository.deleteAll();
+        surveyResultRepository.deleteAll();
         applicationRepository.deleteAll();
         steadyRepository.deleteAll();
         userRepository.deleteAll();
@@ -93,10 +103,9 @@ class ApplicationServiceTest {
     @Test
     void createApplicationTest() {
         //given
-        var user = userRepository.save(createSecondUser(position));
-        var steady = steadyRepository.save(createSteady(user, stack));
+        var steady = steadyRepository.save(createSteady(leader, stack));
         var surveyResultRequests = createSurveyResultRequests();
-        var userInfo = createUserInfo(user.getId());
+        var userInfo = createUserInfo(leader.getId());
 
         //when
         CreateApplicationResponse response = applicationService.createApplication(steady.getId(),
@@ -154,6 +163,7 @@ class ApplicationServiceTest {
         var steady = steadyRepository.save(createSteady(leader, stack));
         var secondUser = userRepository.save(createSecondUser(position));
         var application = applicationRepository.save(createApplication(secondUser, steady));
+        surveyResultRepository.saveAll(createSurveyResults(application));
         var userInfo = createUserInfo(leader.getId());
         //when
         ApplicationDetailResponse response = applicationService.getApplicationDetail(application.getId(), userInfo);
@@ -161,9 +171,9 @@ class ApplicationServiceTest {
         assertThat(response.surveys()).hasSize(3)
                 .extracting("question", "answer")
                 .containsExactly(
-                        tuple("질문1", "질문1"),
-                        tuple("질문2", "질문2"),
-                        tuple("질문3", "질문3")
+                        tuple("질문1", "답변1"),
+                        tuple("질문2", "답변2"),
+                        tuple("질문3", "답변3")
                 );
     }
 
@@ -215,6 +225,66 @@ class ApplicationServiceTest {
         assertThatThrownBy(() -> {
             applicationService.updateStatusOfApplication(application.getId(), request, userInfo);
         }).isInstanceOf(ForbiddenException.class);
+    }
+
+    @DisplayName("신청자는 본인이 제출한 신청서의 답변을 수정할 수 있다.")
+    @Test
+    void updateApplicationAnswerTest() {
+        //given
+        var steady = steadyRepository.save(createSteady(leader, stack));
+        var secondUser = userRepository.save(createSecondUser(position));
+        var application = createApplication(secondUser, steady);
+        var savedApplication = applicationRepository.save(application);
+        surveyResultRepository.saveAll(createSurveyResults(savedApplication));
+        var applicationId = savedApplication.getId();
+        var answers = createAnswers();
+        var userInfo = new UserInfo(secondUser.getId());
+
+        //when
+        applicationService.updateApplicationAnswer(applicationId, answers, userInfo);
+
+        //then
+        List<SurveyResult> surveyResults = surveyResultRepository.findByApplicationOrderBySequenceAsc(savedApplication);
+        assertThat(surveyResults).hasSameSizeAs(answers.answers())
+                .extracting("answer")
+                .containsExactly("답변100", "답변101", "답변102");
+    }
+
+    @DisplayName("신청자는 본인이 제출한 신청서의 답변을 수정할 수 있다.")
+    @Test
+    void updateApplicationAnswerTest2() {
+        //given
+        var steady = steadyRepository.save(createSteady(leader, stack));
+        var secondUser = userRepository.save(createSecondUser(position));
+        var application = createApplication(secondUser, steady);
+        var savedApplication = applicationRepository.save(application);
+        surveyResultRepository.saveAll(createSurveyResults(savedApplication));
+        var applicationId = savedApplication.getId();
+        var answers = createAnswers();
+        var userInfo = new UserInfo(leader.getId());
+
+        //when
+        //then
+        assertThatThrownBy(() -> applicationService.updateApplicationAnswer(applicationId, answers, userInfo))
+                .isInstanceOf(ForbiddenException.class);
+    }
+
+    @DisplayName("신청자는 본인이 신청한 신청서 리스트를 조회할 수 있다.")
+    @Test
+    void getMyApplications() {
+        var steady = steadyRepository.save(createSteady(leader, stack));
+        var secondUser = userRepository.save(createSecondUser(position));
+        var application = createApplication(secondUser, steady);
+        var savedApplication = applicationRepository.save(application);
+        var userInfo = new UserInfo(secondUser.getId());
+        var pageRequest = PageRequest.of(0, 10);
+        //when
+        SliceResponse<MyApplicationSummaryResponse> response = applicationService.getMyApplications(userInfo, pageRequest);
+
+        //then
+        List<MyApplicationSummaryResponse> actual = response.content();
+        assertThat(actual).extracting("applicationId", "steadyName")
+                .contains(tuple(savedApplication.getId(), steady.getName()));
     }
 
 }

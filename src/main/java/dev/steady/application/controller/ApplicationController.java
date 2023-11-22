@@ -2,12 +2,14 @@ package dev.steady.application.controller;
 
 import dev.steady.application.dto.request.ApplicationPageRequest;
 import dev.steady.application.dto.request.ApplicationStatusUpdateRequest;
+import dev.steady.application.dto.request.ApplicationUpdateAnswerRequest;
 import dev.steady.application.dto.request.SurveyResultRequest;
 import dev.steady.application.dto.response.ApplicationDetailResponse;
 import dev.steady.application.dto.response.ApplicationSummaryResponse;
 import dev.steady.application.dto.response.CreateApplicationResponse;
 import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.application.service.ApplicationService;
+import dev.steady.application.dto.response.MyApplicationSummaryResponse;
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
 import lombok.RequiredArgsConstructor;
@@ -47,11 +49,27 @@ public class ApplicationController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/applications/my-list")
+    public ResponseEntity<SliceResponse<MyApplicationSummaryResponse>> getMyApplications(@Auth UserInfo userInfo,
+                                                                                         ApplicationPageRequest request) {
+        Pageable pageable = request.toPageable();
+        SliceResponse<MyApplicationSummaryResponse> response = applicationService.getMyApplications(userInfo, pageable);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/applications/{applicationId}")
     public ResponseEntity<ApplicationDetailResponse> getApplicationDetail(@PathVariable Long applicationId,
                                                                           @Auth UserInfo userInfo) {
         ApplicationDetailResponse applicationDetail = applicationService.getApplicationDetail(applicationId, userInfo);
         return ResponseEntity.ok(applicationDetail);
+    }
+
+    @PatchMapping("/applications/{applicationId}")
+    public ResponseEntity<Void> updateApplicationAnswers(@PathVariable Long applicationId,
+                                                         @RequestBody ApplicationUpdateAnswerRequest request,
+                                                         @Auth UserInfo userInfo) {
+        applicationService.updateApplicationAnswer(applicationId, request, userInfo);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/applications/{applicationId}/status")

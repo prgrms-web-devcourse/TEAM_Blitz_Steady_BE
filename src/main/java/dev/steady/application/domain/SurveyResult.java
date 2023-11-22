@@ -39,7 +39,6 @@ public class SurveyResult {
                          String question,
                          String answer,
                          int sequence) {
-        application.addSurveyResult(this);
         this.application = application;
         this.question = question;
         this.answer = answer;
@@ -53,8 +52,8 @@ public class SurveyResult {
                 sequence);
     }
 
-    public void setApplication(Application application) {
-        this.application = application;
+    public void updateAnswer(String answer) {
+        this.answer = answer;
     }
 
 }

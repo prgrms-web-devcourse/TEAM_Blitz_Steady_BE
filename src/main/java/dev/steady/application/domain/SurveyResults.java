@@ -1,26 +1,30 @@
 package dev.steady.application.domain;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.OneToMany;
-import lombok.AccessLevel;
+import dev.steady.global.exception.InvalidValueException;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import static dev.steady.application.exception.SurveyResultErrorCode.INVALID_SURVEY_SIZE;
+
 @Getter
-@Embeddable
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SurveyResults {
 
-    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SurveyResult> values = new ArrayList<>();
+    private final List<SurveyResult> values;
 
-    public void addSurveyResult(SurveyResult surveyResult, Application application) {
-        surveyResult.setApplication(application);
-        values.add(surveyResult);
+    public SurveyResults(List<SurveyResult> values) {
+        this.values = values;
+    }
+
+    public void updateAnswers(List<String> answers) {
+        if (values.size() != answers.size()) {
+            throw new InvalidValueException(INVALID_SURVEY_SIZE);
+        }
+        for (int i = 0; i < values.size(); i++) {
+            SurveyResult surveyResult = values.get(i);
+            String newAnswer = answers.get(i);
+            surveyResult.updateAnswer(newAnswer);
+        }
     }
 
 }
