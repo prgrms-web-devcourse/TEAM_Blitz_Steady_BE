@@ -106,8 +106,8 @@ class ApplicationControllerTest extends ControllerTestConfig {
                                         headerWithName(AUTHORIZATION).description("토큰")
                                 ),
                                 queryParameters(
-                                        parameterWithName("page").description("페이지 넘버"),
-                                        parameterWithName("direction").description("내림/오름차순")
+                                        parameterWithName("page").description("페이지 넘버").optional(),
+                                        parameterWithName("direction").description("내림/오름차순").optional()
                                 ),
                                 responseFields(
                                         fieldWithPath("content").description("신청서 목록"),
@@ -148,8 +148,8 @@ class ApplicationControllerTest extends ControllerTestConfig {
                                         headerWithName(AUTHORIZATION).description("토큰")
                                 ),
                                 queryParameters(
-                                        parameterWithName("page").description("페이지 넘버"),
-                                        parameterWithName("direction").description("내림/오름차순")
+                                        parameterWithName("page").description("페이지 넘버").optional(),
+                                        parameterWithName("direction").description("내림/오름차순").optional()
                                 ),
                                 responseFields(
                                         fieldWithPath("content").type(ARRAY).description("신청서 목록"),
