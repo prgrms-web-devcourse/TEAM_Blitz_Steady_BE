@@ -237,7 +237,7 @@ class SteadyControllerTest extends ControllerTestConfig {
         var steady = createSteady();
         var position = createPosition();
         var steadyPosition = createSteadyPosition(steady, position);
-        ReflectionTestUtils.setField(steadyPosition, "id", 1L);
+        ReflectionTestUtils.setField(position, "id", 1L);
         var response = SteadyDetailResponse.of(steady,
                 List.of(steadyPosition),
                 true,
