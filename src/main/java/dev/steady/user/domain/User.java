@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
 public class User extends BaseEntity {
 
     private static final String DEFAULT_PROFILE_IMAGE_URL = "default_profile_image_url.jpg";
-    private static final String WITHDRAW_USER_NAME = "탈퇴한 유저";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,7 +73,7 @@ public class User extends BaseEntity {
 
     public void withdraw() {
         this.profileImage = DEFAULT_PROFILE_IMAGE_URL;
-        this.nickname = WITHDRAW_USER_NAME;
+        this.nickname = WithdrawUserUtils.generateWithdrawName();
         this.bio = null;
         this.position = null;
         this.isDeleted = true;
