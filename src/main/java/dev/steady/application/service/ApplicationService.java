@@ -119,8 +119,8 @@ public class ApplicationService {
         Application application = applicationRepository.getById(applicationId);
         application.checkApplicant(user);
 
-        applicationRepository.delete(application);
         surveyResultRepository.deleteAllByApplication(application);
+        applicationRepository.delete(application);
     }
 
     private void addParticipant(Application application, User leader) {
