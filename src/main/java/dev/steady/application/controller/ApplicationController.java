@@ -15,6 +15,7 @@ import dev.steady.global.auth.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -77,6 +78,13 @@ public class ApplicationController {
                                                         @RequestBody ApplicationStatusUpdateRequest request,
                                                         @Auth UserInfo userInfo) {
         applicationService.updateStatusOfApplication(applicationId, request, userInfo);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/applications/{applicationId}")
+    public ResponseEntity<Void> deleteApplication(@PathVariable Long applicationId,
+                                                  @Auth UserInfo userInfo) {
+        applicationService.deleteApplication(applicationId, userInfo);
         return ResponseEntity.noContent().build();
     }
 

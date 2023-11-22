@@ -23,6 +23,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -75,7 +76,8 @@ class ApplicationControllerTest extends ControllerTestConfig {
                                         fieldWithPath("applicationId").type(NUMBER).description("신청서 식별자")
                                 )
                         )
-                );
+                ).andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
     }
 
     @DisplayName("인증된 사용자는 스테디에 제출된 신청서를 조회할 수 있다.")
@@ -247,6 +249,25 @@ class ApplicationControllerTest extends ControllerTestConfig {
                 ),
                 requestFields(
                         fieldWithPath("answers").type(ARRAY).description("답변 목록")
+                )
+        )).andExpect(status().isNoContent());
+    }
+
+    @DisplayName("신청서 삭제 요청을 받아 신청서를 삭제함")
+    @Test
+    void deleteApplicationTest() throws Exception {
+        long userId = 1L;
+        long applicationId = 1L;
+        var auth = new Authentication(userId);
+
+        when(jwtResolver.getAuthentication(TOKEN)).thenReturn(auth);
+
+        mockMvc.perform(delete("/api/v1/applications/{applicationId}", applicationId)
+                .header(AUTHORIZATION, TOKEN)
+        ).andDo(document("application-delete",
+                resourceDetails().tag("신청서").description("신청서 삭제 요청"),
+                requestHeaders(
+                        headerWithName(AUTHORIZATION).description("토큰")
                 )
         )).andExpect(status().isNoContent());
     }
