@@ -8,7 +8,7 @@ public record SteadyPositionResponse(
 ) {
 
     public static SteadyPositionResponse from(SteadyPosition steadyPosition) {
-        return new SteadyPositionResponse(steadyPosition.getId(), steadyPosition.getPositionName());
+        return new SteadyPositionResponse(steadyPosition.getPositionId(), steadyPosition.getPositionName());
     }
 
 }
