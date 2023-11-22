@@ -24,8 +24,12 @@ public class Card {
     @Column(nullable = false)
     private String content;
 
-    public Card(String content) {
+    @Column(nullable = false)
+    private String imageUrl;
+
+    public Card(String content, String imageUrl) {
         this.content = content;
+        this.imageUrl = imageUrl;
     }
 
 }

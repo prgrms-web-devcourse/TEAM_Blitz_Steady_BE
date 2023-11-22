@@ -28,7 +28,8 @@ public class ReviewFixture {
 
     public static Card createCard() {
         return new Card(
-                "이 팀원은 출석을 열심히 잘 했어요!"
+                "이 팀원은 출석을 열심히 잘 했어요!",
+                "attendance.jpg"
         );
     }
 
