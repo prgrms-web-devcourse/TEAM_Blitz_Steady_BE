@@ -128,7 +128,7 @@ public class ReviewService {
         List<RevieweeResponse> revieweeResponses = participants.stream()
                 .filter(participant -> !Objects.equals(reviewer, participant)
                                        && !isAlreadyReviewed(reviewer, participant, steady))
-                .map(participant -> RevieweeResponse.from(reviewer))
+                .map(RevieweeResponse::from)
                 .toList();
 
         return ReviewInfoResponse.of(steadyResponse, revieweeResponses);
