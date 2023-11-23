@@ -1,5 +1,6 @@
 package dev.steady.steady.service;
 
+import dev.steady.application.domain.Application;
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.UserInfo;
@@ -10,7 +11,11 @@ import dev.steady.steady.domain.SteadyPosition;
 import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.SteadyViewLog;
-import dev.steady.steady.domain.repository.*;
+import dev.steady.steady.domain.repository.SteadyLikeRepository;
+import dev.steady.steady.domain.repository.SteadyPositionRepository;
+import dev.steady.steady.domain.repository.SteadyQuestionRepository;
+import dev.steady.steady.domain.repository.SteadyRepository;
+import dev.steady.steady.domain.repository.ViewCountLogRepository;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
 import dev.steady.steady.dto.request.SteadyQuestionUpdateRequest;
@@ -38,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static dev.steady.application.domain.ApplicationStatus.WAITING;
 import static dev.steady.steady.exception.SteadyErrorCode.STEADY_IS_NOT_EMPTY;
@@ -88,20 +92,21 @@ public class SteadyService {
         List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steady.getId());
 
         boolean isLeader = false;
-        boolean isWaitingApplication = false;
+        Long applicationId = null;
+        boolean isLiked = false;
 
         if (userInfo.isAuthenticated()) {
             User user = userRepository.getUserBy(userInfo.userId());
             isLeader = steady.isLeader(user);
+            isLiked = steadyLikeRepository.findByUserAndSteady(user, steady).isPresent();
 
             if (!isLeader) {
-                isWaitingApplication = isWaitingApplication(user, steady);
-                processViewCountLog(user, steady);
+                applicationId = findSubmittedApplicationId(user, steady);
             }
+            processViewCountLog(user, steady);
         }
-        int likeCount = getLikeCount(steady);
 
-        return SteadyDetailResponse.of(steady, positions, isLeader, isWaitingApplication, likeCount);
+        return SteadyDetailResponse.of(steady, positions, isLeader, applicationId, isLiked);
     }
 
     @Transactional(readOnly = true)
@@ -135,6 +140,7 @@ public class SteadyService {
                 request.title(),
                 request.content(),
                 stacks);
+        updateSteadyPositions(steady, request.positions());
     }
 
     @Transactional
@@ -198,11 +204,13 @@ public class SteadyService {
         return !viewLogOptional.isPresent() || viewLogOptional.get().checkThreeHoursPassed();
     }
 
-    private boolean isWaitingApplication(User user, Steady steady) {
-        return applicationRepository.findBySteadyIdAndUserIdAndStatus(steady.getId(), user.getId(), WAITING)
-                .stream()
-                .findFirst()
-                .isPresent();
+    private Long findSubmittedApplicationId(User user, Steady steady) {
+        Optional<Application> application = applicationRepository
+                .findBySteadyIdAndUserIdAndStatus(steady.getId(), user.getId(), WAITING);
+        if (application.isPresent()) {
+            return application.get().getId();
+        }
+        return null;
     }
 
     private List<Stack> getStacks(List<Long> stacks) {
@@ -242,6 +250,12 @@ public class SteadyService {
 
     private int getLikeCount(Steady steady) {
         return steadyLikeRepository.countBySteady(steady);
+    }
+
+    private void updateSteadyPositions(Steady steady, List<Long> positions) {
+        steadyPositionRepository.deleteBySteadyId(steady.getId());
+        List<SteadyPosition> steadyPositions = createSteadyPositions(positions, steady);
+        steadyPositionRepository.saveAll(steadyPositions);
     }
 
 }

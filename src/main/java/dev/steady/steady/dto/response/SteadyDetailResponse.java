@@ -29,23 +29,23 @@ public record SteadyDetailResponse(
         List<SteadyPositionResponse> positions,
         List<SteadyStackResponse> stacks,
         boolean isLeader,
-        boolean isSubmittedUser,
+        Long applicationId,
         int promotionCount,
         LocalDateTime createdAt,
         LocalDate finishedAt,
         boolean isReviewEnabled,
-        int likeCount
+        boolean isLiked
 ) {
 
     public static SteadyDetailResponse of(Steady steady,
                                           List<SteadyPosition> positions,
                                           boolean isLeader,
-                                          boolean isSubmittedUser,
-                                          int likeCount) {
+                                          Long applicationId,
+                                          boolean isLiked) {
         return new SteadyDetailResponse(steady.getId(),
                 LeaderResponse.from(steady.getLeader()),
                 steady.getName(),
-                steady.getTitle(),
+                steady.getBio(),
                 steady.getType(),
                 steady.getStatus(),
                 steady.getParticipantLimit(),
@@ -63,12 +63,12 @@ public record SteadyDetailResponse(
                         .map(SteadyStackResponse::from)
                         .toList(),
                 isLeader,
-                isSubmittedUser,
+                applicationId,
                 steady.getPromotionCount(),
                 steady.getCreatedAt(),
                 steady.getFinishedAt(),
                 steady.isReviewEnabled(),
-                likeCount
+                isLiked
         );
     }
 
