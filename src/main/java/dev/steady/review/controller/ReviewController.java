@@ -3,6 +3,8 @@ package dev.steady.review.controller;
 import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.review.dto.request.ReviewCreateRequest;
+import dev.steady.review.dto.response.CardsResponse;
+import dev.steady.review.dto.response.ReviewInfoResponse;
 import dev.steady.review.dto.response.ReviewMyResponse;
 import dev.steady.review.dto.response.ReviewSwitchResponse;
 import dev.steady.review.service.ReviewService;
@@ -48,6 +50,13 @@ public class ReviewController {
     @GetMapping("/reviews/my")
     public ResponseEntity<ReviewMyResponse> getMyCardsAndReviews(@Auth UserInfo userInfo) {
         ReviewMyResponse response = reviewService.getMyCardsAndReviews(userInfo);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/steadies/{steadyId}/review")
+    public ResponseEntity<ReviewInfoResponse> getReviewInfo(@PathVariable Long steadyId,
+                                                            @Auth UserInfo userInfo) {
+        ReviewInfoResponse response = reviewService.getReviewInfo(steadyId, userInfo);
         return ResponseEntity.ok(response);
     }
 
