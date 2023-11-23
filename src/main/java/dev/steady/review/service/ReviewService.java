@@ -14,8 +14,6 @@ import dev.steady.review.dto.response.ReviewMyResponse;
 import dev.steady.review.dto.response.ReviewSwitchResponse;
 import dev.steady.review.dto.response.ReviewsBySteadyResponse;
 import dev.steady.review.dto.response.UserCardResponse;
-import dev.steady.review.infrastructure.ReviewQueryRepository;
-import dev.steady.review.infrastructure.UserCardQueryRepository;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Participants;
 import dev.steady.steady.domain.Steady;
