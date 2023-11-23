@@ -1,12 +1,12 @@
 package dev.steady.steady.service;
 
+import dev.steady.application.domain.Application;
 import dev.steady.application.domain.repository.ApplicationRepository;
 import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.global.exception.InvalidStateException;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
-import dev.steady.steady.domain.SteadyLike;
 import dev.steady.steady.domain.SteadyPosition;
 import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.domain.SteadyStatus;
@@ -89,19 +89,20 @@ public class SteadyService {
 
         boolean isLeader = false;
         Long applicationId = null;
+        boolean isLiked = false;
 
         if (userInfo.isAuthenticated()) {
             User user = userRepository.getUserBy(userInfo.userId());
             isLeader = steady.isLeader(user);
+            isLiked = steadyLikeRepository.findByUserAndSteady(user, steady).isPresent();
 
             if (!isLeader) {
-                applicationId = findSubmittedApplication(user, steady);
-                processViewCountLog(user, steady);
+                applicationId = findSubmittedApplicationId(user, steady);
             }
+            processViewCountLog(user, steady);
         }
-        int likeCount = getLikeCount(steady);
 
-        return SteadyDetailResponse.of(steady, positions, isLeader, applicationId, likeCount);
+        return SteadyDetailResponse.of(steady, positions, isLeader, applicationId, isLiked);
     }
 
     @Transactional(readOnly = true)
@@ -199,9 +200,13 @@ public class SteadyService {
         return !viewLogOptional.isPresent() || viewLogOptional.get().checkThreeHoursPassed();
     }
 
-    private Long findSubmittedApplication(User user, Steady steady) {
-        return applicationRepository.findBySteadyIdAndUserIdAndStatus(steady.getId(), user.getId(), WAITING)
-                .getId();
+    private Long findSubmittedApplicationId(User user, Steady steady) {
+        Optional<Application> application = applicationRepository
+                .findBySteadyIdAndUserIdAndStatus(steady.getId(), user.getId(), WAITING);
+        if (application.isPresent()) {
+            return application.get().getId();
+        }
+        return null;
     }
 
     private List<Stack> getStacks(List<Long> stacks) {

@@ -34,14 +34,14 @@ public record SteadyDetailResponse(
         LocalDateTime createdAt,
         LocalDate finishedAt,
         boolean isReviewEnabled,
-        int likeCount
+        boolean isLiked
 ) {
 
     public static SteadyDetailResponse of(Steady steady,
                                           List<SteadyPosition> positions,
                                           boolean isLeader,
                                           Long applicationId,
-                                          int likeCount) {
+                                          boolean isLiked) {
         return new SteadyDetailResponse(steady.getId(),
                 LeaderResponse.from(steady.getLeader()),
                 steady.getName(),
@@ -68,7 +68,7 @@ public record SteadyDetailResponse(
                 steady.getCreatedAt(),
                 steady.getFinishedAt(),
                 steady.isReviewEnabled(),
-                likeCount
+                isLiked
         );
     }
 
