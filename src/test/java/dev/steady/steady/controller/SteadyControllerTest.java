@@ -241,8 +241,8 @@ class SteadyControllerTest extends ControllerTestConfig {
         var response = SteadyDetailResponse.of(steady,
                 List.of(steadyPosition),
                 true,
-                false,
-                10);
+                1L,
+                false);
 
         given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
         given(steadyService.getDetailSteady(steadyId, userInfo)).willReturn(response);
@@ -279,12 +279,12 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("stacks[].name").type(STRING).description("기술 스택명"),
                                 fieldWithPath("stacks[].imageUrl").type(STRING).description("기술 스택 이미지"),
                                 fieldWithPath("isLeader").type(BOOLEAN).description("리더 여부"),
-                                fieldWithPath("isSubmittedUser").type(BOOLEAN).description("신청 여부"),
+                                fieldWithPath("applicationId").type(NUMBER).description("신청서 식별자"),
                                 fieldWithPath("promotionCount").type(NUMBER).description("끌어올리가 남은 횟수"),
                                 fieldWithPath("createdAt").type(STRING).description("스테디 생성일"),
                                 fieldWithPath("finishedAt").type(STRING).description("스테디 종료일").optional(),
                                 fieldWithPath("isReviewEnabled").type(BOOLEAN).description("리뷰 작성 가능 여부"),
-                                fieldWithPath("likeCount").type(NUMBER).description("좋아요 수")
+                                fieldWithPath("isLiked").type(BOOLEAN).description("좋아요 여부")
                         )
                 ))
                 .andExpect(status().isOk())

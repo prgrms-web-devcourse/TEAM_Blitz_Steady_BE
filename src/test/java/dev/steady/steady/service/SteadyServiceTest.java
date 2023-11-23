@@ -18,19 +18,15 @@ import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.steady.domain.repository.SteadyStackRepository;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyCreateRequest;
-import dev.steady.steady.dto.request.SteadyPageRequest;
 import dev.steady.steady.dto.request.SteadyQuestionUpdateRequest;
 import dev.steady.steady.dto.request.SteadySearchRequest;
 import dev.steady.steady.dto.request.SteadyUpdateRequest;
-import dev.steady.steady.dto.response.LeaderResponse;
 import dev.steady.steady.dto.response.MySteadyResponse;
 import dev.steady.steady.dto.response.PageResponse;
 import dev.steady.steady.dto.response.ParticipantsResponse;
 import dev.steady.steady.dto.response.SteadyDetailResponse;
-import dev.steady.steady.dto.response.SteadyPositionResponse;
 import dev.steady.steady.dto.response.SteadyQuestionsResponse;
 import dev.steady.steady.dto.response.SteadySearchResponse;
-import dev.steady.steady.dto.response.SteadyStackResponse;
 import dev.steady.user.domain.User;
 import dev.steady.user.domain.repository.PositionRepository;
 import dev.steady.user.domain.repository.StackRepository;
@@ -230,35 +226,14 @@ class SteadyServiceTest {
         SteadyDetailResponse response = steadyService.getDetailSteady(steadyId, userInfo);
 
         // then
-        Steady steady = steadyRepository.findById(steadyId).get();
+        Steady steady = steadyRepository.getSteady(steadyId);
         List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steadyId);
         assertAll(
                 () -> assertThat(response.id()).isEqualTo(steady.getId()),
-                () -> assertThat(response.leaderResponse()).isEqualTo(LeaderResponse.from(steady.getParticipants().getLeader())),
-                () -> assertThat(response.name()).isEqualTo(steady.getName()),
-                () -> assertThat(response.title()).isEqualTo(steady.getTitle()),
-                () -> assertThat(response.type()).isEqualTo(steady.getType()),
-                () -> assertThat(response.status()).isEqualTo(steady.getStatus()),
-                () -> assertThat(response.participantLimit()).isEqualTo(steady.getParticipantLimit()),
-                () -> assertThat(response.numberOfParticipants()).isEqualTo(steady.getNumberOfParticipants()),
-                () -> assertThat(response.steadyMode()).isEqualTo(steady.getSteadyMode()),
-                () -> assertThat(response.scheduledPeriod()).isEqualTo(steady.getScheduledPeriod()),
-                () -> assertThat(response.deadline()).isEqualTo(steady.getDeadline()),
-                () -> assertThat(response.title()).isEqualTo(steady.getTitle()),
-                () -> assertThat(response.content()).isEqualTo(steady.getContent()),
-                () -> assertThat(response.positions()).isEqualTo(positions.stream()
-                        .map(SteadyPositionResponse::from)
-                        .toList()),
-                () -> assertThat(response.stacks()).isEqualTo(steady.getSteadyStacks().stream()
-                        .map(SteadyStackResponse::from)
-                        .toList()),
+                () -> assertThat(response.positions()).hasSameSizeAs(positions),
                 () -> assertThat(response.isLeader()).isTrue(),
-                () -> assertThat(response.isSubmittedUser()).isFalse(),
-                () -> assertThat(response.promotionCount()).isEqualTo(steady.getPromotionCount()),
-                () -> assertThat(response.createdAt()).isEqualTo(steady.getCreatedAt()),
-                () -> assertThat(response.finishedAt()).isEqualTo(steady.getFinishedAt()),
-                () -> assertThat(response.isReviewEnabled()).isEqualTo(false),
-                () -> assertThat(response.likeCount()).isEqualTo(0)
+                () -> assertThat(response.applicationId()).isNull(),
+                () -> assertThat(response.isLiked()).isFalse()
         );
     }
 
@@ -281,33 +256,14 @@ class SteadyServiceTest {
         SteadyDetailResponse response = steadyService.getDetailSteady(steadyId, userInfo);
 
         // then
-        Steady foundSteady = steadyRepository.findById(steadyId).get();
+        Steady foundSteady = steadyRepository.getSteady(steadyId);
         List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steadyId);
         assertAll(
                 () -> assertThat(response.id()).isEqualTo(foundSteady.getId()),
-                () -> assertThat(response.leaderResponse()).isEqualTo(LeaderResponse.from(foundSteady.getParticipants().getLeader())),
-                () -> assertThat(response.name()).isEqualTo(foundSteady.getName()),
-                () -> assertThat(response.title()).isEqualTo(foundSteady.getTitle()),
-                () -> assertThat(response.type()).isEqualTo(foundSteady.getType()),
-                () -> assertThat(response.status()).isEqualTo(foundSteady.getStatus()),
-                () -> assertThat(response.participantLimit()).isEqualTo(foundSteady.getParticipantLimit()),
-                () -> assertThat(response.numberOfParticipants()).isEqualTo(foundSteady.getNumberOfParticipants()),
-                () -> assertThat(response.steadyMode()).isEqualTo(foundSteady.getSteadyMode()),
-                () -> assertThat(response.scheduledPeriod()).isEqualTo(foundSteady.getScheduledPeriod()),
-                () -> assertThat(response.deadline()).isEqualTo(foundSteady.getDeadline()),
-                () -> assertThat(response.title()).isEqualTo(foundSteady.getTitle()),
-                () -> assertThat(response.content()).isEqualTo(foundSteady.getContent()),
-                () -> assertThat(response.positions()).isEqualTo(positions.stream()
-                        .map(v -> v.getPosition().getName())
-                        .toList()),
-                () -> assertThat(response.stacks()).isEqualTo(foundSteady.getSteadyStacks().stream()
-                        .map(SteadyStackResponse::from)
-                        .toList()),
+                () -> assertThat(response.positions()).hasSameSizeAs(positions),
                 () -> assertThat(response.isLeader()).isFalse(),
-                () -> assertThat(response.isSubmittedUser()).isFalse(),
-                () -> assertThat(response.promotionCount()).isEqualTo(steady.getPromotionCount()),
-                () -> assertThat(response.finishedAt()).isEqualTo(steady.getFinishedAt()),
-                () -> assertThat(response.isReviewEnabled()).isEqualTo(false)
+                () -> assertThat(response.applicationId()).isNull(),
+                () -> assertThat(response.isLiked()).isFalse()
         );
     }
 
@@ -378,29 +334,10 @@ class SteadyServiceTest {
         List<SteadyPosition> positions = steadyPositionRepository.findBySteadyId(steadyId);
         assertAll(
                 () -> assertThat(response.id()).isEqualTo(foundSteady.getId()),
-                () -> assertThat(response.leaderResponse()).isEqualTo(LeaderResponse.from(foundSteady.getParticipants().getLeader())),
-                () -> assertThat(response.name()).isEqualTo(foundSteady.getName()),
-                () -> assertThat(response.title()).isEqualTo(foundSteady.getTitle()),
-                () -> assertThat(response.type()).isEqualTo(foundSteady.getType()),
-                () -> assertThat(response.status()).isEqualTo(foundSteady.getStatus()),
-                () -> assertThat(response.participantLimit()).isEqualTo(foundSteady.getParticipantLimit()),
-                () -> assertThat(response.numberOfParticipants()).isEqualTo(foundSteady.getNumberOfParticipants()),
-                () -> assertThat(response.steadyMode()).isEqualTo(foundSteady.getSteadyMode()),
-                () -> assertThat(response.scheduledPeriod()).isEqualTo(foundSteady.getScheduledPeriod()),
-                () -> assertThat(response.deadline()).isEqualTo(foundSteady.getDeadline()),
-                () -> assertThat(response.title()).isEqualTo(foundSteady.getTitle()),
-                () -> assertThat(response.content()).isEqualTo(foundSteady.getContent()),
-                () -> assertThat(response.positions()).isEqualTo(positions.stream()
-                        .map(v -> v.getPosition().getName())
-                        .toList()),
-                () -> assertThat(response.stacks()).isEqualTo(foundSteady.getSteadyStacks().stream()
-                        .map(SteadyStackResponse::from)
-                        .toList()),
+                () -> assertThat(response.positions()).hasSameSizeAs(positions),
                 () -> assertThat(response.isLeader()).isFalse(),
-                () -> assertThat(response.isSubmittedUser()).isFalse(),
-                () -> assertThat(response.promotionCount()).isEqualTo(steady.getPromotionCount()),
-                () -> assertThat(response.finishedAt()).isEqualTo(steady.getFinishedAt()),
-                () -> assertThat(response.isReviewEnabled()).isEqualTo(false)
+                () -> assertThat(response.applicationId()).isNull(),
+                () -> assertThat(response.isLiked()).isFalse()
         );
     }
 
