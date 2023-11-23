@@ -13,5 +13,5 @@ public record CardsResponse(
                 cards.stream().map(CardResponse::from).toList()
         );
     }
-    
+
 }

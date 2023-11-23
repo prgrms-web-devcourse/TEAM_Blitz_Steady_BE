@@ -13,5 +13,5 @@ public record CardResponse(
                 card.getContent()
         );
     }
-    
+
 }
