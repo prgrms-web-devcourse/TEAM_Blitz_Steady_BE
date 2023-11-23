@@ -18,8 +18,11 @@ import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static dev.steady.steady.fixture.SteadyFixtures.createSteady;
 
 public class ReviewFixture {
 
@@ -97,6 +100,28 @@ public class ReviewFixture {
         );
     }
 
+    public static ReviewInfoResponse createReviewInfoResponse() {
+        Steady steady = createSteady();
+        LocalDate finishedAt = LocalDate.of(2023, 12, 2);
+        ReviewSteadyResponse reviewSteadyResponse = ReviewSteadyResponse.builder()
+                .steadyId(steady.getId())
+                .name(steady.getName())
+                .steadyMode(steady.getSteadyMode())
+                .steadyType(steady.getType())
+                .participants(3)
+                .finishedAt(finishedAt)
+                .participatedAt(LocalDate.of(2023, 10, 12))
+                .reviewDeadline(finishedAt.plusMonths(2L))
+                .build();
+
+        List<RevieweeResponse> revieweeResponses = List.of(
+                new RevieweeResponse(2L, "꼬부기", "profile_image1.jpg"),
+                new RevieweeResponse(3L, "파이리", "profile_image2.jpg"),
+                new RevieweeResponse(3L, "메타몽", "profile_image2.jpg")
+        );
+
+        return ReviewInfoResponse.of(reviewSteadyResponse, revieweeResponses);
+    }
 
     public static CardsResponse createCardsResponse() {
         return new CardsResponse(

@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
+import static dev.steady.review.fixture.ReviewFixture.createCardsResponse;
 import static dev.steady.review.fixture.ReviewFixture.createReviewCreateRequest;
+import static dev.steady.review.fixture.ReviewFixture.createReviewInfoResponse;
 import static dev.steady.review.fixture.ReviewFixture.createReviewMyResponse;
 import static dev.steady.review.fixture.ReviewFixture.createReviewSwitchResponse;
 import static org.mockito.BDDMockito.given;
@@ -135,6 +137,43 @@ class ReviewControllerTest extends ControllerTestConfig {
                 .andExpect(content().string(objectMapper.writeValueAsString(response)));
     }
 
+    @Test
+    @DisplayName("리뷰할 스테디의 정보와 리뷰이 목록을 조회할 수 있다.")
+    void getReviewInfo() throws Exception {
+        // given
+        var userId = 1L;
+        var steadyId = 1L;
+        var userInfo = createUserInfo(userId);
+        var auth = new Authentication(userId);
+        var response = createReviewInfoResponse();
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(auth);
+        given(reviewService.getReviewInfo(steadyId, userInfo)).willReturn(response);
+
+        // when, then
+        mockMvc.perform(get("/api/v1/steadies/{steadyId}/review", steadyId)
+                        .header(AUTHORIZATION, TOKEN)
+                )
+                .andDo(document("review-v1-get-steadyInfo",
+                        resourceDetails().tag("리뷰").description("리뷰할 스테디 정보와 리뷰이 목록")
+                                .responseSchema(Schema.schema("ReviewInfoResponse")),
+                        responseFields(
+                                fieldWithPath("steady.steadyId").type(NUMBER).description("스테디 식별자"),
+                                fieldWithPath("steady.name").type(STRING).description("스테디 이름"),
+                                fieldWithPath("steady.steadyMode").type(STRING).description("스테디 모드"),
+                                fieldWithPath("steady.steadyType").type(STRING).description("스테디 타입"),
+                                fieldWithPath("steady.participants").type(NUMBER).description("스테디 참여자 수"),
+                                fieldWithPath("steady.participatedAt").type(STRING).description("스테디 참여일"),
+                                fieldWithPath("steady.finishedAt").type(STRING).description("스테디 종료일"),
+                                fieldWithPath("steady.reviewDeadline").type(STRING).description("스테디 리뷰 마감일"),
+                                fieldWithPath("reviewees").type(ARRAY).description("리뷰이 목록"),
+                                fieldWithPath("reviewees[].userId").type(NUMBER).description("리뷰이 사용자 식별자"),
+                                fieldWithPath("reviewees[].nickname").type(STRING).description("리뷰이 닉네임"),
+                                fieldWithPath("reviewees[].profileImage").type(STRING).description("리뷰이 프로필 이미지 url")
+
+                        )
+                )).andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
+    }
 
     @Test
     @DisplayName("카드 전체 조회 요청을 통해 모든 카드를 가져올 수 있다.")
