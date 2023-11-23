@@ -33,6 +33,12 @@ public class ReviewFixture {
         );
     }
 
+    public static Card createAnotherCard() {
+        return new Card(
+                "이 팀원은 열정적으로 참여했어요!"
+        );
+    }
+
     public static Review createReview(Participant reviewer, Participant reviewee, Steady steady) {
         return Review.builder()
                 .steady(steady)

@@ -253,4 +253,19 @@ class ReviewServiceTest {
         );
     }
 
+    @Test
+    @DisplayName("모든 카드를 가져올 수 있다.")
+    void getAllCardsTest() {
+        // given
+        cardRepository.save(createCard());
+        cardRepository.save(createAnotherCard());
+        var cards = cardRepository.findAll();
+
+        // when
+        CardsResponse response = reviewService.getAllCards();
+
+        // then
+        assertThat(response.cards()).hasSameSizeAs(cards);
+    }
+
 }
