@@ -7,8 +7,10 @@ import dev.steady.review.domain.UserCard;
 import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
+import dev.steady.review.dto.response.ReviewInfoResponse;
 import dev.steady.review.dto.response.ReviewMyResponse;
 import dev.steady.review.dto.response.ReviewSwitchResponse;
+import dev.steady.review.dto.response.RevieweeResponse;
 import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.Stack;
@@ -220,7 +222,35 @@ class ReviewServiceTest {
                 () -> assertThat(response.reviews()).hasSameSizeAs(allReviews),
                 () -> assertThat(response.userCards()).hasSameSizeAs(cardsCount)
         );
+    }
 
+    @Test
+    @DisplayName("리뷰할 스테디 정보와 리뷰이 목록을 조회할 수 있다.")
+    void getReviewInfoTest() {
+        // given
+        var userInfo = createUserInfo(reviewerUser.getId());
+
+        var steady = createSteady(leader, stacks, FINISHED);
+        var finishedAt = LocalDate.now();
+        var reviewClosedAt = finishedAt.plusMonths(2L);
+
+        ReflectionTestUtils.setField(steady, "finishedAt", finishedAt);
+        var savedSteady = steadyRepository.save(steady);
+
+        var reviewer = participantRepository.save(createMember(reviewerUser, savedSteady));
+        var reviewee = participantRepository.save(createMember(revieweeUser, savedSteady));
+
+        // when
+        ReviewInfoResponse response = reviewService.getReviewInfo(savedSteady.getId(), userInfo);
+
+        // then
+        assertAll(
+                () -> assertThat(response.steady().steadyId()).isEqualTo(steady.getId()),
+                () -> assertThat(response.steady().finishedAt()).isEqualTo(finishedAt),
+                () -> assertThat(response.steady().reviewClosedAt()).isEqualTo(reviewClosedAt),
+                () -> assertThat(response.steady().participatedAt()).isEqualTo(reviewer.getCreatedAt().toLocalDate()),
+                () -> assertThat(response.reviewees()).contains(RevieweeResponse.from(reviewee))
+        );
     }
 
 }
