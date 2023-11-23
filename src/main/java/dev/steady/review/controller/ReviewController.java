@@ -51,4 +51,10 @@ public class ReviewController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/cards")
+    public ResponseEntity<CardsResponse> getAllCards() {
+        CardsResponse response = reviewService.getAllCards();
+        return ResponseEntity.ok(response);
+    }
+
 }
