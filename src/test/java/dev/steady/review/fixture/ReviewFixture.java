@@ -43,7 +43,8 @@ public class ReviewFixture {
 
     public static Card createAnotherCard() {
         return new Card(
-                "이 팀원은 열정적으로 참여했어요!"
+                "이 팀원은 열정적으로 참여했어요!",
+                "passion.jpg"
         );
     }
 
@@ -126,8 +127,8 @@ public class ReviewFixture {
     public static CardsResponse createCardsResponse() {
         return new CardsResponse(
                 List.of(
-                        new CardResponse(1L, "이 팀원은 출석을 열심히 잘 했어요!"),
-                        new CardResponse(2L, "이 팀원은 스테디에 열정적이었어요!")
+                        new CardResponse(1L, "이 팀원은 출석을 열심히 잘 했어요!", "attendance.jpg"),
+                        new CardResponse(2L, "이 팀원은 스테디에 열정적이었어요!", "passion.jpg")
                 )
         );
     }

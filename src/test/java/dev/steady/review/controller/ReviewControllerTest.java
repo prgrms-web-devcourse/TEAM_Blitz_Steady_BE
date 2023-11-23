@@ -188,7 +188,8 @@ class ReviewControllerTest extends ControllerTestConfig {
                                         .responseSchema(Schema.schema("CardsResponse")),
                                 responseFields(
                                         fieldWithPath("cards[].cardId").type(NUMBER).description("카드 식별자"),
-                                        fieldWithPath("cards[].content").type(STRING).description("카드 내용")
+                                        fieldWithPath("cards[].content").type(STRING).description("카드 내용"),
+                                        fieldWithPath("cards[].imageUrl").type(STRING).description("카드 내용")
                                 )
                         )
                 ).andExpect(status().isOk())
