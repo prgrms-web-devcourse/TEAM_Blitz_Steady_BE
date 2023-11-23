@@ -4,9 +4,14 @@ import dev.steady.review.domain.Card;
 import dev.steady.review.domain.Review;
 import dev.steady.review.domain.UserCard;
 import dev.steady.review.dto.request.ReviewCreateRequest;
+import dev.steady.review.dto.response.CardResponse;
+import dev.steady.review.dto.response.CardsResponse;
 import dev.steady.review.dto.response.ReviewDetailResponse;
+import dev.steady.review.dto.response.ReviewInfoResponse;
 import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.dto.response.ReviewSteadyResponse;
 import dev.steady.review.dto.response.ReviewSwitchResponse;
+import dev.steady.review.dto.response.RevieweeResponse;
 import dev.steady.review.dto.response.ReviewsBySteadyResponse;
 import dev.steady.review.dto.response.UserCardResponse;
 import dev.steady.steady.domain.Participant;
@@ -89,6 +94,16 @@ public class ReviewFixture {
         return new ReviewMyResponse(
                 createUserCardResponses(),
                 List.of(reviewsBySteadyResponse)
+        );
+    }
+
+
+    public static CardsResponse createCardsResponse() {
+        return new CardsResponse(
+                List.of(
+                        new CardResponse(1L, "이 팀원은 출석을 열심히 잘 했어요!"),
+                        new CardResponse(2L, "이 팀원은 스테디에 열정적이었어요!")
+                )
         );
     }
 

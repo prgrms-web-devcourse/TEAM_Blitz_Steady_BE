@@ -135,4 +135,25 @@ class ReviewControllerTest extends ControllerTestConfig {
                 .andExpect(content().string(objectMapper.writeValueAsString(response)));
     }
 
+
+    @Test
+    @DisplayName("카드 전체 조회 요청을 통해 모든 카드를 가져올 수 있다.")
+    void getAllCards() throws Exception {
+        var response = createCardsResponse();
+
+        given(reviewService.getAllCards()).willReturn(response);
+
+        mockMvc.perform(get("/api/v1/cards"))
+                .andDo(document("review-get-cards",
+                                resourceDetails().tag("리뷰").description("카드 전체 조회")
+                                        .responseSchema(Schema.schema("CardsResponse")),
+                                responseFields(
+                                        fieldWithPath("cards[].cardId").type(NUMBER).description("카드 식별자"),
+                                        fieldWithPath("cards[].content").type(STRING).description("카드 내용")
+                                )
+                        )
+                ).andExpect(status().isOk())
+                .andExpect(content().string(objectMapper.writeValueAsString(response)));
+    }
+
 }
