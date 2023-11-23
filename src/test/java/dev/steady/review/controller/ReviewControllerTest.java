@@ -88,6 +88,9 @@ class ReviewControllerTest extends ControllerTestConfig {
                 .andDo(document("review-v1-update",
                         resourceDetails().tag("리뷰").description("리뷰 공개 여부 수정")
                                 .responseSchema(Schema.schema("ReviewSwitchRepsonse")),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        ),
                         responseFields(
                                 fieldWithPath("isPublic").type(BOOLEAN).description("수정된 리뷰 공개 여부 상태")
                         )
@@ -114,9 +117,12 @@ class ReviewControllerTest extends ControllerTestConfig {
                 .andDo(document("review-v1-get-myAll",
                         resourceDetails().tag("리뷰").description("내가 받은 카드와 리뷰 조회")
                                 .responseSchema(Schema.schema("ReviewMyResponse")),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        ),
                         responseFields(
                                 fieldWithPath("userCards[].cardId").type(NUMBER).description("카드 식별자"),
-                                fieldWithPath("userCards[].content").type(STRING).description("카드 내용"),
+                                fieldWithPath("userCards[].imageUrl").type(STRING).description("카드 이미지 URL"),
                                 fieldWithPath("userCards[].count").type(NUMBER).description("사용자가 받은 카드 개수"),
                                 fieldWithPath("reviews[].steadyId").type(NUMBER).description("스테디 식별자"),
                                 fieldWithPath("reviews[].steadyName").type(STRING).description("스테디 이름"),

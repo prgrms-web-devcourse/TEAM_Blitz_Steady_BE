@@ -24,7 +24,7 @@ public class UserCardQueryRepositoryImpl implements UserCardQueryRepository {
     public List<UserCardResponse> getCardCountByUser(User user) {
         return jpaQueryFactory.select(Projections.constructor(UserCardResponse.class,
                         card.id,
-                        card.content,
+                        card.imageUrl,
                         userCard.card.count()))
                 .from(card)
                 .leftJoin(userCard)

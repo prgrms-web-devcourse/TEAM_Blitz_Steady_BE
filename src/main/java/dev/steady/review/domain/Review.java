@@ -38,7 +38,7 @@ public class Review extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Steady steady;
 
-    @Column(nullable = false)
+    @Column
     private String comment;
 
     @Column(nullable = false)

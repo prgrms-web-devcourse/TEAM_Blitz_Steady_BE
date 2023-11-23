@@ -165,7 +165,7 @@ class UserControllerTest extends ControllerTestConfig {
                                 fieldWithPath("user.stacks[].name").type(STRING).description("관심 스택 이름"),
                                 fieldWithPath("user.stacks[].imageUrl").type(STRING).description("관심 스택 이미지 URL"),
                                 fieldWithPath("userCards[].cardId").type(NUMBER).description("카드 식별자"),
-                                fieldWithPath("userCards[].content").type(STRING).description("카드 내용"),
+                                fieldWithPath("userCards[].imageUrl").type(STRING).description("카드 이미지 URL"),
                                 fieldWithPath("userCards[].count").type(NUMBER).description("사용자가 받은 카드 개수"),
                                 fieldWithPath("reviews").type(ARRAY).description("사용자가 받은 리뷰 코멘트"),
                                 fieldWithPath("isDeleted").type(BOOLEAN).description("탈퇴 유저 여부")
