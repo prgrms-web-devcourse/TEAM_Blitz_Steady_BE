@@ -17,7 +17,7 @@ public record ReviewSteadyResponse(
         int participants,
         LocalDate participatedAt,
         LocalDate finishedAt,
-        LocalDate reviewClosedAt
+        LocalDate reviewDeadline
 ) {
 
     public static ReviewSteadyResponse from(Steady steady, Participant reviewer) {
@@ -29,7 +29,7 @@ public record ReviewSteadyResponse(
                 .participants(steady.getNumberOfParticipants())
                 .participatedAt(reviewer.getCreatedAt().toLocalDate())
                 .finishedAt(steady.getFinishedAt())
-                .reviewClosedAt(steady.getFinishedAt().plusMonths(2L))
+                .reviewDeadline(steady.getFinishedAt().plusMonths(2L))
                 .build();
     }
 

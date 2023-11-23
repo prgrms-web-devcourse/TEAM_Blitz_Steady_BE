@@ -7,6 +7,7 @@ import dev.steady.review.domain.UserCard;
 import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
+import dev.steady.review.dto.response.CardsResponse;
 import dev.steady.review.dto.response.ReviewInfoResponse;
 import dev.steady.review.dto.response.ReviewMyResponse;
 import dev.steady.review.dto.response.ReviewSwitchResponse;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
+import static dev.steady.review.fixture.ReviewFixture.createAnotherCard;
 import static dev.steady.review.fixture.ReviewFixture.createCard;
 import static dev.steady.review.fixture.ReviewFixture.createReview;
 import static dev.steady.review.fixture.ReviewFixture.createReviewCreateRequest;
@@ -232,7 +234,7 @@ class ReviewServiceTest {
 
         var steady = createSteady(leader, stacks, FINISHED);
         var finishedAt = LocalDate.now();
-        var reviewClosedAt = finishedAt.plusMonths(2L);
+        var reviewDeadline = finishedAt.plusMonths(2L);
 
         ReflectionTestUtils.setField(steady, "finishedAt", finishedAt);
         var savedSteady = steadyRepository.save(steady);
@@ -247,7 +249,7 @@ class ReviewServiceTest {
         assertAll(
                 () -> assertThat(response.steady().steadyId()).isEqualTo(steady.getId()),
                 () -> assertThat(response.steady().finishedAt()).isEqualTo(finishedAt),
-                () -> assertThat(response.steady().reviewClosedAt()).isEqualTo(reviewClosedAt),
+                () -> assertThat(response.steady().reviewDeadline()).isEqualTo(reviewDeadline),
                 () -> assertThat(response.steady().participatedAt()).isEqualTo(reviewer.getCreatedAt().toLocalDate()),
                 () -> assertThat(response.reviewees()).contains(RevieweeResponse.from(reviewee))
         );
