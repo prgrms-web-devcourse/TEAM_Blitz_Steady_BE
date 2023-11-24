@@ -411,6 +411,30 @@ class SteadyControllerTest extends ControllerTestConfig {
     }
 
     @Test
+    @DisplayName("스테디 리더는 스테디 참여자를 추방할 수 있다.")
+    void expelParticipantTest() throws Exception {
+        // given
+        var steadyId = 1L;
+        var leaderId = 1L;
+        var memberId = 1L;
+        var authentication = new Authentication(leaderId);
+        var userInfo = createUserInfo(leaderId);
+
+        given(jwtResolver.getAuthentication(TOKEN)).willReturn(authentication);
+        willDoNothing().given(steadyService).expelParticipant(steadyId, memberId, userInfo);
+
+        // when & then
+        mockMvc.perform(patch("/api/v1/steadies/{steadyId}/{memberId}", steadyId, memberId)
+                        .header(AUTHORIZATION, TOKEN))
+                .andDo(document("steady-expel-participant",
+                        resourceDetails().tag("스테디").description("스테디 참여자 추방하기"),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        )))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
     @DisplayName("스테디 리더의 끌어올리기 요청을 통해 스테디를 끌어올릴 수 있다.")
     void promoteSteadyTest() throws Exception {
         // given

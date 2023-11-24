@@ -490,6 +490,29 @@ class SteadyServiceTest {
     }
 
     @Test
+    @DisplayName("스테디 리더가 참여자를 추방할 수 있다.")
+    void expelParticipantTest() {
+        // given
+        var position = positionRepository.save(createPosition());
+        var leader = userRepository.save(createFirstUser(position));
+        var member = userRepository.save(createSecondUser(position));
+        var stack = stackRepository.save(createStack());
+        var userInfo = createUserInfo(leader.getId());
+
+        var steadyRequest = createSteadyRequest(stack.getId(), position.getId());
+        var steadyId = steadyService.create(steadyRequest, userInfo);
+        var steady = steadyRepository.getSteady(steadyId);
+        steady.addParticipantByLeader(leader, member);
+
+        // when
+        steadyService.expelParticipant(steady.getId(), member.getId(), userInfo);
+
+        // then
+        Steady foundSteady = steadyRepository.getSteady(steadyId);
+        assertThat(foundSteady.getNumberOfParticipants()).isEqualTo(1);
+    }
+
+    @Test
     @DisplayName("스테디 리더가 끌어올리기 요청을 통해 스테디를 끌어올릴 수 있다.")
     void promoteSteadyTest() {
         // given
