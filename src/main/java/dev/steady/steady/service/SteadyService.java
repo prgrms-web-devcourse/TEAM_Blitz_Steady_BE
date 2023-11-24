@@ -79,8 +79,8 @@ public class SteadyService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<SteadySearchResponse> getSteadies(SearchConditionDto conditionDto, Pageable pageable) {
-        Page<Steady> steadies = steadyRepository.findAllBySearchCondition(conditionDto, pageable);
+    public PageResponse<SteadySearchResponse> getSteadies(UserInfo userInfo, SearchConditionDto conditionDto, Pageable pageable) {
+        Page<Steady> steadies = steadyRepository.findAllBySearchCondition(userInfo, conditionDto, pageable);
         Page<SteadySearchResponse> searchResponses = steadies
                 .map(steady -> SteadySearchResponse.from(steady, getLikeCount(steady)));
         return PageResponse.from(searchResponses);

@@ -1,5 +1,6 @@
 package dev.steady.steady.infrastructure;
 
+import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.dto.SearchConditionDto;
@@ -11,7 +12,7 @@ import org.springframework.data.domain.Slice;
 
 public interface SteadySearchRepository {
 
-    Page<Steady> findAllBySearchCondition(SearchConditionDto condition, Pageable pageable);
+    Page<Steady> findAllBySearchCondition(UserInfo userInfo, SearchConditionDto condition, Pageable pageable);
 
     Slice<MySteadyQueryResponse> findMySteadies(SteadyStatus status, User user, Pageable pageable);
 }
