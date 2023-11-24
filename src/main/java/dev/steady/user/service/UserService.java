@@ -8,6 +8,7 @@ import dev.steady.review.domain.repository.UserCardRepository;
 import dev.steady.review.dto.response.UserCardResponse;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.repository.ParticipantRepository;
+import dev.steady.storage.PresignedUrlProvier;
 import dev.steady.user.domain.Position;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
@@ -32,6 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
+    private static final String PROFILE_IMAGE_KEY_PATTERN = "profile/%s";
     private final UserRepository userRepository;
     private final StackRepository stackRepository;
     private final PositionRepository positionRepository;
@@ -40,6 +42,7 @@ public class UserService {
     private final UserCardRepository userCardRepository;
     private final ReviewRepository reviewRepository;
     private final ParticipantRepository participantRepository;
+    private final PresignedUrlProvier presignedUrlProvier;
 
     @Transactional(readOnly = true)
     public UserMyDetailResponse getMyUserDetail(UserInfo userInfo) {
@@ -111,6 +114,10 @@ public class UserService {
         List<Participant> participants = participantRepository.findByUser(user);
         participants.forEach(reviewRepository::deleteAllByReviewee);
         accountRepository.deleteByUser(user);
+    }
+
+    public String getProfileUploadUrl(String fileName) {
+        return presignedUrlProvier.providePutObjectUrl(fileName, PROFILE_IMAGE_KEY_PATTERN);
     }
 
     private Stack getStack(Long stackId) {
