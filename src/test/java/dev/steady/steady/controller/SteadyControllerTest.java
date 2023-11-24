@@ -3,6 +3,7 @@ package dev.steady.steady.controller;
 import com.epages.restdocs.apispec.Schema;
 import dev.steady.application.dto.response.SliceResponse;
 import dev.steady.global.auth.Authentication;
+import dev.steady.global.auth.UserInfo;
 import dev.steady.global.config.ControllerTestConfig;
 import dev.steady.steady.dto.SearchConditionDto;
 import dev.steady.steady.dto.request.SteadyPageRequest;
@@ -178,7 +179,7 @@ class SteadyControllerTest extends ControllerTestConfig {
         var steady = createSteady();
         var response = createSteadyPageResponse(steady, pageable);
 
-        given(steadyService.getSteadies(condition, pageable)).willReturn(response);
+        given(steadyService.getSteadies(new UserInfo(null), condition, pageable)).willReturn(response);
 
         // when & then
         mockMvc.perform(get("/api/v1/steadies/search")

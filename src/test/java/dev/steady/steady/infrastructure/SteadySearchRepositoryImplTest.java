@@ -98,7 +98,7 @@ class SteadySearchRepositoryImplTest {
 
         var pageable = request.toPageable();
         var condition = SearchConditionDto.from(request);
-        var response = queryDslRepository.findAllBySearchCondition(condition, pageable);
+        var response = queryDslRepository.findAllBySearchCondition(null, condition, pageable);
         var returnedSteady = response.getContent().get(0);
 
         // then
@@ -139,7 +139,7 @@ class SteadySearchRepositoryImplTest {
 
         var pageable = request.toPageable();
         var condition = SearchConditionDto.from(request);
-        var response = queryDslRepository.findAllBySearchCondition(condition, pageable);
+        var response = queryDslRepository.findAllBySearchCondition(null, condition, pageable);
 
         // then
         assertAll(
@@ -176,7 +176,7 @@ class SteadySearchRepositoryImplTest {
                 null);
         var pageable = request.toPageable();
         var condition = SearchConditionDto.from(request);
-        var response = queryDslRepository.findAllBySearchCondition(condition, pageable);
+        var response = queryDslRepository.findAllBySearchCondition(null, condition, pageable);
 
         // then
         int expectedSize = 1;

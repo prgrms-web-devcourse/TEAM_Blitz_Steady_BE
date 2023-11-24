@@ -157,7 +157,7 @@ class SteadyServiceTest {
                 null);
         SearchConditionDto condition = SearchConditionDto.from(searchRequest);
         Pageable pageable = searchRequest.toPageable();
-        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(condition, pageable);
+        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(userInfo, condition, pageable);
 
         // then
         List<Steady> steadies = steadyRepository.findAll();
@@ -197,7 +197,7 @@ class SteadyServiceTest {
                 null);
         SearchConditionDto condition = SearchConditionDto.from(searchRequest);
         Pageable pageable = searchRequest.toPageable();
-        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(condition, pageable);
+        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(userInfo, condition, pageable);
 
         // then
         List<Steady> steadies = steadyRepository.findAll();

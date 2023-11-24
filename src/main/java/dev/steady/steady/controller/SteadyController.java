@@ -59,10 +59,11 @@ public class SteadyController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<PageResponse<SteadySearchResponse>> getSteadies(SteadySearchRequest request) {
+    public ResponseEntity<PageResponse<SteadySearchResponse>> getSteadies(@Auth(required = false) UserInfo userInfo,
+                                                                          SteadySearchRequest request) {
         SearchConditionDto condition = SearchConditionDto.from(request);
         Pageable pageable = request.toPageable();
-        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(condition, pageable);
+        PageResponse<SteadySearchResponse> response = steadyService.getSteadies(userInfo, condition, pageable);
         return ResponseEntity.ok(response);
     }
 
