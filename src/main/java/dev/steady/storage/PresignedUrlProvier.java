@@ -20,10 +20,7 @@ public class PresignedUrlProvier {
     private final String bucketName;
     private final S3Presigner s3Presigner;
 
-    public PresignedUrlProvier(
-            @Value("${cloud.s3.bucket}")
-            String bucketName,
-            S3Presigner s3Presigner) {
+    public PresignedUrlProvier(@Value("${cloud.s3.bucket}") String bucketName, S3Presigner s3Presigner) {
         this.bucketName = bucketName;
         this.s3Presigner = s3Presigner;
     }

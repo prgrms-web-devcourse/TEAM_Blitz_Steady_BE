@@ -18,15 +18,15 @@ public record SteadyUpdateRequest(
         String name,
         @Size(min = 1, max = 50, message = "스테디 소개는 1글자 이상 50글자 이하입니다.")
         String bio,
-        @NotNull(message = "NULL은 올 수 없습니다." )
+        @NotNull(message = "NULL은 올 수 없습니다.")
         SteadyType type,
-        @NotNull(message = "NULL은 올 수 없습니다." )
+        @NotNull(message = "NULL은 올 수 없습니다.")
         SteadyStatus status,
         @Range(min = 2, max = 10, message = "스테디 정원은 2이상 10 이하입니다.")
         int participantLimit,
-        @NotNull(message = "NULL은 올 수 없습니다." )
+        @NotNull(message = "NULL은 올 수 없습니다.")
         SteadyMode steadyMode,
-        @NotNull(message = "NULL은 올 수 없습니다." )
+        @NotNull(message = "NULL은 올 수 없습니다.")
         String scheduledPeriod,
         @FutureOrPresent(message = "마감 종료일은 오늘 이후로 설정해야합니다.")
         LocalDate deadline,
@@ -34,9 +34,9 @@ public record SteadyUpdateRequest(
         String title,
         @Size(min = 1, max = 3000, message = "모집글 내용은 1글자 이상 3000글자 이하입니다.")
         String content,
-        @NotNull(message = "NULL은 올 수 없습니다." )
+        @NotNull(message = "NULL은 올 수 없습니다.")
         List<Long> positions,
-        @NotNull(message = "NULL은 올 수 없습니다." )
+        @NotNull(message = "NULL은 올 수 없습니다.")
         List<Long> stacks
 ) {
 
