@@ -156,6 +156,7 @@ class ApplicationControllerTest extends ControllerTestConfig {
                                 responseFields(
                                         fieldWithPath("content").type(ARRAY).description("신청서 목록"),
                                         fieldWithPath("content[].applicationId").type(NUMBER).description("신청서 식별자"),
+                                        fieldWithPath("content[].steadyId").type(NUMBER).description("스테디 식별자"),
                                         fieldWithPath("content[].steadyName").type(STRING).description("스테디 이름"),
                                         fieldWithPath("content[].createdAt").type(STRING).description("신청서 제출일"),
                                         fieldWithPath("content[].status").type(STRING).description("신청서 상태"),

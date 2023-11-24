@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 public record MyApplicationSummaryResponse(
         Long applicationId,
+        Long steadyId,
         String steadyName,
         LocalDateTime createdAt,
         ApplicationStatus status
@@ -15,6 +16,7 @@ public record MyApplicationSummaryResponse(
     public static MyApplicationSummaryResponse from(Application application) {
         return new MyApplicationSummaryResponse(
                 application.getId(),
+                application.getSteady().getId(),
                 application.getSteady().getName(),
                 application.getCreatedAt(),
                 application.getStatus()
