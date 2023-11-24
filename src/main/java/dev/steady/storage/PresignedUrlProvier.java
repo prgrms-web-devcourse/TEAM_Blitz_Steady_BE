@@ -10,6 +10,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 
 import java.time.Duration;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import static dev.steady.storage.exception.StorageErrorCode.NOT_SUPPORTED_FILE_TYPE;
 
@@ -17,6 +18,7 @@ import static dev.steady.storage.exception.StorageErrorCode.NOT_SUPPORTED_FILE_T
 public class PresignedUrlProvier {
 
     private static final String CONTENT_TYPE_PATTERN = "image/%s";
+    private static final String PERIOD = ".";
     private final String bucketName;
     private final S3Presigner s3Presigner;
 
@@ -27,7 +29,7 @@ public class PresignedUrlProvier {
 
     public String providePutObjectUrl(String fileName, String keyPattern) {
 
-        String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+        String extension = fileName.substring(fileName.lastIndexOf(PERIOD) + 1);
         validateImageFile(extension);
 
         String key = String.format(keyPattern, UUID.randomUUID());
@@ -50,8 +52,8 @@ public class PresignedUrlProvier {
     }
 
     private void validateImageFile(String extension) {
-        String imageFileRegex = "\\(jpeg|jpg|png|bmp\\)";
-        if (!extension.toLowerCase().matches(imageFileRegex)) {
+        String imageFileRegex = "^(jpeg|jpg|png)$";
+        if (!Pattern.matches(imageFileRegex, extension)) {
             throw new InvalidValueException(NOT_SUPPORTED_FILE_TYPE);
         }
     }
