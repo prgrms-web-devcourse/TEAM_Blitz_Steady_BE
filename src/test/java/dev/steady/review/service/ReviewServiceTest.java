@@ -7,8 +7,12 @@ import dev.steady.review.domain.UserCard;
 import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
+import dev.steady.review.dto.response.CardsResponse;
+import dev.steady.review.dto.response.ReviewInfoResponse;
 import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.dto.response.ReviewSteadyResponse;
 import dev.steady.review.dto.response.ReviewSwitchResponse;
+import dev.steady.review.dto.response.RevieweeResponse;
 import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyRepository;
 import dev.steady.user.domain.Stack;
@@ -29,6 +33,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static dev.steady.global.auth.AuthFixture.createUserInfo;
+import static dev.steady.review.fixture.ReviewFixture.createAnotherCard;
 import static dev.steady.review.fixture.ReviewFixture.createCard;
 import static dev.steady.review.fixture.ReviewFixture.createReview;
 import static dev.steady.review.fixture.ReviewFixture.createReviewCreateRequest;
@@ -220,7 +225,51 @@ class ReviewServiceTest {
                 () -> assertThat(response.reviews()).hasSameSizeAs(allReviews),
                 () -> assertThat(response.userCards()).hasSameSizeAs(cardsCount)
         );
+    }
 
+    @Test
+    @DisplayName("리뷰할 스테디 정보와 리뷰이 목록을 조회할 수 있다.")
+    void getReviewInfoTest() {
+        // given
+        var userInfo = createUserInfo(reviewerUser.getId());
+
+        var steady = createSteady(leader, stacks, FINISHED);
+        var finishedAt = LocalDate.now();
+        var reviewDeadline = finishedAt.plusMonths(2L);
+
+        ReflectionTestUtils.setField(steady, "finishedAt", finishedAt);
+        var savedSteady = steadyRepository.save(steady);
+
+        var reviewer = participantRepository.save(createMember(reviewerUser, savedSteady));
+        var reviewee = participantRepository.save(createMember(revieweeUser, savedSteady));
+
+        // when
+        ReviewInfoResponse response = reviewService.getReviewInfo(savedSteady.getId(), userInfo);
+        ReviewSteadyResponse steadyResponse = response.steady();
+
+        // then
+        assertAll(
+                () -> assertThat(steadyResponse.steadyId()).isEqualTo(steady.getId()),
+                () -> assertThat(steadyResponse.finishedAt()).isEqualTo(finishedAt),
+                () -> assertThat(steadyResponse.reviewDeadline()).isEqualTo(reviewDeadline),
+                () -> assertThat(steadyResponse.participatedAt()).isEqualTo(reviewer.getCreatedAt().toLocalDate()),
+                () -> assertThat(response.reviewees()).contains(RevieweeResponse.from(reviewee))
+        );
+    }
+
+    @Test
+    @DisplayName("모든 카드를 가져올 수 있다.")
+    void getAllCardsTest() {
+        // given
+        cardRepository.save(createCard());
+        cardRepository.save(createAnotherCard());
+        var cards = cardRepository.findAll();
+
+        // when
+        CardsResponse response = reviewService.getAllCards();
+
+        // then
+        assertThat(response.cards()).hasSameSizeAs(cards);
     }
 
 }

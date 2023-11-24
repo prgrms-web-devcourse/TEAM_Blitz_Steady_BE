@@ -10,8 +10,12 @@ import dev.steady.review.domain.repository.CardRepository;
 import dev.steady.review.domain.repository.ReviewRepository;
 import dev.steady.review.domain.repository.UserCardRepository;
 import dev.steady.review.dto.request.ReviewCreateRequest;
+import dev.steady.review.dto.response.CardsResponse;
+import dev.steady.review.dto.response.ReviewInfoResponse;
 import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.dto.response.ReviewSteadyResponse;
 import dev.steady.review.dto.response.ReviewSwitchResponse;
+import dev.steady.review.dto.response.RevieweeResponse;
 import dev.steady.review.dto.response.ReviewsBySteadyResponse;
 import dev.steady.review.dto.response.UserCardResponse;
 import dev.steady.steady.domain.Participant;
@@ -109,6 +113,31 @@ public class ReviewService {
         List<UserCardResponse> userCards = userCardRepository.getCardCountByUser(user);
         List<ReviewsBySteadyResponse> reviews = reviewRepository.getAllReviewsByRevieweeUser(user);
         return ReviewMyResponse.of(userCards, reviews);
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewInfoResponse getReviewInfo(Long steadyId, UserInfo userInfo) {
+        Steady steady = steadyRepository.getSteady(steadyId);
+
+        Participants steadyParticipants = steady.getParticipants();
+        Participant reviewer = steadyParticipants.getParticipantByUserId(userInfo.userId());
+
+        ReviewSteadyResponse steadyResponse = ReviewSteadyResponse.from(steady, reviewer);
+
+        List<Participant> participants = steadyParticipants.getAllParticipants();
+        List<RevieweeResponse> revieweeResponses = participants.stream()
+                .filter(participant -> !Objects.equals(reviewer, participant)
+                                       && !isAlreadyReviewed(reviewer, participant, steady))
+                .map(RevieweeResponse::from)
+                .toList();
+
+        return ReviewInfoResponse.of(steadyResponse, revieweeResponses);
+    }
+
+    @Transactional(readOnly = true)
+    public CardsResponse getAllCards() {
+        List<Card> cards = cardRepository.findAll();
+        return CardsResponse.from(cards);
     }
 
     private boolean isAlreadyReviewed(Participant reviewer, Participant reviewee, Steady steady) {
