@@ -36,9 +36,9 @@ public class ApplicationFixture {
     public static SliceResponse<MyApplicationSummaryResponse> createMyApplicationSummaryResponse() {
         return new SliceResponse<>(
                 List.of(
-                        new MyApplicationSummaryResponse(1L, "스테디 제목1", LocalDateTime.of(2023, 12, 31, 12, 30), WAITING),
-                        new MyApplicationSummaryResponse(2L, "스테디 제목2", LocalDateTime.of(2023, 12, 31, 12, 30), REJECTED),
-                        new MyApplicationSummaryResponse(3L, "스테디 제목3", LocalDateTime.of(2023, 12, 31, 12, 30), ACCEPTED)),
+                        new MyApplicationSummaryResponse(1L, 1L,"스테디 제목1", LocalDateTime.of(2023, 12, 31, 12, 30), WAITING),
+                        new MyApplicationSummaryResponse(2L, 2L,"스테디 제목2", LocalDateTime.of(2023, 12, 31, 12, 30), REJECTED),
+                        new MyApplicationSummaryResponse(3L, 3L,"스테디 제목3", LocalDateTime.of(2023, 12, 31, 12, 30), ACCEPTED)),
                 3,
                 false
         );
