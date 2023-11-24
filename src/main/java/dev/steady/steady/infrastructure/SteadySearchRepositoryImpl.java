@@ -5,6 +5,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import dev.steady.global.auth.UserInfo;
 import dev.steady.steady.domain.Participant;
 import dev.steady.steady.domain.Steady;
 import dev.steady.steady.domain.SteadyStatus;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import static dev.steady.steady.domain.QParticipant.participant;
 import static dev.steady.steady.domain.QSteady.steady;
+import static dev.steady.steady.domain.QSteadyLike.steadyLike;
 import static dev.steady.steady.domain.QSteadyPosition.steadyPosition;
 import static dev.steady.steady.domain.QSteadyStack.steadyStack;
 import static dev.steady.steady.domain.SteadyStatus.CLOSED;
@@ -41,13 +43,15 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<Steady> findAllBySearchCondition(SearchConditionDto condition, Pageable pageable) {
+    public Page<Steady> findAllBySearchCondition(UserInfo userInfo, SearchConditionDto condition, Pageable pageable) {
         List<Steady> steadies = jpaQueryFactory
                 .selectFrom(steady)
                 .innerJoin(steady.steadyStacks, steadyStack)
                 .innerJoin(steadyPosition)
                 .on(steady.id.eq(steadyPosition.steady.id))
-                .where(searchCondition(condition))
+                .leftJoin(steadyLike)
+                .on(steady.id.eq(steadyLike.steady.id))
+                .where(searchCondition(userInfo, condition))
                 .orderBy(orderBySort(pageable.getSort(), Steady.class))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -59,9 +63,11 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
                 .innerJoin(steady.steadyStacks, steadyStack)
                 .innerJoin(steadyPosition)
                 .on(steady.id.eq(steadyPosition.steady.id))
-                .where(searchCondition(condition))
+                .leftJoin(steadyLike)
+                .on(steady.id.eq(steadyLike.steady.id))
+                .where(searchCondition(userInfo, condition))
                 .distinct();
-        // TODO: 2023-11-04 좋아요 (북마크) 구현된다면 where 조건 추가
+
         return PageableExecutionUtils.getPage(steadies, pageable, count::fetchCount);
     }
 
@@ -110,13 +116,16 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
         return null;
     }
 
-    private BooleanBuilder searchCondition(SearchConditionDto condition) {
+    private BooleanBuilder searchCondition(UserInfo userInfo, SearchConditionDto condition) {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         booleanBuilder.and(filterCondition(condition.steadyType(), steady.type::eq));
         booleanBuilder.and(filterCondition(condition.steadyMode(), steady.steadyMode::eq));
         booleanBuilder.and(filterCondition(condition.stacks(), steadyStack.stack.name::in));
         booleanBuilder.and(filterCondition(condition.positions(), steadyPosition.position.name::in));
         booleanBuilder.and(filterCondition(condition.status(), steady.status::eq));
+        if (condition.like()) {
+            booleanBuilder.and(filterCondition(userInfo.userId(), steadyLike.user.id::eq));
+        }
         if (StringUtils.hasText(condition.keyword())) {
             return booleanBuilder.and(filterCondition(condition.keyword(), steady.title::contains))
                     .or(filterCondition(condition.keyword(), steady.content::contains));
