@@ -7,15 +7,16 @@ import dev.steady.global.auth.Auth;
 import dev.steady.global.auth.UserInfo;
 import dev.steady.user.dto.request.UserCreateRequest;
 import dev.steady.user.dto.request.UserUpdateRequest;
+import dev.steady.user.dto.response.ProfileUploadUrlResponse;
 import dev.steady.user.dto.response.UserMyDetailResponse;
 import dev.steady.user.dto.response.UserNicknameExistResponse;
 import dev.steady.user.dto.response.UserOtherDetailResponse;
 import dev.steady.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -72,6 +73,12 @@ public class UserController {
     public ResponseEntity<Void> withdrawUser(@Auth UserInfo userInfo) {
         userService.withdrawUser(userInfo);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/profile/image")
+    public ResponseEntity<ProfileUploadUrlResponse> getProfileUploadUrl(@RequestParam String fileName) {
+        ProfileUploadUrlResponse response = userService.getProfileUploadUrl(fileName);
+        return ResponseEntity.ok(response);
     }
 
 }

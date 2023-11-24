@@ -79,7 +79,7 @@ public class ReviewService {
         if (request.cardsId().isEmpty()) {
             return;
         }
-        
+
         User reviewee = userRepository.getUserBy(request.revieweeId());
         List<Card> cards = getCards(request.cardsId());
         List<UserCard> userCards = cards.stream()

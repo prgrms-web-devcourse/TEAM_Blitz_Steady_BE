@@ -9,11 +9,13 @@ import dev.steady.user.dto.request.UserCreateRequest;
 import dev.steady.user.dto.request.UserUpdateRequest;
 import dev.steady.user.dto.response.PositionResponse;
 import dev.steady.user.dto.response.PositionsResponse;
+import dev.steady.user.dto.response.ProfileUploadUrlResponse;
 import dev.steady.user.dto.response.StackResponse;
 import dev.steady.user.dto.response.StacksResponse;
 import dev.steady.user.dto.response.UserDetailResponse;
 import dev.steady.user.dto.response.UserMyDetailResponse;
 import dev.steady.user.dto.response.UserOtherDetailResponse;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
@@ -155,6 +157,19 @@ public class UserFixtures {
                 1L,
                 List.of(1L, 2L)
         );
+    }
+
+    public static ProfileUploadUrlResponse createProfileUploadUrlResponse() {
+        String url = UriComponentsBuilder
+                .fromUriString("bucket-name.s3.region.amazonaws.com/path/{fileName}")
+                .queryParam("X-Amz-Algorithm", "{Algorithm}")
+                .queryParam("X-Amz-Date", "{Date}")
+                .queryParam("X-Amz-SignedHeaders", "{SignedHeaders}")
+                .queryParam("X-Amz-Credential", "{Credential}")
+                .queryParam("X-Amz-Expires", "{Expires}")
+                .queryParam("X-Amz-Signature", "{Signature}")
+                .build().toString();
+        return ProfileUploadUrlResponse.from(url);
     }
 
 }

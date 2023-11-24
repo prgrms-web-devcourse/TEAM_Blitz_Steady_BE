@@ -24,3 +24,12 @@ jwt:
   secret_key: secretkeysecretkeysecretkeysecretkeysecretkeysecretkey
   access_token_expiration: 1800
   refresh_token_expiration: 6000
+
+cloud:
+  aws:
+    region: region
+    credentials:
+      access_key: accesskeyaccesskeyaccesskey
+      secret_key: secretkeysecretkeysecretkeysecretkey
+  s3:
+    bucket: bucketname
