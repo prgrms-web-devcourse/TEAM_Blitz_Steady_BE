@@ -156,6 +156,9 @@ class ReviewControllerTest extends ControllerTestConfig {
                 .andDo(document("review-v1-get-steadyInfo",
                         resourceDetails().tag("리뷰").description("리뷰할 스테디 정보와 리뷰이 목록")
                                 .responseSchema(Schema.schema("ReviewInfoResponse")),
+                        requestHeaders(
+                                headerWithName(AUTHORIZATION).description("토큰")
+                        ),
                         responseFields(
                                 fieldWithPath("steady.steadyId").type(NUMBER).description("스테디 식별자"),
                                 fieldWithPath("steady.name").type(STRING).description("스테디 이름"),
