@@ -19,6 +19,7 @@ import dev.steady.user.domain.repository.UserRepository;
 import dev.steady.user.domain.repository.UserStackRepository;
 import dev.steady.user.dto.request.UserCreateRequest;
 import dev.steady.user.dto.request.UserUpdateRequest;
+import dev.steady.user.dto.response.ProfileUploadUrlResponse;
 import dev.steady.user.dto.response.UserDetailResponse;
 import dev.steady.user.dto.response.UserMyDetailResponse;
 import dev.steady.user.dto.response.UserNicknameExistResponse;
@@ -116,8 +117,9 @@ public class UserService {
         accountRepository.deleteByUser(user);
     }
 
-    public String getProfileUploadUrl(String fileName) {
-        return presignedUrlProvier.providePutObjectUrl(fileName, PROFILE_IMAGE_KEY_PATTERN);
+    public ProfileUploadUrlResponse getProfileUploadUrl(String fileName) {
+        String url = presignedUrlProvier.providePutObjectUrl(fileName, PROFILE_IMAGE_KEY_PATTERN);
+        return ProfileUploadUrlResponse.from(url);
     }
 
     private Stack getStack(Long stackId) {
