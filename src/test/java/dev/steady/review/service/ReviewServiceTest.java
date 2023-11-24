@@ -10,6 +10,7 @@ import dev.steady.review.domain.repository.UserCardRepository;
 import dev.steady.review.dto.response.CardsResponse;
 import dev.steady.review.dto.response.ReviewInfoResponse;
 import dev.steady.review.dto.response.ReviewMyResponse;
+import dev.steady.review.dto.response.ReviewSteadyResponse;
 import dev.steady.review.dto.response.ReviewSwitchResponse;
 import dev.steady.review.dto.response.RevieweeResponse;
 import dev.steady.steady.domain.repository.ParticipantRepository;
@@ -244,13 +245,14 @@ class ReviewServiceTest {
 
         // when
         ReviewInfoResponse response = reviewService.getReviewInfo(savedSteady.getId(), userInfo);
+        ReviewSteadyResponse steadyResponse = response.steady();
 
         // then
         assertAll(
-                () -> assertThat(response.steady().steadyId()).isEqualTo(steady.getId()),
-                () -> assertThat(response.steady().finishedAt()).isEqualTo(finishedAt),
-                () -> assertThat(response.steady().reviewDeadline()).isEqualTo(reviewDeadline),
-                () -> assertThat(response.steady().participatedAt()).isEqualTo(reviewer.getCreatedAt().toLocalDate()),
+                () -> assertThat(steadyResponse.steadyId()).isEqualTo(steady.getId()),
+                () -> assertThat(steadyResponse.finishedAt()).isEqualTo(finishedAt),
+                () -> assertThat(steadyResponse.reviewDeadline()).isEqualTo(reviewDeadline),
+                () -> assertThat(steadyResponse.participatedAt()).isEqualTo(reviewer.getCreatedAt().toLocalDate()),
                 () -> assertThat(response.reviewees()).contains(RevieweeResponse.from(reviewee))
         );
     }
