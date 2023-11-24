@@ -22,15 +22,20 @@ public class Participants {
 
     @OneToMany(mappedBy = "steady", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Participant> steadyParticipants = new ArrayList<>();
-    private int participantLimits;
 
-    public Participants(int participantLimits) {
-        this.participantLimits = participantLimits;
+    private int participantLimit;
+
+    public Participants(int participantLimit) {
+        this.participantLimit = participantLimit;
     }
 
     public void add(Participant participant) {
         validateParticipantLimit();
         steadyParticipants.add(participant);
+    }
+
+    public void expel(Participant participant) {
+        steadyParticipants.remove(participant);
     }
 
     public User getLeader() {
@@ -56,8 +61,16 @@ public class Participants {
         return steadyParticipants.size();
     }
 
+    public int getParticipantLimit() {
+        return participantLimit;
+    }
+
+    public void updateParticipantLimit(int participantLimit) {
+        this.participantLimit = participantLimit;
+    }
+
     private void validateParticipantLimit() {
-        if (participantLimits == steadyParticipants.size()) {
+        if (participantLimit == steadyParticipants.size()) {
             throw new InvalidStateException(PARTICIPANT_LIMIT_EXCEEDED);
         }
     }
