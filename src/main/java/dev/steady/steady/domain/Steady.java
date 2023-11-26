@@ -57,9 +57,6 @@ public class Steady extends BaseEntity {
     private SteadyStatus status;
 
     @Column(nullable = false)
-    private int participantLimit;
-
-    @Column(nullable = false)
     private int numberOfParticipants;
 
     @Enumerated(EnumType.STRING)
@@ -105,8 +102,7 @@ public class Steady extends BaseEntity {
                    User user,
                    List<Stack> stacks) {
         this.promotion = new Promotion();
-        this.participantLimit = participantLimit;
-        this.participants = createParticipants(user);
+        this.participants = createParticipants(user, participantLimit);
         this.numberOfParticipants = participants.getNumberOfParticipants();
         this.name = name;
         this.bio = bio;
@@ -138,7 +134,7 @@ public class Steady extends BaseEntity {
         this.bio = bio;
         this.type = type;
         this.status = status;
-        this.participantLimit = participantLimit;
+        this.participants.updateParticipantLimit(participantLimit);
         this.steadyMode = steadyMode;
         this.scheduledPeriod = ScheduledPeriod.valueOf(scheduledPeriod);
         this.deadline = deadline;
@@ -162,6 +158,12 @@ public class Steady extends BaseEntity {
     public void addParticipantByLeader(User leader, User member) {
         validateLeader(leader);
         participants.add(Participant.createMember(member, this));
+        numberOfParticipants = participants.getNumberOfParticipants();
+    }
+
+    public void expelParticipantByLeader(User leader, Participant participant) {
+        validateLeader(leader);
+        participants.expel(participant);
         numberOfParticipants = participants.getNumberOfParticipants();
     }
 
@@ -190,6 +192,10 @@ public class Steady extends BaseEntity {
         return promotion.getPromotionCount();
     }
 
+    public int getParticipantLimit() {
+        return participants.getParticipantLimit();
+    }
+
     public boolean isDeletable(User user) {
         validateLeader(user);
         return numberOfParticipants == 1;
@@ -207,7 +213,7 @@ public class Steady extends BaseEntity {
         this.viewCount++;
     }
 
-    private Participants createParticipants(User user) {
+    private Participants createParticipants(User user, int participantLimit) {
         Participants participants = new Participants(participantLimit);
         participants.add(Participant.createLeader(user, this));
         return participants;

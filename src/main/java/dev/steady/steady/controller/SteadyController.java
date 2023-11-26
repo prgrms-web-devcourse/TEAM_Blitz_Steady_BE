@@ -102,6 +102,14 @@ public class SteadyController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{steadyId}/{memberId}")
+    public ResponseEntity<Void> expelParticipant(@PathVariable Long steadyId,
+                                                 @PathVariable Long memberId,
+                                                 @Auth UserInfo userInfo) {
+        steadyService.expelParticipant(steadyId, memberId, userInfo);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/{steadyId}/promote")
     public ResponseEntity<Void> promoteSteady(@PathVariable Long steadyId, @Auth UserInfo userInfo) {
         steadyService.promoteSteady(steadyId, userInfo);

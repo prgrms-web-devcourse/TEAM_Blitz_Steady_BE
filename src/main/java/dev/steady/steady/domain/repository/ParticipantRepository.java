@@ -2,6 +2,7 @@ package dev.steady.steady.domain.repository;
 
 import dev.steady.global.exception.NotFoundException;
 import dev.steady.steady.domain.Participant;
+import dev.steady.steady.domain.Steady;
 import dev.steady.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -19,5 +20,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
     List<Participant> findBySteadyId(Long id);
 
     List<Participant> findByUser(User user);
+
+    Participant findByUserAndSteady(User user, Steady steady);
 
 }

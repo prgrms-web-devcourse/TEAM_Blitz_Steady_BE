@@ -11,6 +11,7 @@ import dev.steady.steady.domain.SteadyPosition;
 import dev.steady.steady.domain.SteadyQuestion;
 import dev.steady.steady.domain.SteadyStatus;
 import dev.steady.steady.domain.SteadyViewLog;
+import dev.steady.steady.domain.repository.ParticipantRepository;
 import dev.steady.steady.domain.repository.SteadyLikeRepository;
 import dev.steady.steady.domain.repository.SteadyPositionRepository;
 import dev.steady.steady.domain.repository.SteadyQuestionRepository;
@@ -60,6 +61,7 @@ public class SteadyService {
     private final SteadyQuestionRepository steadyQuestionRepository;
     private final SteadyPositionRepository steadyPositionRepository;
     private final SteadyLikeRepository steadyLikeRepository;
+    private final ParticipantRepository participantRepository;
 
     @Transactional
     public Long create(SteadyCreateRequest request, UserInfo userinfo) {
@@ -152,6 +154,15 @@ public class SteadyService {
         steadyQuestionRepository.deleteBySteadyId(steadyId);
         List<SteadyQuestion> steadyQuestions = createSteadyQuestions(request.questions(), steady);
         steadyQuestionRepository.saveAll(steadyQuestions);
+    }
+
+    @Transactional
+    public void expelParticipant(Long steadyId, Long memberId, UserInfo userInfo) {
+        Steady steady = steadyRepository.getSteady(steadyId);
+        User leader = userRepository.getUserBy(userInfo.userId());
+        User member = userRepository.getUserBy(memberId);
+        Participant participant = participantRepository.findByUserAndSteady(member, steady);
+        steady.expelParticipantByLeader(leader, participant);
     }
 
     @Transactional
