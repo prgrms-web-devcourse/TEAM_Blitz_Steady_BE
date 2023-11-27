@@ -245,14 +245,15 @@ class UserControllerTest extends ControllerTestConfig {
         mockMvc.perform(get("/api/v1/user/profile/image")
                         .queryParam("fileName", fileName)
                 )
-                .andDo(document("user-v1-get-ProfileUploadUrl",
+                .andDo(document("user-v1-get-PutObjectUrlResponse",
                         resourceDetails().tag("사용자").description("사용자 프로필 이미지 업로드 URL 불러오기")
-                                .responseSchema(Schema.schema("ProfileUploadUrlResponse")),
+                                .responseSchema(Schema.schema("PutObjectUrlResponse")),
                         queryParameters(
                                 parameterWithName("fileName").description("확장자를 포함한 이미지 파일 이름")
                         ),
                         responseFields(
-                                fieldWithPath("url").type(STRING).description("사용자 프로필 이미지 업로드 URL")
+                                fieldWithPath("presignedUrl").type(STRING).description("사용자 프로필 이미지 업로드 URL"),
+                                fieldWithPath("objectUrl").type(STRING).description("업로드된 이미지 URL")
                         ))
                 )
                 .andExpect(status().isOk())

@@ -9,7 +9,7 @@ import dev.steady.user.dto.request.UserCreateRequest;
 import dev.steady.user.dto.request.UserUpdateRequest;
 import dev.steady.user.dto.response.PositionResponse;
 import dev.steady.user.dto.response.PositionsResponse;
-import dev.steady.user.dto.response.ProfileUploadUrlResponse;
+import dev.steady.user.dto.response.PutObjectUrlResponse;
 import dev.steady.user.dto.response.StackResponse;
 import dev.steady.user.dto.response.StacksResponse;
 import dev.steady.user.dto.response.UserDetailResponse;
@@ -159,8 +159,8 @@ public class UserFixtures {
         );
     }
 
-    public static ProfileUploadUrlResponse createProfileUploadUrlResponse() {
-        String url = UriComponentsBuilder
+    public static PutObjectUrlResponse createProfileUploadUrlResponse() {
+        String presignedUrl = UriComponentsBuilder
                 .fromUriString("bucket-name.s3.region.amazonaws.com/path/{fileName}")
                 .queryParam("X-Amz-Algorithm", "{Algorithm}")
                 .queryParam("X-Amz-Date", "{Date}")
@@ -169,7 +169,8 @@ public class UserFixtures {
                 .queryParam("X-Amz-Expires", "{Expires}")
                 .queryParam("X-Amz-Signature", "{Signature}")
                 .build().toString();
-        return ProfileUploadUrlResponse.from(url);
+        String objectUrl = "https:{bucket_name}.s3.{region}.com/{key}";
+        return PutObjectUrlResponse.of(presignedUrl, objectUrl);
     }
 
 }
