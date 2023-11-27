@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
-    private static final String DEFAULT_PROFILE_IMAGE_URL = "https://github.com/Team-Blitz-Steady/steady-server/assets/102007066/18b7281d-255c-474d-a0c3-1e4909862a1f";
+    private static final String DEFAULT_PROFILE_IMAGE_URL = "https://team-13-image-bucket.s3.ap-northeast-2.amazonaws.com/profile/steady_default_profile.svg";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
