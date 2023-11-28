@@ -80,7 +80,6 @@ public class SteadyFixtures {
                 .name("업데이트 스테디")
                 .bio("업데이트 적용한 스터디")
                 .contact("email")
-                .contact("email")
                 .type(SteadyType.PROJECT)
                 .status(SteadyStatus.CLOSED)
                 .participantLimit(5)
