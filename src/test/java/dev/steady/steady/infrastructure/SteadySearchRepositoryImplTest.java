@@ -142,9 +142,7 @@ class SteadySearchRepositoryImplTest {
         var response = queryDslRepository.findAllBySearchCondition(null, condition, pageable);
 
         // then
-        assertAll(
-                () -> assertThat(response.getTotalElements()).isEqualTo(0)
-        );
+        assertThat(response.getTotalElements()).isZero();
     }
 
     @Test

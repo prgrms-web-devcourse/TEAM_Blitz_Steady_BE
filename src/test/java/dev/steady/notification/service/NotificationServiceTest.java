@@ -255,8 +255,7 @@ class NotificationServiceTest {
         notificationService.deleteAll(userInfo);
 
         // then
-        int expectedSize = 0;
-        assertThat(notificationRepository.findByReceiverId(user.getId())).hasSize(0);
+        assertThat(notificationRepository.findByReceiverId(user.getId())).isEmpty();
     }
 
 }
