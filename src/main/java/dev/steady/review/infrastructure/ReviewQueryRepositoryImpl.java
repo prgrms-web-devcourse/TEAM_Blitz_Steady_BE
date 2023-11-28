@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import dev.steady.review.dto.response.ReviewDetailResponse;
 import dev.steady.review.dto.response.ReviewsBySteadyResponse;
+import dev.steady.steady.domain.Participant;
 import dev.steady.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -28,7 +29,7 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
     public List<String> getPublicCommentsByRevieweeUser(User user) {
         return jpaQueryFactory.select(review.comment)
                 .from(review)
-                .where(revieweeEqualsUser(user),
+                .where(revieweeEquals(user),
                         review.comment.isNotNull(),
                         isPublic())
                 .orderBy(review.createdAt.desc())
@@ -39,8 +40,8 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
     public List<ReviewsBySteadyResponse> getAllReviewsByRevieweeUser(User user) {
         return jpaQueryFactory.selectFrom(steady)
                 .innerJoin(review)
-                .on(steady.id.eq(review.steady.id))
-                .where(revieweeEqualsUser(user),
+                .on(steady.id.eq(review.reviewee.steady.id))
+                .where(revieweeEquals(user),
                         review.comment.isNotNull())
                 .orderBy(steady.finishedAt.desc())
                 .transform(groupBy(steady.id)
@@ -55,11 +56,33 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
                                         review.isPublic,
                                         review.createdAt
                                 ))
-                        )));
+                        ))
+                );
     }
 
-    private BooleanExpression revieweeEqualsUser(User user) {
+    @Override
+    public Boolean existsReviewByReviewerAndRevieweeAndSteady(Participant reviewer, Participant reviewee, Long steadyId) {
+        return jpaQueryFactory.from(review)
+                       .where(revieweeEquals(reviewee))
+                       .where(reviewerEquals(reviewer))
+                       .where(steadyIdEquals(steadyId))
+                       .fetchFirst() != null;
+    }
+
+    private BooleanExpression revieweeEquals(User user) {
         return review.reviewee.user.eq(user);
+    }
+
+    private BooleanExpression revieweeEquals(Participant reviewee) {
+        return review.reviewee.eq(reviewee);
+    }
+
+    private BooleanExpression reviewerEquals(Participant reviewer) {
+        return review.reviewer.eq(reviewer);
+    }
+
+    private BooleanExpression steadyIdEquals(Long steadyId) {
+        return review.reviewer.steady.id.eq(steadyId);
     }
 
     private BooleanExpression isPublic() {
