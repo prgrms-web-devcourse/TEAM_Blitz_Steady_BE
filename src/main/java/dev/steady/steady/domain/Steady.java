@@ -229,7 +229,7 @@ public class Steady extends BaseEntity {
     private List<SteadyStack> createSteadyStack(List<Stack> stacks) {
         return stacks.stream()
                 .map(stack -> new SteadyStack(stack, this))
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }
