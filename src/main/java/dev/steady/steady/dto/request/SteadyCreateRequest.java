@@ -7,6 +7,7 @@ import dev.steady.steady.domain.SteadyType;
 import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.User;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -21,6 +22,8 @@ public record SteadyCreateRequest(
         String name,
         @Size(min = 1, max = 50, message = "스테디 소개는 1글자 이상 50글자 이하입니다.")
         String bio,
+        @NotBlank(message = "연락 수단은 필수입니다.")
+        String contact,
         @NotNull(message = "NULL은 올 수 없습니다.")
         SteadyType type,
         @Range(min = 2, max = 10, message = "스테디 정원은 2이상 10 이하입니다.")
@@ -47,6 +50,7 @@ public record SteadyCreateRequest(
         return Steady.builder()
                 .name(name)
                 .bio(bio)
+                .contact(contact)
                 .type(type)
                 .participantLimit(participantLimit)
                 .steadyMode(steadyMode)

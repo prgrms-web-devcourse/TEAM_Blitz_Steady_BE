@@ -43,6 +43,7 @@ public class SteadyFixtures {
         return SteadyCreateRequest.builder()
                 .name("테스트 스테디")
                 .bio("무슨 스터디")
+                .contact("email")
                 .type(STUDY)
                 .participantLimit(6)
                 .steadyMode(ONLINE)
@@ -60,6 +61,7 @@ public class SteadyFixtures {
         return SteadyCreateRequest.builder()
                 .name("테스트 스테디")
                 .bio("무슨 스터디")
+                .contact("email")
                 .type(PROJECT)
                 .participantLimit(6)
                 .steadyMode(OFFLINE)
@@ -77,6 +79,7 @@ public class SteadyFixtures {
         return SteadyUpdateRequest.builder()
                 .name("업데이트 스테디")
                 .bio("업데이트 적용한 스터디")
+                .contact("email")
                 .type(SteadyType.PROJECT)
                 .status(SteadyStatus.CLOSED)
                 .participantLimit(5)
@@ -94,6 +97,7 @@ public class SteadyFixtures {
         return Steady.builder()
                 .name("스테디")
                 .bio("boi")
+                .contact("email")
                 .type(STUDY)
                 .participantLimit(6)
                 .scheduledPeriod(ScheduledPeriod.FIVE_MONTH)
@@ -135,6 +139,7 @@ public class SteadyFixtures {
         Steady steady = Steady.builder()
                 .name("스테디 제목")
                 .bio("Bio")
+                .contact("email")
                 .type(STUDY)
                 .participantLimit(5)
                 .steadyMode(SteadyMode.BOTH)
@@ -173,8 +178,8 @@ public class SteadyFixtures {
     public static SliceResponse<MySteadyResponse> createMySteadyResponse() {
         return new SliceResponse<>(
                 List.of(
-                        new MySteadyResponse(1L, "스테디 제목", true, LocalDateTime.of(2023, 12, 31, 11, 10)),
-                        new MySteadyResponse(2L, "스테디 제목2", false, LocalDateTime.of(2023, 12, 31, 11, 10))
+                        new MySteadyResponse(1L, "스테디 제목", "email", true, LocalDateTime.of(2023, 12, 31, 11, 10)),
+                        new MySteadyResponse(2L, "스테디 제목2", "email", false, LocalDateTime.of(2023, 12, 31, 11, 10))
                 ),
                 2,
                 false

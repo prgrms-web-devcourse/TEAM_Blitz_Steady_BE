@@ -89,6 +89,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                         requestFields(
                                 fieldWithPath("name").type(STRING).description("스테디 이름"),
                                 fieldWithPath("bio").type(STRING).description("스테디 소개"),
+                                fieldWithPath("contact").type(STRING).description("연락 수"),
                                 fieldWithPath("type").type(STRING).description("스테디 종류"),
                                 fieldWithPath("participantLimit").type(NUMBER).description("모집 정원"),
                                 fieldWithPath("steadyMode").type(STRING).description("스테디 진행 방식"),
@@ -137,6 +138,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("content[]").type(ARRAY).description("내 스테디 목록"),
                                 fieldWithPath("content[].steadyId").type(NUMBER).description("스테디 식별자"),
                                 fieldWithPath("content[].name").type(STRING).description("스테디 제목"),
+                                fieldWithPath("content[].contact").type(STRING).description("연락 수"),
                                 fieldWithPath("content[].isLeader").type(BOOLEAN).description("리더 여부"),
                                 fieldWithPath("content[].joinedAt").type(STRING).description("스테디 참여 시간"),
                                 fieldWithPath("numberOfElements").type(NUMBER).description("조회된 스테디 갯수"),
@@ -365,6 +367,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                         requestFields(
                                 fieldWithPath("name").type(STRING).description("스테디 이름"),
                                 fieldWithPath("bio").type(STRING).description("스테디 소개"),
+                                fieldWithPath("contact").type(STRING).description("연락수단"),
                                 fieldWithPath("type").type(STRING).description("스테디 종류"),
                                 fieldWithPath("status").type(STRING).description("스테디 상태"),
                                 fieldWithPath("participantLimit").type(NUMBER).description("모집 정원"),
