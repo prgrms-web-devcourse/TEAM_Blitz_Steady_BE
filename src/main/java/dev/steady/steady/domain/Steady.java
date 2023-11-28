@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static dev.steady.steady.exception.SteadyErrorCode.ALREADY_FINISHED;
 import static dev.steady.steady.exception.SteadyErrorCode.LEADER_PERMISSION_NEEDED;
