@@ -2,6 +2,9 @@ package dev.steady.steady.infrastructure.util;
 
 public class StringConverterUtils {
 
+    private StringConverterUtils() {
+    }
+
     public static String lowercaseFirstLetter(String input) {
         if (input == null || input.isEmpty()) {
             return input;

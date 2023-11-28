@@ -4,6 +4,9 @@ import java.util.UUID;
 
 public class WithdrawUserUtils {
 
+    private WithdrawUserUtils() {
+    }
+
     public static final String WITHDRAW_USER_NAME_PREFIX = "탈퇴한 유저%s";
     public static final int BEGIN_INDEX = 0;
     public static final int END_INDEX = 8;

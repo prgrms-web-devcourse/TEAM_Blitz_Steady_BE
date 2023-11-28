@@ -16,6 +16,9 @@ import static dev.steady.steady.infrastructure.util.StringConverterUtils.lowerca
 
 public class DynamicQueryUtils {
 
+    private DynamicQueryUtils() {
+    }
+
     public static <T> BooleanExpression filterCondition(T condition, Function<T, BooleanExpression> function) {
         T conditionResult = condition;
 
