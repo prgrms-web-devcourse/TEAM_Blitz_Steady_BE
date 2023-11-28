@@ -22,6 +22,9 @@ public class ApplicationResultNotificationStrategy extends NotificationStrategy 
 
     @Override
     public String getRedirectUri() {
+        if (status == ApplicationStatus.ACCEPTED) {
+            return "/mysteady";
+        }
         return "/mypage/application";
     }
 
