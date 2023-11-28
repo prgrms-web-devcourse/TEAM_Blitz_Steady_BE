@@ -133,6 +133,7 @@ public class SteadyService {
         steady.update(user,
                 request.name(),
                 request.bio(),
+                request.contact(), 
                 request.type(),
                 request.status(),
                 request.participantLimit(),

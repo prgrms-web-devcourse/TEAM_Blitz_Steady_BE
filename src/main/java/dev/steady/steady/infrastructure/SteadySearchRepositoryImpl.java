@@ -77,6 +77,7 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
                 .select(Projections.constructor(MySteadyQueryResponse.class,
                         steady.id,
                         steady.name,
+                        steady.contact,
                         participant.isLeader,
                         participant.createdAt))
                 .from(steady)

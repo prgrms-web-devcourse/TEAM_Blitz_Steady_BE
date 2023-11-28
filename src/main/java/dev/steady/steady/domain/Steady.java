@@ -48,6 +48,9 @@ public class Steady extends BaseEntity {
     @Column(nullable = true)
     private String bio;
 
+    @Column(nullable = false)
+    private String contact;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SteadyType type;
@@ -92,6 +95,7 @@ public class Steady extends BaseEntity {
     @Builder
     private Steady(String name,
                    String bio,
+                   String contact,
                    SteadyType type,
                    int participantLimit,
                    SteadyMode steadyMode,
@@ -106,6 +110,7 @@ public class Steady extends BaseEntity {
         this.numberOfParticipants = participants.getNumberOfParticipants();
         this.name = name;
         this.bio = bio;
+        this.contact = contact;
         this.type = type;
         this.status = SteadyStatus.RECRUITING;
         this.steadyMode = steadyMode;
@@ -120,6 +125,7 @@ public class Steady extends BaseEntity {
     public void update(User user,
                        String name,
                        String bio,
+                       String contact,
                        SteadyType type,
                        SteadyStatus status,
                        int participantLimit,
@@ -132,6 +138,7 @@ public class Steady extends BaseEntity {
         validateLeader(user);
         this.name = name;
         this.bio = bio;
+        this.contact = contact;
         this.type = type;
         this.status = status;
         this.participants.updateParticipantLimit(participantLimit);
