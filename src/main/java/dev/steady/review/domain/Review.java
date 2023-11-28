@@ -2,7 +2,6 @@ package dev.steady.review.domain;
 
 import dev.steady.global.entity.BaseEntity;
 import dev.steady.steady.domain.Participant;
-import dev.steady.steady.domain.Steady;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,9 +34,6 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "reviewee_id")
     private Participant reviewee;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Steady steady;
-
     @Column
     private String comment;
 
@@ -47,11 +43,9 @@ public class Review extends BaseEntity {
     @Builder
     private Review(Participant reviewer,
                    Participant reviewee,
-                   Steady steady,
                    String comment) {
         this.reviewer = reviewer;
         this.reviewee = reviewee;
-        this.steady = steady;
         this.comment = comment;
         this.isPublic = true;
     }

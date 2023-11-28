@@ -50,7 +50,6 @@ public class ReviewFixture {
 
     public static Review createReview(Participant reviewer, Participant reviewee, Steady steady) {
         return Review.builder()
-                .steady(steady)
                 .reviewer(reviewer)
                 .reviewee(reviewee)
                 .comment("다음에도 저랑 같이 공부해요!")
