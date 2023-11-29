@@ -68,7 +68,7 @@ public class ReviewService {
             throw new InvalidStateException(REVIEW_DUPLICATE);
         }
 
-        Review review = request.toEntity(reviewer, reviewee, steady);
+        Review review = request.toEntity(reviewer, reviewee);
         Review savedReview = reviewRepository.save(review);
 
         return savedReview.getId();
@@ -141,10 +141,10 @@ public class ReviewService {
     }
 
     private boolean isAlreadyReviewed(Participant reviewer, Participant reviewee, Steady steady) {
-        return reviewRepository.existsByReviewerAndRevieweeAndSteady(
+        return reviewRepository.existsReviewByReviewerAndRevieweeAndSteady(
                 reviewer,
                 reviewee,
-                steady
+                steady.getId()
         );
     }
 

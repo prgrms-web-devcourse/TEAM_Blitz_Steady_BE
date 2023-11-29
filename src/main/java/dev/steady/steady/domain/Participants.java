@@ -34,10 +34,6 @@ public class Participants {
         steadyParticipants.add(participant);
     }
 
-    public void expel(Participant participant) {
-        steadyParticipants.remove(participant);
-    }
-
     public User getLeader() {
         return steadyParticipants.stream()
                 .filter(Participant::isLeader)
@@ -54,11 +50,16 @@ public class Participants {
     }
 
     public List<Participant> getAllParticipants() {
-        return steadyParticipants;
+        return steadyParticipants.stream()
+                .filter(participant -> !participant.isDeleted())
+                .toList();
     }
 
     public int getNumberOfParticipants() {
-        return steadyParticipants.size();
+        long count = steadyParticipants.stream()
+                .filter(participant -> !participant.isDeleted())
+                .count();
+        return (int) count;
     }
 
     public int getParticipantLimit() {

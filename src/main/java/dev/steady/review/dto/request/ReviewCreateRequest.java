@@ -2,7 +2,6 @@ package dev.steady.review.dto.request;
 
 import dev.steady.review.domain.Review;
 import dev.steady.steady.domain.Participant;
-import dev.steady.steady.domain.Steady;
 
 import java.util.List;
 
@@ -12,9 +11,8 @@ public record ReviewCreateRequest(
         String comment
 ) {
 
-    public Review toEntity(Participant reviewer, Participant reviewee, Steady steady) {
+    public Review toEntity(Participant reviewer, Participant reviewee) {
         return Review.builder()
-                .steady(steady)
                 .reviewer(reviewer)
                 .reviewee(reviewee)
                 .comment(comment)
