@@ -169,6 +169,9 @@ public class Steady extends BaseEntity {
 
     public void expelParticipantByLeader(User leader, Participant participant) {
         validateLeader(leader);
+        if (finishedAt != null || isFinished()) {
+            throw new InvalidStateException(ALREADY_FINISHED);
+        }
         participants.expel(participant);
         numberOfParticipants = participants.getNumberOfParticipants();
     }
