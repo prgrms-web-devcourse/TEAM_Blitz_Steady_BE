@@ -34,10 +34,6 @@ public class Participants {
         steadyParticipants.add(participant);
     }
 
-    public void expel(Participant participant) {
-        participant.delete();
-    }
-
     public User getLeader() {
         return steadyParticipants.stream()
                 .filter(Participant::isLeader)

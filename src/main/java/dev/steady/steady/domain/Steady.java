@@ -172,7 +172,7 @@ public class Steady extends BaseEntity {
         if (finishedAt != null || isFinished()) {
             throw new InvalidStateException(ALREADY_FINISHED);
         }
-        participants.expel(participant);
+        participant.delete();
         numberOfParticipants = participants.getNumberOfParticipants();
     }
 
