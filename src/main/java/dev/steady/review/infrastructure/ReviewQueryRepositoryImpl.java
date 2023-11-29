@@ -63,9 +63,9 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
     @Override
     public Boolean existsReviewByReviewerAndRevieweeAndSteady(Participant reviewer, Participant reviewee, Long steadyId) {
         return jpaQueryFactory.from(review)
-                       .where(revieweeEquals(reviewee))
-                       .where(reviewerEquals(reviewer))
-                       .where(steadyIdEquals(steadyId))
+                       .where(revieweeEquals(reviewee),
+                               reviewerEquals(reviewer),
+                               steadyIdEquals(steadyId))
                        .fetchFirst() != null;
     }
 
