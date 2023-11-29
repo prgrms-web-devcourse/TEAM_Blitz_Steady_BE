@@ -18,17 +18,17 @@ import java.util.List;
 public class Questions {
 
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Question> questions = new ArrayList<>();
+    private List<Question> values = new ArrayList<>();
 
     public Questions(Template template, List<String> questions) {
         List<Question> values = createQuestions(template, questions);
-        this.questions = values;
+        this.values = values;
     }
 
     public void update(List<String> questions, Template template) {
-        this.questions.clear();
+        this.values.clear();
         List<Question> values = createQuestions(template, questions);
-        this.questions.addAll(values);
+        this.values.addAll(values);
     }
 
     private List<Question> createQuestions(Template template, List<String> questions) {
@@ -38,7 +38,7 @@ public class Questions {
     }
 
     public List<String> getContents() {
-        return questions.stream()
+        return values.stream()
                 .map(Question::getContent)
                 .toList();
     }

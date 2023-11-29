@@ -35,6 +35,10 @@ public class UserFixtures {
                 .build();
     }
 
+    public static List<Position> createPositions() {
+        return List.of(createPosition(), createAnotherPosition());
+    }
+
     public static Stack createStack() {
         return Stack.builder()
                 .name("Java")
@@ -47,6 +51,10 @@ public class UserFixtures {
                 .name("JavaScript")
                 .imageUrl("www")
                 .build();
+    }
+
+    public static List<Stack> createStacks() {
+        return List.of(createStack(), createAnotherStack());
     }
 
     public static User createFirstUser(Position position) {

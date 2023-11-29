@@ -163,7 +163,7 @@ class SteadyServiceTest {
         List<Steady> steadies = steadyRepository.findAll();
         List<SteadySearchResponse> content = response.content();
         assertAll(
-                () -> assertThat(content.size()).isEqualTo(steadies.size()),
+                () -> assertThat(content).hasSameSizeAs(steadies),
                 () -> assertThat(content.get(0).createdAt()).isAfter(content.get(1).createdAt())
         );
     }
@@ -203,7 +203,7 @@ class SteadyServiceTest {
         List<Steady> steadies = steadyRepository.findAll();
         List<SteadySearchResponse> content = response.content();
         assertAll(
-                () -> assertThat(content.size()).isEqualTo(steadies.size()),
+                () -> assertThat(content).hasSameSizeAs(steadies),
                 () -> assertThat(content.get(0).deadline()).isBefore(content.get(1).deadline())
         );
     }

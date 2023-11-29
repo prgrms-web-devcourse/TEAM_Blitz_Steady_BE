@@ -1,5 +1,6 @@
 package dev.steady.user.service;
 
+import dev.steady.user.domain.Stack;
 import dev.steady.user.domain.repository.StackRepository;
 import dev.steady.user.dto.response.StacksResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -7,8 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static dev.steady.user.fixture.UserFixtures.createAnotherStack;
-import static dev.steady.user.fixture.UserFixtures.createStack;
+import java.util.List;
+
+import static dev.steady.user.fixture.UserFixtures.createStacks;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -24,15 +26,14 @@ class StackServiceTest {
     @DisplayName("모든 스택을 가져올 수 있다.")
     void getStacksTest() {
         // given
-        stackRepository.save(createStack());
-        stackRepository.save(createAnotherStack());
+        List<Stack> stacks = createStacks();
+        stackRepository.saveAll(stacks);
 
         // when
         StacksResponse response = stackService.getStacks();
 
         // then
-        int expectedSize = 2;
-        assertThat(response.stacks().size()).isEqualTo(expectedSize);
+        assertThat(response.stacks()).hasSameSizeAs(stacks);
     }
 
 }
