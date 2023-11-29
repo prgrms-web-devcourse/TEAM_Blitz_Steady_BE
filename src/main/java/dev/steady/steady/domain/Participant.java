@@ -34,10 +34,14 @@ public class Participant extends BaseEntity {
     @Column(name = "is_leader", nullable = false)
     private boolean isLeader;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
     private Participant(User user, Steady steady, boolean isLeader) {
         this.user = user;
         this.steady = steady;
         this.isLeader = isLeader;
+        this.isDeleted = false;
     }
 
     public static Participant createLeader(User user, Steady steady) {
@@ -52,4 +56,8 @@ public class Participant extends BaseEntity {
         return this.user.getId();
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+    
 }

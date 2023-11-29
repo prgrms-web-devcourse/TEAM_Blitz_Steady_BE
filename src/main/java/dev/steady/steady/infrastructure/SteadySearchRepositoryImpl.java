@@ -85,7 +85,8 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
                 .where(
                         isFinishSteady(status),
                         isWorkSteady(status),
-                        isParticipantUserIdEqual(user)
+                        isParticipantUserIdEqual(user),
+                        isParticipantNotDeleted()
                 )
                 .orderBy(orderBySort(pageable.getSort(), Participant.class), steady.id.asc())
                 .offset(pageable.getOffset())
@@ -100,6 +101,10 @@ public class SteadySearchRepositoryImpl implements SteadySearchRepository {
 
     private BooleanExpression isParticipantUserIdEqual(User user) {
         return participant.user.id.eq(user.getId());
+    }
+
+    private BooleanExpression isParticipantNotDeleted() {
+        return participant.isDeleted.isFalse();
     }
 
     private BooleanExpression isFinishSteady(SteadyStatus status) {
