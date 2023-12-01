@@ -266,6 +266,7 @@ class SteadyControllerTest extends ControllerTestConfig {
                                 fieldWithPath("leaderResponse.profileImage").type(STRING).description("스테디 리더 프로필 이미지"),
                                 fieldWithPath("name").type(STRING).description("스테디 이름"),
                                 fieldWithPath("bio").type(STRING).description("스테디 소개"),
+                                fieldWithPath("contact").type(STRING).description("연락 수단"),
                                 fieldWithPath("type").type(STRING).description("스테디 유형"),
                                 fieldWithPath("status").type(STRING).description("스테디 상태"),
                                 fieldWithPath("participantLimit").type(NUMBER).description("모집 정원"),
